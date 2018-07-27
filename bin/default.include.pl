@@ -23,9 +23,7 @@ $database_last_error				= "";
 # in future, move database settings to externalfile. 
 # Use hardcode make life complex to manage production and multiple development base
 # all other data need leave in database
-$database_dsn						= "DBI:Pg:database=fusionpbx;host=127.0.0.1";
-$database_user						= "fusionpbx";
-$database_password					= "admin709!5";
+
 
 #
 # in future, make this thing permanent in modperl.
@@ -308,7 +306,7 @@ sub form_check_email(){
 #------------------------
 sub database_connect(){
 	if ($database_connected eq 0) {
-		$database = DBI->connect($database_dsn, $database_user, $database_password);
+		$database = DBI->connect($app{database_dsn}, $app{database_user}, $app{database_password});
 		$database->{mysql_auto_reconnect} = 1;
 		$database_connected = 1;
 	}

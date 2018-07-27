@@ -9,9 +9,13 @@ use DBI;
 use Time::Local;
 #use Math::Round qw(:all);
 use URI::Escape;
-use Net::AMQP::RabbitMQ;
 use POSIX qw(strftime);
 use MIME::Base64;
+$default_include = "/salzh/velantroapi/bin/default.include.pl";
+$SIG{CHLD} = \&reaper;
+$SIG{INT}          = \&_stop_server;
+$SIG{'__DIE__'}    = \&_die;
+$SIG{'__WARN__'}   = \&_warn;
 
 $pid = fork();
 if ($pid <= 0) {
@@ -19,7 +23,7 @@ if ($pid <= 0) {
 	exit;
 }
 
-require "/usr/local/pbx/bin/default.include.pl";
+require $default_include;
 
 #======================================================
 
@@ -130,14 +134,14 @@ sub do_hold() {
 	local $presence_id =  uri_unescape($event{'Channel-Presence-ID'});
 	local ($ext, $domain_name) = split '@', $presence_id;
 	
-	if (index(",$app{domain_monitor_hold},"), ",$domain,") == -1) {
+	if (index(",$app{domain_monitor_hold},", ",$domain,") == -1) {
 		return;
 	}
 	
 	
 	if ($event{'Event-Name'} eq 'CHANNEL_HOLD') {
 		$sql = "insert into v_hold (channel_uuid,other_channel_uuid,hold_timestamp,ext, domain_name) values
-				('$uuid', '$other_uuid', '$time', '$ext', '$domain_name')";
+				('$uuid', '$other_uuid', now(), '$ext', '$domain_name')";
 	} elsif ($event{'Event-Name'} eq 'CHANNEL_UNHOLD' ||
 			$event{'Event-Name'} eq "CHANNEL_HANGUP") {
 		$sql = "delete from v_hold where channel_uuid='$uuid'";
@@ -404,18 +408,21 @@ sub update_agent_status() {
 
 
 sub monitor_callback() {
-	require "/usr/local/pbx/bin/default.include.pl";
+	require $default_include;
+	$app{callback_timeout} ||= 5;
 	while (1) {
-		$sql = "select channel_uuid,other_channel_uuid,hold_timestamp,ext, domain_name from v_hold where now()- interval '$app{callback_timeout} S' <= hold_timestamp"; 
+		$sql = "select channel_uuid,other_channel_uuid,hold_timestamp,ext, domain_name from v_hold where now()- interval '$app{callback_timeout} S' >= hold_timestamp"; 
 		warn "sql: $sql!\n";
-		%callback = &database_select_as_hash($sql, "channel_uuid,other_channel_uuid,hold_timestamp,ext, domain_name");
+		%callback = &database_select_as_hash($sql, "other_channel_uuid,hold_timestamp,ext, domain_name");
 		
 		for $uuid (keys %callback) {
-			$cmd = "uuid_transfer $uuid $callback{$uuid}{ext} XML $callback{uuid}{domain_name}";
+			$cmd = "uuid_transfer $uuid $callback{$uuid}{ext} XML $callback{$uuid}{domain_name}";
 			warn "cmd: $cmd!\n";
 			$res = `fs_cli -rx "$cmd"`;
 			
 			warn $res;
+			
+			&database_do("delete from v_hold where channel_uuid='$uuid'");
 		}
 		sleep 3;
 	}
@@ -604,3 +611,34 @@ sub asterisk_debug_print(){
 }
 #======================================================
  
+sub reaper {
+   while ((my $child = waitpid(-1, WNOHANG)) > 0) {
+	   warn "process $child exit ...\n";
+   }
+}
+
+sub out() {
+    local $str = shift;
+    print "[", &now(), "] ", $str, "\n";
+}
+
+sub now() {
+    @v = localtime;
+    return sprintf("%04d-%02d-%02d %02d:%02d:%02d", 1900+$v[5],$v[4]+1,$v[3],$v[2],$v[1],$v[0]);
+}
+
+sub _stop_server {
+    &out("** catch INT SIGNAL, server will quit!");
+    exit 0;
+}
+
+
+sub _die {
+    &out("DIE: pid=$$ and cause= @_");
+    &_exit("quit with die");
+}
+
+sub _warn {
+    &out("WARN: pid=$$ and cause=@_");
+}
+
