@@ -12,6 +12,10 @@ use URI::Escape;
 use POSIX qw(strftime);
 use MIME::Base64;
 $default_include = "/salzh/velantroapi/bin/default.include.pl";
+$SIG{CHLD} = \&reaper;
+$SIG{INT}          = \&_stop_server;
+$SIG{'__DIE__'}    = \&_die;
+$SIG{'__WARN__'}   = \&_warn;
 
 $pid = fork();
 if ($pid <= 0) {
@@ -607,3 +611,34 @@ sub asterisk_debug_print(){
 }
 #======================================================
  
+sub reaper {
+   while ((my $child = waitpid(-1, WNOHANG)) > 0) {
+	   warn "process $child exit ...\n";
+   }
+}
+
+sub out() {
+    local $str = shift;
+    print "[", &now(), "] ", $str, "\n";
+}
+
+sub now() {
+    @v = localtime;
+    return sprintf("%04d-%02d-%02d %02d:%02d:%02d", 1900+$v[5],$v[4]+1,$v[3],$v[2],$v[1],$v[0]);
+}
+
+sub _stop_server {
+    &out("** catch INT SIGNAL, server will quit!");
+    exit 0;
+}
+
+
+sub _die {
+    &out("DIE: pid=$$ and cause= @_");
+    &_exit("quit with die");
+}
+
+sub _warn {
+    &out("WARN: pid=$$ and cause=@_");
+}
+
