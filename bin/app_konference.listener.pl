@@ -129,7 +129,8 @@ sub do_hold() {
 	#print Dumper(\%event); return;
 	local $uuid = $event{'Channel-Call-UUID'};
 	local $other_uuid = $event{'Other-Leg-Unique-ID'};
-	
+	$other_uuid ||= $event{'Caller-Unique-ID'};
+
 	local $time  = uri_unescape($event{'Event-Date-Local'});
 	local $presence_id =  uri_unescape($event{'Channel-Presence-ID'});
 	local ($ext, $domain_name) = split '@', $presence_id;
@@ -411,9 +412,9 @@ sub monitor_callback() {
 	require $default_include;
 	$app{callback_timeout} ||= 5;
 	while (1) {
-		$sql = "select channel_uuid,other_channel_uuid,hold_timestamp,ext, domain_name from v_hold where now()- interval '$app{callback_timeout} S' >= hold_timestamp"; 
+		$sql = "select channel_uuid,other_channel_uuid,hold_timestamp,ext,domain_name from v_hold where now()- interval '$app{callback_timeout} S' >= hold_timestamp"; 
 		warn "sql: $sql!\n";
-		%callback = &database_select_as_hash($sql, "other_channel_uuid,hold_timestamp,ext, domain_name");
+		%callback = &database_select_as_hash($sql, "other_channel_uuid,hold_timestamp,ext,domain_name");
 		
 		for $uuid (keys %callback) {
 			$cmd = "uuid_transfer $uuid $callback{$uuid}{ext} XML $callback{$uuid}{domain_name}";
