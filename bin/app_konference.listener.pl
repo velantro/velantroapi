@@ -24,7 +24,7 @@ if ($pid <= 0) {
 }
 
 require $default_include;
-
+warn "domain_monitor_hold:$app{domain_monitor_hold}!\n";
 #======================================================
 
 
@@ -135,7 +135,7 @@ sub do_hold() {
 	local $presence_id =  uri_unescape($event{'Channel-Presence-ID'});
 	local ($ext, $domain_name) = split '@', $presence_id;
 	
-	if (index(",$app{domain_monitor_hold},", ",$domain,") == -1) {
+	if (index(",$app{domain_monitor_hold},", ",$domain_name,") == -1) {
 		return;
 	}
 	
@@ -417,7 +417,7 @@ sub monitor_callback() {
 		%callback = &database_select_as_hash($sql, "other_channel_uuid,hold_timestamp,ext,domain_name");
 		
 		for $uuid (keys %callback) {
-			$cmd = "uuid_transfer $uuid $callback{$uuid}{ext} XML $callback{$uuid}{domain_name}";
+			$cmd = "uuid_transfer $uuid  mc$callback{$uuid}{ext} XML $callback{$uuid}{domain_name}";
 			warn "cmd: $cmd!\n";
 			$res = `fs_cli -rx "$cmd"`;
 			
