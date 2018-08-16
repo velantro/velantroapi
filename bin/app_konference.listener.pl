@@ -11,7 +11,10 @@ use Time::Local;
 use URI::Escape;
 use POSIX qw(strftime);
 use MIME::Base64;
-$default_include = "/salzh/velantroapi/bin/default.include.pl";
+require "/salzh/velantroapi/lib/default.include.pl";
+&default_include_init();
+
+$default_include = "/salzh/velantroapi/lib/tools.database.pl";
 $SIG{CHLD} = \&reaper;
 $SIG{INT}          = \&_stop_server;
 $SIG{'__DIE__'}    = \&_die;

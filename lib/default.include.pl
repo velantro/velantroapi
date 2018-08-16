@@ -45,9 +45,9 @@ sub default_include_init(){
 	$app{app_root}			= $app{app_root} || "/usr/local/pbx-v2/";
 	##$app{host_name}			= $app{host_name} || "dev-desktop";# we need remove all calls to this variable. we need use server_id instead
 	$app{server_id}			= $app{server_id} || "1";
-	$app{database_dsn}		= $app{database_dsn} || "dbi:mysql:fusionpbx:localhost";
-	$app{database_user}		= $app{database_user} || "root";
-	$app{database_password}	= $app{database_password} || "root";
+	$app{database_dsn}		= $app{database_dsn} || "DBI:Pg:database=fusionpbx;host=127.0.0.1";
+	$app{database_user}		= $app{database_user} || "fusionpbx";
+	$app{database_password}	= $app{database_password} || "fusionpbx";
 	$host_name				= $app{host_name};
 	$app{pbx_host}		= $app{pbx_host}     || '';
 	$app{pbx_hostname}	= $app{pbx_hostname} || '';
