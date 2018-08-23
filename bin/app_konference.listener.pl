@@ -429,6 +429,7 @@ sub monitor_callback() {
 			&database_do("delete from v_hold where channel_uuid='$uuid'");
 		}
 		sleep 3;
+		&default_include_init();
 	}
 	
 }
