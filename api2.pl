@@ -67,21 +67,6 @@ my $jar = HTTP::Cookies->new(
 
 my ($api_login, $api_pass);
 
-my $txt = `cat /etc/vconnect.conf`;
-my %config = ();
-for (split /\n/, $txt) {
-	my ($key, $val)	= split /=/, $_, 2;
-	
-	if ($key) {
-		$config{$key} = $val;
-		#warn "$key=$val\n";
-	}
-}
-
-$adb = $config{dbname} if $config{dbname};
-$ahost = $config{dbhost} if $config{dbhost};
-$auser = $config{dbuser} if $config{dbuser};
-$apass = $config{dbpass} if $config{dbpass};
 
 my $dbh = '';
 if ($config{dbtype} eq 'sqlite') {
