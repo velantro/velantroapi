@@ -105,7 +105,14 @@ my ($username, $password) = split ':', $txt, 2;
 if ($query{action} eq 'login') {
 	my $error = 0;
 	my $msg = 'ok';
-	if ($query{username} eq $username && $query{password} eq $password) {
+	my $old_session_uuid  = $cgi->cookie('session_uuid');
+	if ($old_session_uuid) {
+		#remove old session in db if relogin
+		$dbh->prepare("delete from v_api_session where  session_uuid='$old_session_uuid'")->execute();
+	}
+		
+	if ($query{username} eq $username && $query{password} eq $password) {	
+
 		my $uuid = _uuid();
 		my $cookie1 = $cgi->cookie( -name  => 'session_uuid',
 						-value => $uuid,
