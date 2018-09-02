@@ -124,7 +124,7 @@ if ($query{action} eq 'login') {
 	} else {
 		$error = 1;
 		$msg = 'Auth Fail';
-		print $cgi->header();
+		print $cgi->header(-status => 403);
 	}
 	
 	print j({error => $error, 'message' => $msg, 'actionid' => $query{actionid}});
