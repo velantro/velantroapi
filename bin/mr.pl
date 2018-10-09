@@ -23,5 +23,6 @@ for $f (split /\n/, `find $s -mtime +7 -name "*.wav"  | grep  'archive'`) {
 
         warn "ln -s $destdir/$n $f";
         system("ln -s $destdir/$n $f");
+        system("chmod a+r $destdir/$n");
 
     }
