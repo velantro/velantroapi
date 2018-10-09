@@ -33,4 +33,10 @@ if ($cmd eq 'updatemonitorscript') {
 		system("scp -oPort=$port /salzh/velantroapi/bin/exec_monitor_command.php root\@$ip:/var/www/fusionpbx/app/exec/exec_monitor_command.php")
 
 	}
+} elsif ($cmd eq 'updatefirewallscript') {
+	($ip,$port,$name,$uri) = split ',', $_, 4;
+		next if !$ip;
+		print "$cmd on  $name [$ip:$port]\n";
+		
+		system("scp -oPort=$port /salzh/velantroapi/bin/firewall2.pl root\@$ip:/var/www/")
 }
