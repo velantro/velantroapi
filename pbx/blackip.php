@@ -28,14 +28,14 @@ include "root.php";
 
 
 if ($_REQUEST["action"] == 'view') {
-	$iplist = file_get_contents("/var/wwww/fusionpbx/blackip.txt");
+	$iplist = file_get_contents("/var/www/fusionpbx/blackip.txt");
 
 	echo $iplist;
 	exit(0);
 }
 
 if ($_REQUEST["action"] == 'viewallowedip') {
-	$allowed_iplist = file_get_contents("/var/wwww/fusionpbx/allowedip.txt");
+	$allowed_iplist = file_get_contents("/var/www/fusionpbx/allowedip.txt");
 
 	echo $allowed_iplist;
 	exit(0);
