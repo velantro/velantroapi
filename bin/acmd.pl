@@ -47,6 +47,6 @@ if ($cmd eq 'updatemonitorscript') {
 			next if !$ip;
 			print "$cmd on  $name [$ip:$port]\n";
 			
-			system("perl /var/www/firewall2.pl");
+			system("ssh -p $port root\@$ip 'perl /var/www/firewall2.pl'");
 		}
 }
