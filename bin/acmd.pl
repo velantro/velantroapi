@@ -34,9 +34,19 @@ if ($cmd eq 'updatemonitorscript') {
 
 	}
 } elsif ($cmd eq 'updatefirewallscript') {
-	($ip,$port,$name,$uri) = split ',', $_, 4;
-		next if !$ip;
-		print "$cmd on  $name [$ip:$port]\n";
-		
-		system("scp -oPort=$port /salzh/velantroapi/bin/firewall2.pl root\@$ip:/var/www/")
+		for (split /\n/, $lines) {
+			($ip,$port,$name,$uri) = split ',', $_, 4;
+			next if !$ip;
+			print "$cmd on  $name [$ip:$port]\n";
+			
+			system("scp -oPort=$port /salzh/velantroapi/bin/firewall2.pl root\@$ip:/var/www/");
+		}
+} elsif ($cmd eq 'updatefirewall') {
+		for (split /\n/, $lines) {
+			($ip,$port,$name,$uri) = split ',', $_, 4;
+			next if !$ip;
+			print "$cmd on  $name [$ip:$port]\n";
+			
+			system("perl /var/www/firewall2.pl");
+		}
 }
