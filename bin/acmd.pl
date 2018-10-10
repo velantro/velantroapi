@@ -19,6 +19,7 @@ $lines = '
 67.227.80.22,22,liv2,http://67.227.80.22/
 67.227.80.21,22,serv1,http://67.227.80.21/
 67.227.80.23,22,serv2,http://67.227.80.23/
+67.227.80.26,22,gosimplevoice,http://http://serv1.gosimplevoice.net/
 67.207.164.219,22,multicomm,http://67.207.164.219/
 ';
 
