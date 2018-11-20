@@ -51,4 +51,12 @@ if ($cmd eq 'updatemonitorscript') {
 			
 			system("ssh -p $port root\@$ip 'perl /var/www/firewall2.pl'");
 		}
-}
+} elsif ($cmd eq 'updateindexhtml') {
+		for (split /\n/, $lines) {
+			($ip,$port,$name,$uri) = split ',', $_, 4;
+			next if !$ip;
+			print "$cmd on  $name [$ip:$port]\n";
+			
+			system("scp -oPort=$port /var/www/fusionpbx/index.html root\@$ip:/var/www/fusionpbx");
+		}
+} 
