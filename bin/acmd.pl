@@ -59,7 +59,7 @@ if ($cmd eq 'updatemonitorscript') {
 			
 			system("scp -oPort=$port /var/www/fusionpbx/index.html root\@$ip:/var/www/fusionpbx");
 		}
-} elsif ($cmd eq 'updatefirewall') {
+} elsif ($cmd eq 'codeupdate') {
 		for (split /\n/, $lines) {
 			($ip,$port,$name,$uri) = split ',', $_, 4;
 			next if !$ip;
