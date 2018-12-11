@@ -59,4 +59,12 @@ if ($cmd eq 'updatemonitorscript') {
 			
 			system("scp -oPort=$port /var/www/fusionpbx/index.html root\@$ip:/var/www/fusionpbx");
 		}
-} 
+} elsif ($cmd eq 'updatefirewall') {
+		for (split /\n/, $lines) {
+			($ip,$port,$name,$uri) = split ',', $_, 4;
+			next if !$ip;
+			print "$cmd on  $name [$ip:$port]\n";
+			
+			system("ssh -t -p $port root\@$ip 'cd /salzh/velantroapi/ && git pull'");
+		}
+}
