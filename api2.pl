@@ -805,9 +805,9 @@ CHECK:
 			} else {
 				$state_index = 24;
 			}
-			
+			warn "state_index:$state_index";
+
 		}
-				warn "state_index:$state_index";
 
 		my @f = split ',', $line;
 		if ($f[22] eq $ext && $f[33] ) { #presence_id && initial_ip_addr
