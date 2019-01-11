@@ -797,7 +797,8 @@ CHECK:
 	
 	my $channels = `fs_cli -rx "show channels"`;
 	my $cnt      = 0;
-	$i = 0;
+	my $i = 0;
+	my $state_index = 24;
 	for my $line (split /\n/, $channels) {
 		if ($i++ == 0) {
 			if ($line =~ /,accountcode,/) {
@@ -815,7 +816,7 @@ CHECK:
 			$current_state = $f[$state_index];
 			if ($status ne $current_state) {		
 				print "data:",j({error => '0', 'message' => 'ok', 'actionid' => $query{actionid}, uuid => $f[0],
-					 caller => "$f[6] <$f[7]>", start_time => $f[2], current_state => $f[24]}), "\n\n";
+					 caller => "$f[6] <$f[7]>", start_time => $f[2], current_state => $current_state}), "\n\n";
 				$memcache->set($ext_tid, $current_state);
 			}
 		}		
