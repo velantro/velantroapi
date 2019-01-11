@@ -2574,13 +2574,15 @@ CHECK:
 	for my $line (split /\n/, $channels) {
 		my @f = split ',', $line;
 		if ($i++ == 0) {
-			if ($channels =~ /,accountcode,/) {
+			if ($line =~ /,accountcode,/) {
 				$state_index = 25;
 			} else {
 				$state_index = 24;
 			}
 			
 		}
+		
+		warn "state_index:$state_index";
 		if ($f[22] eq $ext && $f[33] ) { #presence_id && initial_ip_addr
 			
 			$current_state = $f[$state_index];
