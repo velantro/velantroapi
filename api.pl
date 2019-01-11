@@ -2570,12 +2570,20 @@ CHECK:
 	my $current_state = '';
 	
 	my $channels = `fs_cli -rx "show channels"`;
-	my $cnt      = 0;
+	my $cnt      = 0; $i = 0;
 	for my $line (split /\n/, $channels) {
 		my @f = split ',', $line;
+		if ($i++ == 0) {
+			if ($channels =~ /,accountcode,/) {
+				$state_index = 25;
+			} else {
+				$state_index = 24;
+			}
+			
+		}
 		if ($f[22] eq $ext && $f[33] ) { #presence_id && initial_ip_addr
 			
-			$current_state = $f[24];
+			$current_state = $f[$state_index];
 			if ($status ne $current_state) {		
 				print "data:",j({error => '0', 'message' => 'ok', 'actionid' => $query{actionid}, uuid => $f[0],
 					 caller => "$f[6] <$f[7]>", start_time => $f[2], current_state => $f[24]}), "\n\n";
