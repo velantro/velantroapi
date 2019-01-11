@@ -2590,7 +2590,7 @@ CHECK:
 			$current_state = $f[$state_index];
 			if ($status ne $current_state) {		
 				print "data:",j({error => '0', 'message' => 'ok', 'actionid' => $query{actionid}, uuid => $f[0],
-					 caller => "$f[6] <$f[7]>", start_time => $f[2], current_state => $current_state), "\n\n";
+					 caller => "$f[6] <$f[7]>", start_time => $f[2], current_state => $current_state}), "\n\n";
 				$memcache->set($ext_tid, $current_state);
 			}
 		}		
