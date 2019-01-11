@@ -2570,7 +2570,9 @@ CHECK:
 	my $current_state = '';
 	
 	my $channels = `fs_cli -rx "show channels"`;
-	my $cnt      = 0; $i = 0;
+	my $cnt      = 0;
+	my $i = 0;
+	my $state_index = 24;
 	for my $line (split /\n/, $channels) {
 		my @f = split ',', $line;
 		if ($i++ == 0) {
