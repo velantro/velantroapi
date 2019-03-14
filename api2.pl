@@ -443,6 +443,24 @@ sub stop_moh {
 	print j({error => '0', 'message' => 'ok', 'actionid' => $query{actionid}});
 }
 
+sub hold () {
+    local ($uuid) = &database_clean_string(substr $query{uuid}, 0, 50);
+    local  $direction = $query{direction} eq 'inbound' ? 'inbound': 'outbound';
+		 
+    if ($direction eq 'outbound') {
+    	$uuid = &get_bchannel_uuid($uuid);
+    }
+    $output = &runswitchcommand("internal", "uuid_hold toggle $uuid");
+    
+    $response{stat}          = 'ok';
+    $response{message} = $output;
+    &print_json_response(%response);
+}
+
+sub unhold() {
+    &hold();
+
+	
 sub hangup {
 	my $uuid = $query{uuid} || $query{callbackid};
 
@@ -1105,4 +1123,46 @@ sub clean_str_helper{
 	$string =~ s/\'/\\\'/g; # escape single quotes
 	$string =~ s/\"/\\\"/g; # escape double quotes
 	return $string ;
+}
+
+
+
+sub get_bchannel_uuid() {
+	local $uuid = shift || return;
+	%raw_calls = &parse_calls();
+	for (keys %raw_calls) {
+		if ($_ eq $uuid) {
+			return $raw_calls{$_}{b_uuid};
+			last;
+		}
+	}
+	
+	return;
+}
+
+sub parse_calls () {
+	local $header_csv = 'uuid,direction,created,created_epoch,name,state,cid_name,cid_num,ip_addr,dest,presence_id,presence_data,callstate,callee_name,callee_num,callee_direction,call_uuid,hostname,sent_callee_name,sent_callee_num,b_uuid,b_direction,b_created,b_created_epoch,b_name,b_state,b_cid_name,b_cid_num,b_ip_addr,b_dest,b_presence_id,b_presence_data,b_callstate,b_callee_name,b_callee_num,b_callee_direction,b_sent_callee_name,b_sent_callee_num,call_created_epoch';
+	
+	@header_array = split /,/, $header_csv;
+	
+	%calls = ();
+	$output = &runswitchcommand('internal', 'show calls');
+	for (split /\n/, $output) {
+		next if /^\s*$/;
+		@v = split /,/, $_;
+		
+		for (0..$#header_array) {
+			$calls{$v[0]}{$header_array[$_]} = $v[$_];
+		}
+	}
+	
+	return %calls;	
+}
+
+sub runswitchcommand {
+	$internal = shift;
+	$cmd = shift || return '';
+	
+	$res = `fs_cli -rx "$cmd"`;
+	return $res;
 }
