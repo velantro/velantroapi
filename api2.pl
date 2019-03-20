@@ -629,14 +629,15 @@ sub get_callbackstate {
 			$sth->execute($uuid);
 			my $row = $sth->fetchrow_hashref;
 			if ($row->{bridge_uuid}) {
-				$uuid = $row->{bridge_uuid};
-				if ($uuid{$uuid}) {
+				$tmp_uuid = $row->{bridge_uuid};
+				if ($uuid{$tmp_uuid}) {
 					$state = 'DESTANSWERED';
 				} else {
 					$state = 'HANGUP'
 				}
 			} else {
-				$state = 'HANGUP';
+				warn "not found $uuid in v_xml_table, we think the state is EXTWAIT";
+				$state = 'EXTWAIT';
 			}
 		}
 		
