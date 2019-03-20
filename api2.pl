@@ -636,8 +636,8 @@ sub get_callbackstate {
 					$state = 'HANGUP'
 				}
 			} else {
-				warn "not found $uuid in v_xml_table, we think the state is EXTWAIT";
-				$state = 'EXTWAIT';
+				warn "not found $uuid in v_xml_table, we think the state is HANGUP";
+				$state = 'HANGUP';
 			}
 		}
 		
