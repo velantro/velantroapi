@@ -406,6 +406,7 @@ sub send_callback {
 	if ($query{from} eq 'firefox') {
 		template_print($template_file, {error => '0', 'message' => 'ok', 'actionid' => $query{actionid},callbackid => $uuid,dest=>$dest, src => $ext});
 	} else {
+		sleep 1;
 		print j({error => '0', 'message' => 'ok', 'actionid' => $query{actionid},callbackid => $uuid});
 	}
 
