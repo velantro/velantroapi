@@ -830,7 +830,7 @@ CHECK:
 		}
 
 		my @f = split ',', $line;
-		if ($f[22] eq $ext && $f[33] ) { #presence_id && initial_ip_addr
+		if ($f[22] eq $ext && $f[33] && $f[1] eq 'outbound') { #presence_id && initial_ip_addr
 			
 			$current_state = $f[$state_index];
 			if ($status ne $current_state) {		
