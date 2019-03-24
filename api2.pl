@@ -228,7 +228,11 @@ if ($query{action} eq 'addcallback') {
 	do_send_voicemaildrop();
 } elsif ($query{action} eq 'getvoicemaildrop'){
 	do_get_voicemaildrop();
-} else {
+} elsif ($query{action} eq 'hold'){
+	do_hold();
+} elsif ($query{action} eq 'unhold'){
+	do_unhold();
+}else {
      print j({error => '1', 'message' => 'undefined action', 'actionid' => $query{actionid}});
     exit 0;
 }
@@ -444,8 +448,8 @@ sub stop_moh {
 	print j({error => '0', 'message' => 'ok', 'actionid' => $query{actionid}});
 }
 
-sub hold () {
-    local ($uuid) = &database_clean_string(substr $query{uuid}, 0, 50);
+sub do_hold () {
+    local ($uuid) = &database_clean_string(substr $query{callbackid}, 0, 50);
     local  $direction = $query{direction} eq 'inbound' ? 'inbound': 'outbound';
 		 
     if ($direction eq 'outbound') {
@@ -458,8 +462,8 @@ sub hold () {
     &print_json_response(%response);
 }
 
-sub unhold() {
-    &hold();
+sub do_unhold() {
+    &do_hold();
 }
 	
 sub hangup {
