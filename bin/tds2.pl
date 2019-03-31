@@ -73,6 +73,12 @@ while (1) {
         ($person) = $left =~ m{field'></a><br>\s+?(\w[\s\w,']+\w)\s+<br>}s;
         $person =~ s/[,']/ /g;
         next unless $email;
+        $email_result = &validate_email($email);
+        if (!$email_result || $email_result->{data}{result} ne 'deliverable') {
+            warn "Validate Email $email: " .  $email_result->{data}{result}. "!\n";
+            next;
+        }
+        
         $line = "$dot,$state,$name,$email,$phone,$person";
         
         print $line, "\n";
@@ -115,4 +121,18 @@ sub do_request {
     $raw =  `curl -s -k -b $cookie  \"$url\"`;
    
    return $raw;
+}
+
+sub validate_email {
+    local $email = shift || return;
+    
+    local $raw = `curl  -s -k  \"https://hunter.io/trial/v2/email-verifier?email=$email&format=json\"`;
+    
+    if (!$raw) {
+        warn "Fail to get response for $path!\n";
+        return;
+    }
+    
+    local $hash =  decode_json $raw;
+    return $hash;
 }
