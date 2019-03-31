@@ -142,9 +142,7 @@ sub validate_email {
     use Net::DNS;
     local $email = shift || return;
     local ($user, $host) = split '@', $email;
-    unless (is_email($suspect) or is_email_rfc822($suspect)){
-          print "Doesn't much look like an email address, but passes rfc822\n";
-    } else {
+    unless (is_email($email) or is_email_rfc822($email)) {
          return {status => 'undeliverable', message => 'not pass email format checker'};
     }
     
