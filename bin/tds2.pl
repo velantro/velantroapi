@@ -74,8 +74,8 @@ while (1) {
         $person =~ s/[,']/ /g;
         next unless $email;
         $email_result = &validate_email($email);
-        if (!$email_result || $email_result->{data}{result} ne 'deliverable') {
-            warn "Validate Email $email: " .  $email_result->{data}{result}. "!\n";
+        if (!$email_result || $email_result->{status} ne 'deliverable') {
+            warn "Validate Email $email: " .  $email_result->{message}. "!\n";
             next;
         }
         
@@ -123,7 +123,7 @@ sub do_request {
    return $raw;
 }
 
-sub validate_email {
+sub validate_email2 {
     local $email = shift || return;
     
     local $raw = `curl  -s -k  \"https://hunter.io/trial/v2/email-verifier?email=$email&format=json\"`;
@@ -135,4 +135,23 @@ sub validate_email {
     
     local $hash =  decode_json $raw;
     return $hash;
+}
+
+sub validate_email {
+    use Data::Validate::Email qw(is_email is_email_rfc822);
+    use Net::DNS;
+    local $email = shift || return;
+    local ($user, $host) = split '@', $email;
+    unless (is_email($suspect) or is_email_rfc822($suspect)){
+          print "Doesn't much look like an email address, but passes rfc822\n";
+    } else {
+         return {status => 'undeliverable', message => 'not pass email format checker'};
+    }
+    
+    @mx = mx($host);
+    if (int(@max) < 1) {
+        return {status => 'undeliverable', message => "not found MX records by host=$host"};
+    }
+    
+    return {status => 'deliverable'};
 }
