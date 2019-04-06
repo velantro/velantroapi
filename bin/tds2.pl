@@ -47,6 +47,10 @@ $last_start =~ s/\D//g;
 $start = $last_start || 0;
 
 $length = 10;
+%email_spool = ();
+&init_email_spool;
+
+
 while (1) {    
     $result = &do_search($start);
     #print Data::Dumper::Dumper($result);
@@ -78,9 +82,8 @@ while (1) {
             warn "Validate Email $email: " .  $email_result->{message}. "!\n";
             next;
         }
-        
+        $email_spool{$email} = 1;
         $line = "$dot,$state,$name,$email,$phone,$person";
-        
         print $line, "\n";
         print OUT $line. "\n";
         open W, "> $tds_start_file";
@@ -142,14 +145,30 @@ sub validate_email {
     use Net::DNS;
     local $email = shift || return;
     local ($user, $host) = split '@', $email;
+    if ($email_spool{$email}) {
+        return {status => 'undeliverable', message => $email . " already existed in spool"};
+    }
+    
     unless (is_email($email) or is_email_rfc822($email)) {
          return {status => 'undeliverable', message => 'not pass email format checker'};
     }
     
     @mx = mx($host);
-    if (int(@max) < 1) {
+    if (int(@mx) < 1) {
         return {status => 'undeliverable', message => "not found MX records by host=$host"};
     }
     
     return {status => 'deliverable'};
+}
+
+sub init_email_spool {
+    open TDS, $outfile;
+    while (<TDS>) {
+        chomp;
+        local @f = split ',', $_, 6;
+        $email_spool{$f[3]} = 1;
+        $i++;
+    }
+    warn "$i emails in total!\n";
+    close TDS;
 }
