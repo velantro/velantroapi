@@ -82,7 +82,7 @@ while (1) {
             warn "Validate Email $email: " .  $email_result->{message}. "!\n";
             next;
         }
-        $email_spool{$email} = 1;
+        $email_spool{lc($email)} = 1;
         $line = "$dot,$state,$name,$email,$phone,$person";
         print $line, "\n";
         print OUT $line. "\n";
@@ -166,7 +166,7 @@ sub init_email_spool {
     while (<TDS>) {
         chomp;
         local @f = split ',', $_, 6;
-        $email_spool{$f[3]} = 1;
+        $email_spool{lc($f[3])} = 1;
         $i++;
     }
     warn "$i emails in total!\n";
