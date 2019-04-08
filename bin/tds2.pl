@@ -65,6 +65,7 @@ while (1) {
     #print Data::Dumper::Dumper($data);
     for $d (@$data) {
         #print join "\n", @$d, "\n";
+        $is_ok = 1;
         ($url) = $$d[0] =~ m/(https:.+)"/;
         ($dot) = $url =~ m{/(\d+)\?};
         ($city,$state,$country) = split ', ', $$d[2];
@@ -76,16 +77,18 @@ while (1) {
         ($email) = $left =~ m{mailto:(.+?)['"]}s;
         ($person) = $left =~ m{field'></a><br>\s+?(\w[\s\w,']+\w)\s+<br>}s;
         $person =~ s/[,']/ /g;
-        next unless $email;
         $email_result = &validate_email($email);
-        if (!$email_result || $email_result->{status} ne 'deliverable') {
+        if (!$email || !$email_result || $email_result->{status} ne 'deliverable') {
             warn "Validate Email $email: " .  $email_result->{message}. "!\n";
-            next;
+            $is_ok = 0;
         }
         $email_spool{lc($email)} = 1;
-        $line = "$dot,$state,$name,$email,$phone,$person";
-        print $line, "\n";
-        print OUT $line. "\n";
+        if ($is_ok) {     
+            $line = "$dot,$state,$name,$email,$phone,$person";
+            print $line, "\n";
+            print OUT $line. "\n";                   #
+        }
+        
         open W, "> $tds_start_file";
         print W ++$start;
         close W;
