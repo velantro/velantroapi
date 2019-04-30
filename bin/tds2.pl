@@ -32,12 +32,12 @@ for (split /\n/, $txt) {
 
 $tds_start_file = "/etc/tds_start";
 $json = JSON->new->allow_nonref;
-$outfile = shift || "/var/www/fusionpbx/tds.csv";
+$outfile = shift || "/var/www/fusionpbx/tds";
 if (!-e $outfile) {
    print "USDOT,STATE,COMPANY,EMAIL,PHONE,PERSON\n";
 }
 
-open OUT, ">> $outfile";
+#open OUT, ">> $outfile";
 $cookie = "/tmp/tds.txt";
 &do_login() or exit;
 $tds_start_file = "/etc/tds_start";
@@ -50,8 +50,14 @@ $length = 10;
 %email_spool = ();
 &init_email_spool;
 
-
-while (1) {    
+while (1) {
+    $this_day = &today();
+    if ($this_day ne $last_day) {
+        $last_day = $this_day;
+        open FH, ">> $outfile-$thisday.csv";
+        warn "create new file $outfile-$thisday.csv!\n";
+    }
+    
     $result = &do_search($start);
     #print Data::Dumper::Dumper($result);
     $data = $result->{aaData};
@@ -174,4 +180,12 @@ sub init_email_spool {
     }
     warn "$i emails in total!\n";
     close TDS;
+}
+
+sub today {
+    $mode = shift;
+	($second, $minute, $hour, $dayOfMonth, $month, $yearOffset, $dayOfWeek, $dayOfYear, $daylightSavings) = localtime();
+	
+	return sprintf("%04d%02d%02d",  $yearOffset+1900, $month+1,$dayOfMonth);
+	
 }
