@@ -54,8 +54,8 @@ while (1) {
     $this_day = &today();
     if ($this_day ne $last_day) {
         $last_day = $this_day;
-        open FH, ">> $outfile-$thisday.csv";
-        warn "create new file $outfile-$thisday.csv!\n";
+        open FH, ">> $outfile-$this_day.csv";
+        warn "create new file $outfile-$this_day.csv!\n";
     }
     
     $result = &do_search($start);
