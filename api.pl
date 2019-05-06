@@ -1342,7 +1342,7 @@ sub set_recording {
 	
 	my $exten = $row->{extension};
 	
-	my $result = `fs_cli -rx 'db insert/vconnect_record/$exten/$enable'`;
+	my $result = `fs_cli -x 'db insert/vconnect_record/$exten/$enable'`;
 	print j({error => '0', 'message' => 'ok', 'actionid' => $query{actionid},'widgetid' => $query{widgetid}, result => $result});
 }
 
@@ -1372,7 +1372,7 @@ sub get_register {
 	
 	my $status = 'Unregistered';
 	
-	for (split /\n/, `sudo /usr/local/bin/fs_cli -rx "show registrations"`) {
+	for (split /\n/, `sudo /usr/local/bin/fs_cli -x "show registrations"`) {
 		if (index(",$_,", $ext) != -1 && index(",$_,", $domain) != -1) {
 			$status = 'Registered';
 			last;
@@ -1533,11 +1533,11 @@ sub get_dashboard {
 	my $livevoicemails = $row->{livevoicemails} || 0;
 	
 =pod	
-	my $cnt	= int (`fs_cli -rx "db select/livecalls/$extension"`);
+	my $cnt	= int (`fs_cli -x "db select/livecalls/$extension"`);
 	$cnt  ||= 0;
 	
 =cut
-	my $channels = `fs_cli -rx "show channels"`;
+	my $channels = `fs_cli -x "show channels"`;
 	my $cnt      = 0;
 	for my $line (split /\n/, $channels) {
 		my @f = split ',', $line;
@@ -1569,7 +1569,7 @@ sub check_did_available {
 	my $did 	   = shift || return;
 	my $channels   = shift || 2;
 	
-	my $cnt	= int (`fs_cli -rx "db select/channels/$did"`);
+	my $cnt	= int (`fs_cli -x "db select/channels/$did"`);
 	$cnt  ||= 0;
 	
 	warn "$did $channels $cnt";
@@ -1759,7 +1759,7 @@ sub add_callback {
 	}
 	
 	my $uuid   = _uuid();
-	#my $result = `fs_cli -rx "originate {origination_caller_id_name=callback-$ext,origination_caller_id_number=8188886666,domain_name=$HOSTNAME,origination_uuid=$uuid}loopback/$ext/$HOSTNAME/XML $dest XML $HOSTNAME"`;
+	#my $result = `fs_cli -x "originate {origination_caller_id_name=callback-$ext,origination_caller_id_number=8188886666,domain_name=$HOSTNAME,origination_uuid=$uuid}loopback/$ext/$HOSTNAME/XML $dest XML $HOSTNAME"`;
 	if ($dest =~ /^\+(\d+)$/) {
 		$dest = "011$1";
 	}
@@ -1772,7 +1772,7 @@ sub add_callback {
 	
 	my $callerid = $query{callerid} || '8188886666';
 
-	my $result = `fs_cli -rx "bgapi originate {execute_on_answer='lua callback.lua startmoh $uuid $query{widgetid}',ringback=local_stream://default,ignore_early_media=true,fromextension=$ext,origination_caller_id_name=callback-$ext,origination_caller_id_number=$callerid,outbound_caller_id_number=$callerid,outbound_caller_id_name=callback-$ext,domain_name=$HOSTNAME,origination_uuid=$uuid,sip_h_X-accountcode=6915654132}loopback/$ext/$HOSTNAME/XML $dest XML $HOSTNAME"`; #sofia/gateway/vconnect.velantro.net-newa2b/$dest $ext XML $HOSTNAME"`;
+	my $result = `fs_cli -x "bgapi originate {execute_on_answer='lua callback.lua startmoh $uuid $query{widgetid}',ringback=local_stream://default,ignore_early_media=true,fromextension=$ext,origination_caller_id_name=callback-$ext,origination_caller_id_number=$callerid,outbound_caller_id_number=$callerid,outbound_caller_id_name=callback-$ext,domain_name=$HOSTNAME,origination_uuid=$uuid,sip_h_X-accountcode=6915654132}loopback/$ext/$HOSTNAME/XML $dest XML $HOSTNAME"`; #sofia/gateway/vconnect.velantro.net-newa2b/$dest $ext XML $HOSTNAME"`;
 	print j({error => '0', 'message' => 'ok', 'actionid' => $query{actionid},callbackid => $uuid});	
 
 	#originate {origination_caller_id_name=vconnect_callback,origination_caller_id_number=8188886666,domain_name=vconnect.velantro.net}loopback/8184885588/vconnect.velantro.net/XML 100031 XML vconnect.velantro.net
@@ -1801,20 +1801,20 @@ sub add_autocallback {
 	
 	my $uuid   = _uuid();
 	
-	#my $result = `fs_cli -rx "originate {origination_caller_id_name=callback-$ext,origination_caller_id_number=8188886666,domain_name=$HOSTNAME,origination_uuid=$uuid}loopback/$ext/$HOSTNAME/XML $dest XML $HOSTNAME"`;
+	#my $result = `fs_cli -x "originate {origination_caller_id_name=callback-$ext,origination_caller_id_number=8188886666,domain_name=$HOSTNAME,origination_uuid=$uuid}loopback/$ext/$HOSTNAME/XML $dest XML $HOSTNAME"`;
 	if ($dest =~ /^\+(\d+)$/) {
 		$dest = "011$1";
 	}
 	
-	my $forward_type = `fs_cli -rx "db select/vconnect_dsttype/$ext"`;
-	my $forward_dest = `fs_cli -rx "db select/vconnect/$ext"`;
+	my $forward_type = `fs_cli -x "db select/vconnect_dsttype/$ext"`;
+	my $forward_dest = `fs_cli -x "db select/vconnect/$ext"`;
 	
 	if ($forward_dest =~ /^\+(\d+)$/) {
 		$forward_dest = "011$1";
 	}
 	
 	
-	my $reg_txt = `fs_cli -rx "show registrations"`;
+	my $reg_txt = `fs_cli -x "show registrations"`;
 	
 	my $is_reg = 0;
 	my $reg_domain = 'sipvconnect.velantro.net';
@@ -1827,20 +1827,20 @@ sub add_autocallback {
 	
 	$forward_dest =~ s/\D//g;
 	my $is_widget_in_conference = 0;
-	my $conf_list = `fs_cli -rx "conference $ext list"`;
+	my $conf_list = `fs_cli -x "conference $ext list"`;
 	for (split /\n/, $conf_list) {
 		if (index($_, "loopback/$forward_dest-a") != -1) {
 			$is_widget_in_conference = 1;
 			last;
 		}
 	}
-	my $result = `fs_cli -rx "conference $ext kick non_moderator"`;
+	my $result = `fs_cli -x "conference $ext kick non_moderator"`;
 	
 	if (!$is_widget_in_conference) {
-		my $result = `fs_cli -rx "originate {origination_caller_id_name=callback-$ext,origination_caller_id_number=$callerid,domain_name=$HOSTNAME,ignore_early_media=true,origination_uuid=$uuid,flags=endconf|moderator}loopback/$forward_dest/$HOSTNAME/XML conference$ext XML $HOSTNAME"`;
+		my $result = `fs_cli -x "originate {origination_caller_id_name=callback-$ext,origination_caller_id_number=$callerid,domain_name=$HOSTNAME,ignore_early_media=true,origination_uuid=$uuid,flags=endconf|moderator}loopback/$forward_dest/$HOSTNAME/XML conference$ext XML $HOSTNAME"`;
 		sleep 2;
 		
-		my $call_list = `fs_cli -rx "show calls"`;
+		my $call_list = `fs_cli -x "show calls"`;
 		my $is_ext_answered = 0;
 		for (split /\n/, $call_list) {
 			if (index($_, "$uuid,") == 0) {
@@ -1857,7 +1857,7 @@ sub add_autocallback {
 	
 	
 	$uuid = _uuid();
-	$result = `fs_cli -rx "bgapi originate {origination_caller_id_name=callback-$ext,origination_caller_id_number=$callerid;,domain_name=$HOSTNAME,origination_uuid=$uuid,autocallback_fromextension=$ext,is_lead=1}loopback/$dest/$HOSTNAME/XML conference$ext XML $HOSTNAME"`;
+	$result = `fs_cli -x "bgapi originate {origination_caller_id_name=callback-$ext,origination_caller_id_number=$callerid;,domain_name=$HOSTNAME,origination_uuid=$uuid,autocallback_fromextension=$ext,is_lead=1}loopback/$dest/$HOSTNAME/XML conference$ext XML $HOSTNAME"`;
 	
 	print j({error => '0', 'message' => 'ok', 'actionid' => $query{actionid}, 'callbackid' => $uuid});	
 
@@ -1883,7 +1883,7 @@ sub send_callback {
 	}
 	
 	my $uuid   = _uuid();
-	#my $result = `fs_cli -rx "originate {origination_caller_id_name=callback-$ext,origination_caller_id_number=8188886666,domain_name=$HOSTNAME,origination_uuid=$uuid}loopback/$ext/$HOSTNAME/XML $dest XML $HOSTNAME"`;
+	#my $result = `fs_cli -x "originate {origination_caller_id_name=callback-$ext,origination_caller_id_number=8188886666,domain_name=$HOSTNAME,origination_uuid=$uuid}loopback/$ext/$HOSTNAME/XML $dest XML $HOSTNAME"`;
 	$dest =~ s/^\+1//g;
 	if ($dest =~ /^\+(\d+)$/) {
 		$dest = "011$1";
@@ -1901,8 +1901,8 @@ sub send_callback {
 	
 	
 	# bgapi originate {ignore_early_media=true,fromextension=188,origination_caller_id_name=8882115404,origination_caller_id_number=8882115404,effective_caller_id_number=8882115404,effective_caller_id_name=8882115404,domain_name=vip.velantro.net,origination_uuid=14061580998073}loopback/188/vip.velantro.net 8882115404 XML vip.velantro.net
-	#my $result = `$fs_cli -rx "bgapi originate {ringback=local_stream://default,ignore_early_media=true,absolute_codec_string=PCMU,fromextension=$ext,origination_caller_id_name=$dest,origination_caller_id_number=$dest,effective_caller_id_number=$cid,effective_caller_id_name=$cid,domain_name=$domain,outbound_caller_id_number=$cid,$alert_info,origination_uuid=$uuid,$auto_answer}loopback/$ext/$domain $realdest XML $domain"`;
-	my $result = `$fs_cli -rx "bgapi originate {ringback=/var/www/api/usring.wav,ignore_early_media=true,absolute_codec_string=PCMU,fromextension=$ext,origination_caller_id_name=$dest,origination_caller_id_number=$dest,effective_caller_id_number=$dest,effective_caller_id_name=$dest,domain_name=$domain,outbound_caller_id_number=$dest,$alert_info,origination_uuid=$uuid,$auto_answer}user/$ext\@$domain &bridge([origination_caller_id_name=$cid,origination_caller_id_number=$cid,effective_caller_id_number=$cid,effective_caller_id_name=$cid,iscallback=$ext,outbound_caller_id_number=$cid,user_record=all,record_session=true]loopback/$dest/$domain)"`;
+	#my $result = `$fs_cli -x "bgapi originate {ringback=local_stream://default,ignore_early_media=true,absolute_codec_string=PCMU,fromextension=$ext,origination_caller_id_name=$dest,origination_caller_id_number=$dest,effective_caller_id_number=$cid,effective_caller_id_name=$cid,domain_name=$domain,outbound_caller_id_number=$cid,$alert_info,origination_uuid=$uuid,$auto_answer}loopback/$ext/$domain $realdest XML $domain"`;
+	my $result = `$fs_cli -x "bgapi originate {ringback=/var/www/api/usring.wav,ignore_early_media=true,absolute_codec_string=PCMU,fromextension=$ext,origination_caller_id_name=$dest,origination_caller_id_number=$dest,effective_caller_id_number=$dest,effective_caller_id_name=$dest,domain_name=$domain,outbound_caller_id_number=$dest,$alert_info,origination_uuid=$uuid,$auto_answer}user/$ext\@$domain &bridge([origination_caller_id_name=$cid,origination_caller_id_number=$cid,effective_caller_id_number=$cid,effective_caller_id_name=$cid,iscallback=$ext,outbound_caller_id_number=$cid,user_record=all,record_session=true]loopback/$dest/$domain)"`;
 	
 	if ($query{from} eq 'firefox') {
 		template_print($template_file, {error => '0', 'message' => 'ok', 'actionid' => $query{actionid},callbackid => $uuid,dest=>$dest, src => $ext});
@@ -1930,7 +1930,7 @@ sub get_outbound_callerid {
 sub start_moh {
 	my $uuid = $query{uuid};
 	my $path = "/usr/local/freeswitch/sounds/music/8000/$query{widgetid}.wav";
-	my $res = `fs_cli -rx "uuid_broadcast $uuid $path"`;
+	my $res = `fs_cli -x "uuid_broadcast $uuid $path"`;
 
 	print j({error => '0', 'message' => 'ok', 'actionid' => $query{actionid}});
 }
@@ -1939,7 +1939,7 @@ sub stop_moh {
 	my $uuid = $query{uuid};
 	my $uuid2 = $query{otheruuid};
 	
-	my $res = `fs_cli -rx "uuid_bridge $uuid $uuid2"`;
+	my $res = `fs_cli -x "uuid_bridge $uuid $uuid2"`;
 
 	print j({error => '0', 'message' => 'ok', 'actionid' => $query{actionid}});
 }
@@ -1948,7 +1948,7 @@ sub hangup {
 	my $uuid = $query{uuid} || $query{callbackid};
 
 =pod	
-	my $channels = `fs_cli -rx "show channels"`;
+	my $channels = `fs_cli -x "show channels"`;
 	my $uuid_found = 0;
 	for (split /\n/, $channels) {
 		($id) = split ',', $_;
@@ -1970,7 +1970,7 @@ sub hangup {
 	}
 =cut
 
-	my $res = `fs_cli -rx "uuid_kill $uuid"`;
+	my $res = `fs_cli -x "uuid_kill $uuid"`;
 	if ($res =~ /ERR/) {
 		warn "not found $uuid in current channels, let's find it in xml_cdr log";
 		my $dir = "/usr/local/freeswitch/log/xml_cdr";
@@ -1999,7 +1999,7 @@ sub hangup {
 			}
 		}
 	}
-	$res = `fs_cli -rx "uuid_kill $uuid"`;
+	$res = `fs_cli -x "uuid_kill $uuid"`;
 	
 
 	print j({error => '0', 'message' => 'ok', 'actionid' => $query{actionid}});
@@ -2022,7 +2022,7 @@ sub do_transfer {
 	
 	my $leg = '';
 	if ($query{direction} eq 'incoming') {
-		my $channels = `fs_cli -rx "show channels"`;
+		my $channels = `fs_cli -x "show channels"`;
 		my $uuid_found = 0;
 		for (split /\n/, $channels) {
 			my ($id, $dir) = split ',', $_;
@@ -2038,7 +2038,7 @@ sub do_transfer {
 		$leg = '-bleg';
 	}
 	
-	$res = `fs_cli -rx "uuid_transfer $uuid  $leg $dest XML $domain"`;
+	$res = `fs_cli -x "uuid_transfer $uuid  $leg $dest XML $domain"`;
 	
 	print j({error => '0', 'message' => 'transfer: ok', 'actionid' => $query{actionid}});
 }
@@ -2047,7 +2047,7 @@ sub get_callbackstate {
 	my $uuid = $query{uuid} || $query{callbackid};
 
 	my %uuid = ();
-	my $channels = `fs_cli -rx "show channels"`;
+	my $channels = `fs_cli -x "show channels"`;
 	my $uuid_found = 0;
 	$i = 0;
 	$callstate_index = 24;
@@ -2156,7 +2156,7 @@ sub get_vconnectincoming {
 	my $row = $sth->fetchrow_hashref;
 	
 	my $ext 	= $row->{extension};
-	my $channels = `fs_cli -rx "show calls"`;
+	my $channels = `fs_cli -x "show calls"`;
 	
 	my $found   = 0;
 	my $state   = 'HANGUP';
@@ -2165,7 +2165,7 @@ sub get_vconnectincoming {
 		my @f = split ',', $line;
 		my $uuid = $f[0];
 		
-		my $fromextension = `fs_cli -rx "uuid_getvar $uuid fromextension"`;
+		my $fromextension = `fs_cli -x "uuid_getvar $uuid fromextension"`;
 		chomp $ext;
 		if ($ext eq $fromextension) {
 			$found = 1;
@@ -2202,7 +2202,7 @@ sub get_autocallstate {
 	my $row = $sth->fetchrow_hashref;
 	
 	my $ext 	= $row->{extension};
-	my $channels = `fs_cli -rx "show calls"`;
+	my $channels = `fs_cli -x "show calls"`;
 	
 	my $found   = 0;
 	my $state   = 'HANGUP';
@@ -2216,7 +2216,7 @@ sub get_autocallstate {
 			next;
 		}
 		
-		my $is_lead = `fs_cli -rx "uuid_getvar $uuid is_lead"`;
+		my $is_lead = `fs_cli -x "uuid_getvar $uuid is_lead"`;
 		
 		chomp $is_lead;
 		if ($is_lead == 1) {
@@ -2248,7 +2248,7 @@ sub do_autocallhangup {
 	my $row = $sth->fetchrow_hashref;
 	
 	my $ext 	= $row->{extension};
-	my $channels = `fs_cli -rx "show calls"`;
+	my $channels = `fs_cli -x "show calls"`;
 	
 	my $found   = 0;
 	my $state   = 'HANGUP';
@@ -2262,12 +2262,12 @@ sub do_autocallhangup {
 			next;
 		}
 		
-		my $is_lead = `fs_cli -rx "uuid_getvar $uuid is_lead"`;
+		my $is_lead = `fs_cli -x "uuid_getvar $uuid is_lead"`;
 		
 		chomp $is_lead;
 		if ($is_lead == 1) {
 			$found = 1;
-			my $res = `fs_cli -rx "uuid_kill $uuid"`;
+			my $res = `fs_cli -x "uuid_kill $uuid"`;
 			last;
 		}
 	}	
@@ -2398,7 +2398,7 @@ sub _remove_did {
 }
 
 sub get_livechannels {
-	my $channels = `fs_cli -rx "show channels"`;
+	my $channels = `fs_cli -x "show channels"`;
 	my @channels = ();
 	
 	my $sth = $dbh->prepare("select widgetid from vconnect_widget,v_extensions where vconnect_widget.extension_uid=v_extensions.extension_uuid and user_context='$HOSTNAME' and extension=? limit 1");
@@ -2426,7 +2426,7 @@ sub get_channeldetail {
 
 	#2 total.
 	my $uuid = $query{uuid};
-	my $channels = `fs_cli -rx "show channels"`;
+	my $channels = `fs_cli -x "show channels"`;
 	
 	my $widgetid = '';
 	my $ip = '';
@@ -2532,7 +2532,7 @@ sub get_incoming {
 	my $domain  = $query{domain} || $HOSTNAME;
 	$domain		= $cgi->server_name();
 	$ext = "$ext\@$domain";
-	my $channels = `fs_cli -rx "show channels"`;
+	my $channels = `fs_cli -x "show channels"`;
 	my $cnt      = 0;
 	for my $line (split /\n/, $channels) {
 		my @f = split ',', $line;
@@ -2574,7 +2574,7 @@ CHECK:
 	my $status = $memcache->get($ext_tid);
 	my $current_state = '';
 	
-	my $channels = `fs_cli -rx "show channels"`;
+	my $channels = `fs_cli -x "show channels"`;
 	my $cnt      = 0;
 	my $i = 0;
 	my $state_index = 24;
