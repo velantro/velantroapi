@@ -449,17 +449,16 @@ sub stop_moh {
 }
 
 sub do_hold () {
-    local ($uuid) = &database_clean_string(substr $query{callbackid}, 0, 50);
+    local ($uuid) = substr $query{uuid}, 0, 50;
     local  $direction = $query{direction} eq 'inbound' ? 'inbound': 'outbound';
 		 
     if ($direction eq 'outbound') {
     	$uuid = &get_bchannel_uuid($uuid);
     }
+    warn "uuid_hold toggle $uuid";
     $output = &runswitchcommand("internal", "uuid_hold toggle $uuid");
     
-    $response{stat}          = 'ok';
-    $response{message} = $output;
-    &print_json_response(%response);
+    print j({error => '0', 'message' => $output, 'actionid' => $query{actionid}});
 }
 
 sub do_unhold() {
