@@ -453,6 +453,7 @@ sub do_hold () {
     local  $direction = $query{direction} eq 'inbound' ? 'inbound': 'outbound';
 		 
     if ($direction eq 'outbound') {
+		$output = &runswitchcommand("internal", "uuid_hold toggle $uuid");
     	$uuid = &get_bchannel_uuid($uuid);
     }
     warn "uuid_hold toggle $uuid";
