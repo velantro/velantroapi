@@ -654,6 +654,8 @@ sub get_callbackstate {
 			$state = 'DESTRING';
 		} elsif ($state eq 'ACTIVE') {
 			$state = 'DESTANSWERED';
+		} elsif ($state eq 'HELD') {
+			$state = 'HELD';
 		} else {
 			$state = 'EXTWAIT';
 		}
