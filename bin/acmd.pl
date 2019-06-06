@@ -67,4 +67,13 @@ if ($cmd eq 'updatemonitorscript') {
 			
 			system("ssh -t -p $port root\@$ip 'cd /salzh/velantroapi/ && git pull'");
 		}
+} elsif ($cmd eq 'updatesmtp') {
+		$pass = shift || die "no new pass!\n";
+		for (split /\n/, $lines) {
+			($ip,$port,$name,$uri) = split ',', $_, 4;
+			next if !$ip;
+			print "$cmd on  $name [$ip:$port]\n";
+			
+			system("ssh -t -p $port root\@$ip 'echo \"update v_default_settings set default_setting_value=\'$pass\' where  default_setting_subcategory=\'smtp_password\'\" | psql fusionpbx -U fusionpbx -h 127.0.0.1");
+		}
 }
