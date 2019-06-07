@@ -73,7 +73,8 @@ if ($cmd eq 'updatemonitorscript') {
 			($ip,$port,$name,$uri) = split ',', $_, 4;
 			next if !$ip;
 			print "$cmd on  $name [$ip:$port]\n";
-			
-			system("ssh -t -p $port root\@$ip 'echo \"update v_default_settings set default_setting_value=\'$pass\' where  default_setting_subcategory=\'smtp_password\'\" | psql fusionpbx -U fusionpbx -h 127.0.0.1");
+			$cmd = "echo \"update v_default_settings set default_setting_value='$pass' where  default_setting_subcategory='smtp_password'\" | psql fusionpbx -U fusionpbx -h 127.0.0.1";
+			print $cmd, "\n";
+			system("ssh -t -p $port root\@$ip $cmd");
 		}
 }
