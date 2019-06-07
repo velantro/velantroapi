@@ -1,15 +1,15 @@
 $lines = '
-67.227.80.76,22,76.velantro.net,http://76.velantro.net/
-67.227.80.67,22,67.velantro.net,http://67.227.80.67/
-67.227.80.83,22,204.velantro.net,http://204.velantro.net/
-67.227.80.51,56443,19.velantro.net,http://19.velantro.net/
-67.227.80.35,56443,243.velantro.net,http://243.velantro.net/
-67.227.80.37,56443,245.velantro.net,http://245.velantro.net
-208.76.253.123,56443,vip,http://vip.velantro.net
-67.207.164.220,56443,220.velantro.net,http://220.velantro.net
-67.227.80.53,22,67.227.80.53,http://67.227.80.53
-67.227.80.55,22,67.227.80.55,http://67.227.80.55/
-67.227.80.56,22,67.227.80.56,http://67.227.80.56
+67.227.80.76,22,velantro76,http://76.velantro.net/
+67.227.80.67,22,velantro67,http://67.227.80.67/
+67.227.80.83,22,velantro204,http://204.velantro.net/
+67.227.80.51,56443,velantro19,http://19.velantro.net/
+67.227.80.35,56443,velantro243,http://243.velantro.net/
+67.227.80.37,56443,velantro245,http://245.velantro.net
+208.76.253.123,56443,velantrovip,http://vip.velantro.net
+67.207.164.220,56443,velantro220,http://220.velantro.net
+67.227.80.53,22,velantro53,http://67.227.80.53
+67.227.80.55,22,velantro55,http://67.227.80.55/
+67.227.80.56,22,velantro56,http://67.227.80.56
 67.227.80.20,22,velantro20,http://67.227.80.20
 67.227.80.12,22,velantro12,http://67.227.80.12
 208.76.253.122,22,velantro122,http://208.76.253.122/
@@ -71,12 +71,14 @@ if ($cmd eq 'updatemonitorscript') {
 			
 			system("ssh -t -p $port root\@$ip 'cd /salzh/velantroapi/ && git pull'");
 		}
-} elsif ($cmd eq 'updatesmtp') {
+} elsif ($cmd eq 'velantroupdatesmtp') {
 		$pass = shift || die "no new pass!\n";
 		for (split /\n/, $lines) {
 			($ip,$port,$name,$uri) = split ',', $_, 4;
 			next if !$ip;
 			print "$cmd on  $name [$ip:$port]\n";
+			next unless $name =~ /velantro/;
+			
 			$cmd = "echo \"update v_default_settings set default_setting_value=\\'$pass\\' where  default_setting_subcategory=\\'smtp_password\\'\" | psql fusionpbx -U fusionpbx -h 127.0.0.1";
 			print $cmd, "\n";
 			system("ssh -t -p $port root\@$ip $cmd");
