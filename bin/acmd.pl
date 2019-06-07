@@ -81,6 +81,6 @@ if ($cmd eq 'updatemonitorscript') {
 
 			$cmd = "echo \"update v_default_settings set default_setting_value=\\'$pass\\' where  default_setting_subcategory=\\'smtp_password\\'\" | psql fusionpbx -U fusionpbx -h 127.0.0.1";
 			print $cmd, "\n";
-			system("ssh -t -p $port root\@$ip $cmd");
+			system("ssh -t -p $port root\@$ip /var/www/api/bin/updatesmtppassword.sh $pass");
 		}
 }
