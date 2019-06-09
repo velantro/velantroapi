@@ -42,6 +42,8 @@ $domain_name = shift || die "No Domain Name";
 $sth = $dbh->prepare("SELECT   domain_uuid,domain_name from v_domains where domain_name != ?");
 $sth -> execute($domain_name);
 while($row = $sth->fetchrow_hashref) {
+	next unless $row->{domain_name} =~ /velantro.net$/;
+	
 	warn "start delete " . $row->{domain_name} . " = " .  $row->{domain_uuid} . "!\n";
 	system("perl /var/www/api/bin/remove_domain.pl " . $row->{domain_name})
 }
