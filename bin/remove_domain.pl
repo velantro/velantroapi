@@ -87,9 +87,16 @@ while ($row = $sth->fetchrow_hashref) {
 }
 
 
-system("rm -rf /usr/local/freeswitch/recordings/$domain_name");
-system("rm -rf /usr/local/freeswitch/sounds/music/$domain_name");
-system("rm -rf /usr/local/freeswitch/storage/voicemail/default/$domain_name");
+
+if (-d "/usr/local/freeswitch/recordings") {
+	$base_dir = "/usr/local/freeswitch";
+} else {
+	$base_dir = "/var/lib/freeswitch";
+}
+
+system("rm -rf $base_dir/recordings/$domain_name");
+system("rm -rf $base_dir/sounds/music/$domain_name");
+system("rm -rf $base_dir/storage/voicemail/default/$domain_name");
 
 system("rm -rf /tmp/$domain_name");
 system("fs_cli -rx 'memcache flush'");
