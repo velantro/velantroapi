@@ -9,7 +9,6 @@ for (split /\n/, $txt) {
     
     if ($key) {
         $config{$key} = $val;
-        warn "$key=$val\n";
     }
 }
 
@@ -36,7 +35,6 @@ sub connect_db() {
 	}
 }
 
-$domain_name = shift || die "No Domain Name";
 $sth = $dbh->prepare("SELECT * FROM v_default_settings WHERE default_setting_category = 'email'");
 $sth -> execute($domain_name);
 while($row = $sth->fetchrow_hashref) {
