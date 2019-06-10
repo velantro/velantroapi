@@ -42,17 +42,19 @@ while($row = $sth->fetchrow_hashref) {
     $config{$row->{default_setting_subcategory}} = $row->{default_setting_value};    
 }
 
-
+$user = $config{smtp_username};
+$pass = $config{smtp_password};
 $host = $config{smtp_host};
 $smtp = Net::SMTP::TLS->new($host ,
                        Hello => $host,
                        Timeout => 30,
                        Debug   => 1,
+                        User    => $user,
+                        Password=> $pass
                       );
-$user = $config{smtp_username};
-$pass = $config{smtp_password};
+
 $to ='zhongxiang721@163.com';
-$smtp->auth($user, $pass);
+#$smtp->auth($user, $pass);
 $smtp->mail($config{smtp_from});
 $smtp->recipient($to);
 $data =<<D;
