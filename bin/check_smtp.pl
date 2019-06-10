@@ -1,4 +1,6 @@
 use Net::SMTP;
+use DBI;
+
 my $txt = `cat /etc/fb.conf`;
     
 my %config = ();
