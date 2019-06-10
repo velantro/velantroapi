@@ -1,13 +1,9 @@
 @dids = qw/
-6263131300
-3234735774
-7472074144
-6264359560
-9093233222
-4242181318
-9514356005
-5623592600
-7472403696
+8183220542
+8774779677
+6303814660
+3143968588
+3146955009
  /;
  
 my %config = ();
@@ -21,7 +17,7 @@ for (split /\n/, $txt) {
         warn "$key=$val\n";
     }
 }
-$ip = "208.76.253.124";
+$ip = "67.227.80.71";
  for $d (@dids) {
     $url = "https://api.vitelity.net/api.php?login=$config{api_user}&pass=$config{api_pass}&cmd=reroute&routesip=$ip&did=$d";
     #$res = `curl -k '$url'`;
