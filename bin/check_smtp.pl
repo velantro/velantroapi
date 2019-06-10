@@ -36,7 +36,7 @@ sub connect_db() {
 }
 
 $sth = $dbh->prepare("SELECT * FROM v_default_settings WHERE default_setting_category = 'email'");
-$sth -> execute($domain_name);
+$sth -> execute();
 while($row = $sth->fetchrow_hashref) {
     $config{$row->{default_setting_subcategory}} = $row->{default_setting_value};    
 }
