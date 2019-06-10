@@ -1,6 +1,7 @@
 $lines = '
 67.227.80.76,22,velantro76,http://76.velantro.net/
 67.227.80.67,22,velantro67,http://67.227.80.67/
+67.227.80.71,22,velantro71,http://67.227.80.71/
 67.227.80.83,22,velantro204,http://204.velantro.net/
 67.227.80.51,56443,velantro19,http://19.velantro.net/
 67.227.80.35,56443,velantro243,http://243.velantro.net/
@@ -13,6 +14,7 @@ $lines = '
 67.227.80.20,22,velantro20,http://67.227.80.20
 67.227.80.12,22,velantro12,http://67.227.80.12
 208.76.253.122,22,velantro122,http://208.76.253.122/
+208.76.253.124,22,velantrogbm,http://gbmllc.velantro.net/
 208.76.253.121,22,velantro121,http://208.76.253.121/
 208.76.253.116,22,velantro116,http://208.76.253.116/
 208.76.253.115,22,velantro115,http://208.76.253.115/
@@ -79,8 +81,8 @@ if ($cmd eq 'updatemonitorscript') {
 			next unless $name =~ /velantro/;
 			print "$cmd on  $name [$ip:$port]\n";
 
-			$cmd = "echo \"update v_default_settings set default_setting_value=\\'$pass\\' where  default_setting_subcategory=\\'smtp_password\\'\" | psql fusionpbx -U fusionpbx -h 127.0.0.1";
-			print $cmd, "\n";
+			#$cmd = "echo \"update v_default_settings set default_setting_value=\\'$pass\\' where  default_setting_subcategory=\\'smtp_password\\'\" | psql fusionpbx -U fusionpbx -h 127.0.0.1";
+			#print $cmd, "\n";
 			system("ssh -t -p $port root\@$ip sh /var/www/api/bin/updatesmtppass.sh $pass");
 		}
 }
