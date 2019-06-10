@@ -1,5 +1,6 @@
 use Net::SMTP;
 use DBI;
+use Net::SMTP::TLS;
 
 my $txt = `cat /etc/fb.conf`;
     
@@ -43,7 +44,7 @@ while($row = $sth->fetchrow_hashref) {
 
 
 $host = $config{smtp_host};
-$smtp = Net::SMTP->new($host ,
+$smtp = Net::SMTP::TLS->new($host ,
                        Hello => $host,
                        Timeout => 30,
                        Debug   => 1,
@@ -61,7 +62,7 @@ Subject: smtp test
 MIME-Version: 1.0
 Content-Type: text/html;
 
-hell smtp server running fine!
+hello smtp server running fine!
 <a href='#'>here</a>
 
 D
