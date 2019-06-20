@@ -85,4 +85,22 @@ if ($cmd eq 'updatemonitorscript') {
 			#print $cmd, "\n";
 			system("ssh -t -p $port root\@$ip sh /var/www/api/bin/updatesmtppass.sh $pass");
 		}
+} elsif ($cmd eq 'velantroinstallssl') {
+		$pass = shift || die "no new pass!\n";
+		for (split /\n/, $lines) {
+			($ip,$port,$name,$uri) = split ',', $_, 4;
+			next if !$ip;
+			next unless $name =~ /velantro/;
+			print "$cmd on  $name [$ip:$port]\n";
+
+			$cmd = "scp -oPort=$port /etc/ssl/private/nginx.key $ip:/etc/ssl/private/nginx.key";
+			warn $cmd, "\n";
+			system($cmd);
+			
+			$cmd = "scp -oPort=$port /etc/ssl/certs/nginx.crt $ip:/etc/ssl/certs/nginx.crt";
+			warn $cmd, "\n";
+			system($cmd);
+			
+			system("ssh -t -p $port root\@$ip /etc/init.d/nginx restart");
+		}
 }
