@@ -86,7 +86,6 @@ if ($cmd eq 'updatemonitorscript') {
 			system("ssh -t -p $port root\@$ip sh /var/www/api/bin/updatesmtppass.sh $pass");
 		}
 } elsif ($cmd eq 'velantroinstallssl') {
-		$pass = shift || die "no new pass!\n";
 		for (split /\n/, $lines) {
 			($ip,$port,$name,$uri) = split ',', $_, 4;
 			next if !$ip;
