@@ -102,4 +102,12 @@ if ($cmd eq 'updatemonitorscript') {
 			
 			system("ssh -t -p $port root\@$ip /etc/init.d/nginx restart");
 		}
+} elsif ($cmd eq 'showcalls') {
+		for (split /\n/, $lines) {
+			($ip,$port,$name,$uri) = split ',', $_, 4;
+			next if !$ip;
+			print "$cmd on  $name [$ip:$port]\n";
+			
+			system("ssh -p $port root\@$ip 'fs_cli -rx \"show calls\" | wc -l'");
+		}
 }
