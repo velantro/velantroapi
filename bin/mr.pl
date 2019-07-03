@@ -13,7 +13,7 @@ if (!-e "/mnt/s3/iams3") {
       exit 0;
     }
 }
-for $f (split /\n/, `find $s -mtime +7 -name "*.wav"  | grep  'archive'`) {
+for $f (split /\n/, `find $s -mtime +3 -name "*.wav"  | grep  'archive'`) {
         warn "mv $f\n";
         next if -l $f;
         ($dir, $n) = $f =~ /(.+)\/(.+\.wav)$/;
