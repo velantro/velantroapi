@@ -5,7 +5,13 @@ if (not -d $s) {
 }
 
 if (!-e "/mnt/s3/iams3") {
-    die "not found /mnt/s3/iams3";
+    warn "not found /mnt/s3/iams3, let's mount it!\n";
+    system("/salzh/bin/mounts3");
+    
+    if (!-e "/mnt/s3/iams3") {
+      warn "Fail to mount s3!\n";
+      exit 0;
+    }
 }
 for $f (split /\n/, `find $s -mtime +7 -name "*.wav"  | grep  'archive'`) {
         warn "mv $f\n";
