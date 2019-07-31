@@ -2309,6 +2309,10 @@ sub do_route53 {
 		$basedomain = 'nexeravoice.net';
 		$hostzoneid ='/hostedzone/Z13T4PJ0GZZZSE';
 	}
+	if ($domain =~ /nexlevel2\.net/) {
+		$basedomain = 'nexlevel2.net';
+		$hostzoneid ='/hostedzone/Z1Q2P85CGBRLH7';
+	}
 	
 	$json =<<J;
 {"Comment": "$domain for $basedomain.",
