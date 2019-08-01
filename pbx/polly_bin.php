@@ -3,6 +3,7 @@ require 'aws/aws-autoloader.php';
 
 require 'aws/AwsPolly.php';
 
+$text = $argv[1];
 $content = file_get_contents("/var/www/.aws/config");
 
 $x = 0;
@@ -44,7 +45,7 @@ $param = array(
 );
 
 $filename = $polly->textToVoice(
-    'Set absolute path of the directory where to save the output. You dont need to provide a file name as it will be auto generated.',
+    $text,
     $param
 );
 
