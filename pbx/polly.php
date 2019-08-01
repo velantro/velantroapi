@@ -37,11 +37,11 @@ $polly = new TBETool\AwsPolly(
     $config['region']
 );
 
-$param = [
+$param = array(
     'language' => 'en-US',
     'voice' => 'Joanna',
     'output_path' => '/tmp'
-];
+);
 
 $filename = $polly->textToVoice(
     'Set absolute path of the directory where to save the output. You dont need to provide a file name as it will be auto generated.',
