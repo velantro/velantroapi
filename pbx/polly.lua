@@ -5,6 +5,8 @@ if ( session:ready() ) then
 --get the dialplan variables and set them as local variables
     tts_text = session:getVariable("tts_text") or 'no words';
     
+    api = freeswitch.API();
+
     filename = api:execute("system", "php /var/www/api/pbx/polly_bin.php '" .. tts_text .. "'");
     
     session:streamFile(filename);
@@ -113,7 +115,6 @@ end
 
 		--originate the calls
 			destination_count = 0;
-			api = freeswitch.API();
 			for index,value in pairs(destination_table) do
 				if (string.find(value, "-") == nil) then
 					value = value..'-'..value;
