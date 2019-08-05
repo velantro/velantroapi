@@ -29,7 +29,7 @@ end
 
 
 
-local response = request("/admin/api/2019-07/customers/search.json?query=phone:18185784000&fields=first_name,last_name");
+local response = request("/admin/api/2019-07/customers/search.json?query=phone:18185784000&fields=first_name,last_name,id");
 
 customer_id = response["customers"][1]["id"];
 --freeswitch.consoleLog("notice", "first_name:" .. response["customers"][1]["first_name"] .. " last_name:" .. response["customers"][1]["last_name"]);
