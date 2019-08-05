@@ -60,7 +60,7 @@ if ( session:ready() ) then
     if (dtmf == '1') then
         local response = request("/admin/api/2019-07/customers/" .. customer_id .. ".json");
         last_order_id = response["customer"]["last_order_id"];
-        if (not last_order_id) then
+        if (last_order_id) then
             response = request("/admin/api/2019-07/orders/" .. last_order_id .. ".json");
             filename = dotts("Your last order was on" .. response["order"]["created_at"].." if yes press 1 if no press 2.")
             dtmf = session:playAndGetDigits(min_digits, max_digits, max_tries, digit_timeout, "#", filename, "", "\\d");
