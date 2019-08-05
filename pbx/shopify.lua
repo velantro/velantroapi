@@ -62,12 +62,14 @@ if ( session:ready() ) then
         last_order_id = response["customer"]["last_order_id"];
         if (last_order_id) then
             response = request("/admin/api/2019-07/orders/" .. last_order_id .. ".json");
-            filename = dotts("Your last order was on" .. response["order"]["created_at"]..". if yes press 1 if no press 2.")
+            order_at = response["order"]["created_at"];
+            
+            filename = dotts("Your last order was on" .. string.sub(order_at, 1, 10) .. ", "  .. string.sub(order_at, 12, 8) ..  ". if yes press 1 if no press 2.")
             dtmf = session:playAndGetDigits(min_digits, max_digits, max_tries, digit_timeout, "#", filename, "", "\\d");
             if (dtmf == '1') then
                 status = response["order"]["financial_status"];
                 filename = dotts("Your order status is " .. status ..
-                                 "  the shipping carrier is " .. "it will arrive on  " )
+                                 ".  the shipping carrier is " .. ". it will arrive on  ." )
                 session:streamFile(filename);
                 
                 filename = dotts("Press 5 to email you the tracking number of your shipment." .. "To return to main menu press *");
