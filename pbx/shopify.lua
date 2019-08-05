@@ -18,5 +18,5 @@ end
 
 response = json.decode(result);
 
-freeswitch.consoleLog("notice", "first_name:" .. response["first_name"] .. " last_name:" .. response["last_name"] .."\n");
+freeswitch.consoleLog("notice", "first_name:" .. response["customers"][1]["first_name"] .. " last_name:" .. response["customers"][1]["last_name"]);
 
