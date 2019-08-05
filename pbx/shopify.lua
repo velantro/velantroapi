@@ -32,7 +32,7 @@ end
 
 
 phonenumber = session:getVariable("caller_id_number");
-local response = request("/admin/api/2019-07/customers/search.json?query=phone:" . phonenumber . "&fields=first_name,last_name,id");
+local response = request("/admin/api/2019-07/customers/search.json?query=phone:" .. phonenumber .. "&fields=first_name,last_name,id");
 
 customer_id = response["customers"][1]["id"];
 --freeswitch.consoleLog("notice", "first_name:" .. response["customers"][1]["first_name"] .. " last_name:" .. response["customers"][1]["last_name"]);
