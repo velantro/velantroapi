@@ -18,5 +18,17 @@ end
 
 response = json.decode(result);
 
-freeswitch.consoleLog("notice", "first_name:" .. response["customers"][1]["first_name"] .. " last_name:" .. response["customers"][1]["last_name"]);
+--freeswitch.consoleLog("notice", "first_name:" .. response["customers"][1]["first_name"] .. " last_name:" .. response["customers"][1]["last_name"]);
+shop = "velantro"
+if ( session:ready() ) then
+--answer the call
+    session:answer();
+--get the dialplan variables and set them as local variables
+    tts_text = "Hello " .. response["customers"][1]["first_name"] .. " " .. response["customers"][1]["last_name"] .. ". Thank You for calling " .. shop .. " shop. We appreciate your business. "
+    freeswitch.consoleLog("info", "Polly tts: " .. tts_text .. "\n");
+    api = freeswitch.API();
 
+    filename = api:execute("system", "php /var/www/api/pbx/polly_bin.php '" .. tts_text .. "'");
+    
+    session:streamFile(filename);
+end
