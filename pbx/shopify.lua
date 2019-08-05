@@ -1,6 +1,6 @@
 debug["info"] = true;
 local json
-if (debug["sql"]) then
+if (debug["info"]) then
     json = require "resources.functions.lunajson"
 end
 
