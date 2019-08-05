@@ -7,7 +7,7 @@ end
 
 
 function request(path)
-    local cmd = "curl -k 'https://15a24d3cd32140671569ec08b1c24e58:726d5b90f6fb1a6072d8a032555c7cbe@velantrodev.myshopify.com" .. path . "'";
+    local cmd = "curl -k 'https://15a24d3cd32140671569ec08b1c24e58:726d5b90f6fb1a6072d8a032555c7cbe@velantrodev.myshopify.com" .. path .. "'";
     if (debug["info"]) then
         freeswitch.consoleLog("notice", "[shopify.lua] CMD: " .. cmd .. "\n");
     end
