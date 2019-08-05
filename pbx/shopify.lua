@@ -67,7 +67,7 @@ if ( session:ready() ) then
             response = request("/admin/api/2019-07/orders/" .. last_order_id .. ".json");
             order_at = response["order"]["created_at"];
             
-            filename = dotts("Your last order was on " .. string.sub(order_at, 1, 10) .. ", "  .. string.sub(order_at, 12, 8) ..  ". if yes press 1 if no press 2.")
+            filename = dotts("Your last order was on " .. string.sub(order_at, 1, 10) .. ", "  .. string.sub(order_at, 12, -1) ..  ". if yes press 1 if no press 2.")
             dtmf = session:playAndGetDigits(min_digits, max_digits, max_tries, digit_timeout, "#", filename, "", "\\d");
             if (dtmf == '1') then
                 status = response["order"]["financial_status"];
