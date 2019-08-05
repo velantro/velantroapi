@@ -2,8 +2,8 @@
 require 'aws/aws-autoloader.php';
 
 require 'aws/AwsPolly.php';
-
-$text = $argv[1];
+$voice = $argv[1] || 'Joanna';
+$text = $argv[2];
 $content = file_get_contents("/var/www/.aws/config");
 
 $x = 0;
@@ -40,7 +40,7 @@ $polly = new TBETool\AwsPolly(
 
 $param = array(
     'language' => 'en-US',
-    'voice' => 'Joanna',
+    'voice' => $voice,
     'output_path' => '/tmp'
 );
 

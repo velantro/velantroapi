@@ -1,3 +1,4 @@
+tts_voice = argv[1] or 'Joanna';
 debug["info"] = true;
 local json
 if (debug["info"]) then
@@ -26,7 +27,7 @@ function dotts(tts_text)
     if (debug["info"]) then
         freeswitch.consoleLog("notice", "[shopify.lua] tts_text: " .. tts_text .. "\n");
     end
-    local filename = api:execute("system", "php /var/www/api/pbx/polly_bin.php '" .. tts_text .. "'");
+    local filename = api:execute("system", "php /var/www/api/pbx/polly_bin.php " .. tts_voice .. " '" .. tts_text .. "'");
     return filename;
 end
 
