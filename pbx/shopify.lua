@@ -5,7 +5,7 @@ if (debug["info"]) then
 end
 
 
-cmd =" curl -k 'https://15a24d3cd32140671569ec08b1c24e58:726d5b90f6fb1a6072d8a032555c7cbe@velantrodev.myshopify.com/admin/api/2019-07/customers/search.json?query=phone:7474779513&fields=first_name,last_name'";
+cmd =" curl -k 'https://15a24d3cd32140671569ec08b1c24e58:726d5b90f6fb1a6072d8a032555c7cbe@velantrodev.myshopify.com/admin/api/2019-07/customers/search.json?query=phone:18185784000&fields=first_name,last_name'";
 if (debug["info"]) then
     freeswitch.consoleLog("notice", "[sms] CMD: " .. cmd .. "\n");
 end
