@@ -52,7 +52,7 @@ if ( session:ready() ) then
     max_tries = 2;
     digit_timeout=15000;
     
-     
+    filename = dotts("Are you calling to check on the status of your order. If yes press 1, if no press 2. ");
     dtmf = session:playAndGetDigits(min_digits, max_digits, max_tries, digit_timeout, "#", filename, "", "\\d");
     if (not customer_id) then
         dtmf = '2';
