@@ -1,3 +1,24 @@
+function request(path)
+    local cmd = "curl -k 'https://15a24d3cd32140671569ec08b1c24e58:726d5b90f6fb1a6072d8a032555c7cbe@velantrodev.myshopify.com" .. path;
+    if (debug["info"]) then
+        freeswitch.consoleLog("notice", "[sms] CMD: " .. cmd .. "\n");
+    end
+    local handle = io.popen(cmd)
+    local result = handle:read("*a")
+    handle:close()
+    if (debug["info"]) then
+        freeswitch.consoleLog("notice", "[sms] CURL Returns: " .. result .. "\n");
+    end
+    
+    local response = json.decode(result);
+    return response;
+end
+
+function dotts(tts_text)
+    local filename = api:execute("system", "php /var/www/api/pbx/polly_bin.php '" .. tts_text .. "'");
+    return filename;
+end
+
 debug["info"] = true;
 local json
 if (debug["info"]) then
@@ -55,23 +76,3 @@ if ( session:ready() ) then
     end
 end
 
-function request(path)
-    local cmd = "curl -k 'https://15a24d3cd32140671569ec08b1c24e58:726d5b90f6fb1a6072d8a032555c7cbe@velantrodev.myshopify.com" .. path;
-    if (debug["info"]) then
-        freeswitch.consoleLog("notice", "[sms] CMD: " .. cmd .. "\n");
-    end
-    local handle = io.popen(cmd)
-    local result = handle:read("*a")
-    handle:close()
-    if (debug["info"]) then
-        freeswitch.consoleLog("notice", "[sms] CURL Returns: " .. result .. "\n");
-    end
-    
-    local response = json.decode(result);
-    return response;
-end
-
-function dotts(tts_text)
-    filename = api:execute("system", "php /var/www/api/pbx/polly_bin.php '" .. tts_text .. "'");
-    return filename;
-end
