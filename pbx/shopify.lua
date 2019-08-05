@@ -41,7 +41,7 @@ if ( session:ready() ) then
 --answer the call
     session:answer();
 --get the dialplan variables and set them as local variables
-    tts_text = "Hello " .. response["customers"][1]["first_name"] .. " " .. response["customers"][1]["last_name"] .. ". Thank You for calling " .. shop .. " shop. We appreciate your business. "
+    tts_text = "Hello " .. response["customers"][1]["first_name"] .. ". Thank You for calling " .. shop .. " shop. We appreciate your business. "
     freeswitch.consoleLog("info", "Polly tts: " .. tts_text .. "\n");
     api = freeswitch.API();
 
