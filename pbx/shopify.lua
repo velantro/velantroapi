@@ -23,6 +23,9 @@ function request(path)
 end
 
 function dotts(tts_text)
+    if (debug["info"]) then
+        freeswitch.consoleLog("notice", "[shopify.lua] tts_text: " .. tts_text .. "\n");
+    end
     local filename = api:execute("system", "php /var/www/api/pbx/polly_bin.php '" .. tts_text .. "'");
     return filename;
 end
@@ -72,7 +75,7 @@ if ( session:ready() ) then
                                  ".  the shipping carrier is " .. ". it will arrive on  ." )
                 session:streamFile(filename);
                 
-                filename = dotts("Press 5 to email you the tracking number of your shipment." .. "To return to main menu press *");
+                filename = dotts("Press 5 to email you the tracking number of your shipment." .. "To return to main menu press star");
                 session:streamFile(filename);
 
             end
