@@ -31,8 +31,8 @@ function dotts(tts_text)
 end
 
 
-
-local response = request("/admin/api/2019-07/customers/search.json?query=phone:18185784000&fields=first_name,last_name,id");
+phonenumber = session:getVariable("caller_id_number");
+local response = request("/admin/api/2019-07/customers/search.json?query=phone:" . phonenumber . "&fields=first_name,last_name,id");
 
 customer_id = response["customers"][1]["id"];
 --freeswitch.consoleLog("notice", "first_name:" .. response["customers"][1]["first_name"] .. " last_name:" .. response["customers"][1]["last_name"]);
@@ -67,7 +67,7 @@ if ( session:ready() ) then
             response = request("/admin/api/2019-07/orders/" .. last_order_id .. ".json");
             order_at = response["order"]["created_at"];
             
-            filename = dotts("Your last order was on " .. string.sub(order_at, 1, 10) .. ", "  .. string.sub(order_at, 12, 20) ..  ". if yes press 1 if no press 2.")
+            filename = dotts("Your last order was on " .. string.sub(order_at, 1, 10) .. ", "  .. string.sub(order_at, 12, 19) ..  ". if yes press 1 if no press 2.")
             dtmf = session:playAndGetDigits(min_digits, max_digits, max_tries, digit_timeout, "#", filename, "", "\\d");
             if (dtmf == '1') then
                 status = response["order"]["financial_status"];
