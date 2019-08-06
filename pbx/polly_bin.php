@@ -2,7 +2,7 @@
 require 'aws/aws-autoloader.php';
 
 require 'aws/AwsPolly.php';
-$voice = $argv[1] || 'Joanna';
+$voice = $argv[1] ? $argv[1] : 'Joanna';
 $text = $argv[2];
 $content = file_get_contents("/var/www/.aws/config");
 
