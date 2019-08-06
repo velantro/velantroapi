@@ -46,7 +46,7 @@ if ( session:ready() ) then
     freeswitch.consoleLog("info", "Polly tts: " .. tts_text .. "\n");
     api = freeswitch.API();
 
-    filename = api:execute("system", "php /var/www/api/pbx/polly_bin.php '" .. tts_text .. "'");
+    filename = dotts(tts_text);
     
     session:streamFile(filename);
     
