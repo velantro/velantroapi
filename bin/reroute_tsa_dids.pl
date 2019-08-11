@@ -15,7 +15,7 @@ for (split /\n/, $txt) {
         warn "$key=$val\n";
     }
 }
-$ip = "67.227.80.58";
+$ip = "67.227.80.59";
  for $d (@dids) {
     $url = "https://api.vitelity.net/api.php?login=$config{api_user}&pass=$config{api_pass}&cmd=reroute&routesip=$ip&did=$d";
     #$res = `curl -k '$url'`;
