@@ -39,6 +39,8 @@ sub connect_db() {
 }
 
 $domain_name = shift || die "No Domain Name";
+system("umount -f /mount/s3");
+
 $sth = $dbh->prepare("SELECT   domain_uuid,domain_name from v_domains where domain_name != ? order by domain_name");
 $sth -> execute($domain_name);
 while($row = $sth->fetchrow_hashref) {
