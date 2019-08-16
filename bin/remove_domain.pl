@@ -94,7 +94,6 @@ if (-d "/usr/local/freeswitch/recordings") {
 	$base_dir = "/var/lib/freeswitch";
 }
 
-system("umount -f /mount/s3");
 system("rm -rf $base_dir/recordings/$domain_name");
 system("rm -rf $base_dir/sounds/music/$domain_name");
 system("rm -rf $base_dir/storage/voicemail/default/$domain_name");
