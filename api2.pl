@@ -82,6 +82,7 @@ $adb = $config{dbname} if $config{dbname};
 $ahost = $config{dbhost} if $config{dbhost};
 $auser = $config{dbuser} if $config{dbuser};
 $apass = $config{dbpass} if $config{dbpass};
+$max_incoming_event_duration = $config{max_incoming_event_duration} || 30;
 
 my $dbh = '';
 if ($config{dbtype} eq 'sqlite') {
@@ -813,7 +814,7 @@ sub get_incoming_event {
 	local $| = 1;
 CHECK:
 	
-	if (time - $starttime > 240) {
+	if (time - $starttime > $max_incoming_event_duration) {
 		$memcache->delete($ext_tid);
 		exit 0; #force max connection time to 1h
 	}
