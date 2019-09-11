@@ -3,7 +3,6 @@
 # load head
 #======================================================
 use IO::Socket;
-use Switch;
 use Data::Dumper;
 use DBI;
 use Time::Local;
@@ -22,11 +21,6 @@ $SIG{INT}          = \&_stop_server;
 $SIG{'__DIE__'}    = \&_die;
 $SIG{'__WARN__'}   = \&_warn;
 
-$pid = fork();
-if ($pid <= 0) {
-	&monitor_callback();
-	exit;
-}
 
 require $default_include;
 warn "domain_monitor_hold:$app{domain_monitor_hold}!\n";
@@ -668,10 +662,6 @@ sub out() {
     print "[", &now(), "] ", $str, "\n";
 }
 
-sub now() {
-    @v = localtime;
-    return sprintf("%04d-%02d-%02d %02d:%02d:%02d", 1900+$v[5],$v[4]+1,$v[3],$v[2],$v[1],$v[0]);
-}
 
 sub _stop_server {
     &out("** catch INT SIGNAL, server will quit!");

@@ -16,7 +16,6 @@ $|=1;$!=1; # disable buffer
 use File::Copy;
 use Digest::MD5 qw(md5 md5_hex md5_base64);
 use LWP 5.69;
-use Logger::Syslog;
 use Data::Dumper;
 use Digest::MD5  qw(md5 md5_hex md5_base64);
 use POSIX qw(mkfifo);
