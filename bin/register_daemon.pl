@@ -159,7 +159,7 @@ sub do_unregister() {
     my $memcache = new Cache::Memcached {'servers' => ['127.0.0.1:11211'],};
 	
 	$memcache->delete($ext . '@' . $host);
-	warn "[$time]Delete " . $ext . '@' . "!\n";
+	warn "[$time]Delete " . $ext . '@' . $host . "!\n";
 }
 
 sub do_hold() {
