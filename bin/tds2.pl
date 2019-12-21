@@ -88,9 +88,13 @@ while (1) {
             warn "Validate Email $email: " .  $email_result->{message}. "!\n";
             $is_ok = 0;
         }
+        
+        ($raw_address) = $left =~ m{<b>Physical Address</b>(.+)?<a}s;
+        ($address = $raw_address) =~ s/\n\r\t"//g;
+        
         $email_spool{lc($email)} = 1;
         if ($is_ok) {     
-            $line = "$dot,$state,$name,$email,$phone,$person";
+            $line = "$dot,$state,$name,$email,$phone,$person,$address";
             print $line, "\n";
             print OUT $line. "\n";                   #
         }
