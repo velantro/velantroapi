@@ -92,6 +92,7 @@ while (1) {
         ($raw_address) = $left =~ m{<b>Physical Address</b>(.+?)<a}s;
         ($address = $raw_address) =~ s/[\n\r\t"]//g;
         $address =~ s{<br>}{}g;
+        $address =~ s/\s{2,}//g;
         
         $email_spool{lc($email)} = 1;
         if ($is_ok) {     
