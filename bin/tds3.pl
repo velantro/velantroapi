@@ -93,7 +93,7 @@ while (1) {
         ($address = $raw_address) =~ s/[\n\r\t"]//g;
         $address =~ s{<br>}{}g;
         $address =~ s/\s{2,}//g;
-        $address =~ s/,+$//g;
+        $address =~ s/,.+$//g;
         
         $email_spool{lc($email)} = 1;
         if ($is_ok) {     
