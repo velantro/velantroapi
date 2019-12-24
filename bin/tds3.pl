@@ -93,8 +93,8 @@ while (1) {
         ($address = $raw_address) =~ s/[\n\r\t"]//g;
         $address =~ s{<br>}{}g;
         $address =~ s/\s{2,}//g;
-        $address =~ s/,.+$//g;
-        
+        @arr = split ',', $address;
+        $address = $arr[0]. "\," . $arr[1];
         $email_spool{lc($email)} = 1;
         if ($is_ok) {     
             #$line = "$dot,$state,$name,$email,$phone,$person,$address";
