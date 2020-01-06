@@ -58,6 +58,7 @@ if ($cgi->request_method eq 'GET') {
 
 
 my $dbh = '';
+$config{dbtype} = 'pg';
 if ($config{dbtype} eq 'sqlite') {
 	$dbh = DBI->connect("dbi:SQLite:dbname=/var/www/fusionpbx/secure/fusionpbx.db","","");
 } elsif($config{dbtype} eq 'pg') {
@@ -73,11 +74,13 @@ if (!$dbh) {
 }
 warn "login db: OK!\n";
 
+print $cgi->header();
 
 $action = $query{action};
 if ($action eq 'listagents') {
 	$account = $query{account};
-	$output = ` CLOUDSDK_CONFIG=/usr/share/httpd/$account ./bin/gcloud projects list`
+	$output = `CLOUDSDK_CONFIG=/var/www/google/$account /var/www/google-cloud-sdk/bin/gcloud --format=json projects list`;
+	
 	print $output;
 }
 
