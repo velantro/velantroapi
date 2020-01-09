@@ -17,7 +17,7 @@ for $ac (@accounts) {
     for $ag (@$hash) {
         warn "agent: " . $ag->{projectId} . "\n";
         if ($action eq 'check') {
-            &test_print_token();
+            &test_print_token($ac, $ag->{projectId});
         } else {        
             &generate_print_token($ac, $ag->{projectId});
         }
