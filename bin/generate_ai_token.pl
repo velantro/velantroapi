@@ -1,4 +1,5 @@
 use JSON;
+$action = shift;
 $basedir = "/var/www/google";
 $gcloud_bin = "/var/www/google-cloud-sdk/bin/gcloud";
 
@@ -15,16 +16,38 @@ for $ac (@accounts) {
     
     for $ag (@$hash) {
         warn "agent: " . $ag->{projectId} . "\n";
-        warn "generate print token for $ac - " . $ag->{projectId} . "\n";
-        &generate_print_token($ac, $ag->{projectId});
+        if ($action eq 'check') {
+            &test_print_token();
+        } else {        
+            &generate_print_token($ac, $ag->{projectId});
+        }
     }
 }
 
+sub test_print_token {
+    $account = shift;
+    $agent = shift;
+    if (!-e "$basedir/$account/$agent.conf") {
+        print "$account|$agent : FAIL: " . "$basedir/$account/$agent.conf not existed!!\n";
+        return;
+    }
+    $token = `cat $basedir/$account/$agent.conf`; chomp $token;
+    $uuid = `uuid`;chomp $uuid;
+    $json = `curl -H "Content-Type: application/json; charset=utf-8"  -H "Authorization: Bearer $token"  -d "{\"queryInput\":{\"text\":{\"text\":\"hi\",\"languageCode\":\"en\"}}}" "https://dialogflow.googleapis.com/v2/projects/$agent/agent/sessions/$uuid:detectIntent`;
+    $hash = decode_json($json);
 
+    if ($hash && !$hash->{error}) {
+        print "$account|$agent : OK!\n";
+    } else {
+        print "$account|$agent : FAIL!\n"
+    }
+}
 
 sub generate_print_token {
     $account = shift;
     $agent = shift;
+    warn "generate print token for $ac - " . $ag->{projectId} . "\n";
+
     if (-e "$basedir/$account/$agent.conf") {
         warn "$basedir/$account/$agent.conf alreay generated!!\n";
         return;
