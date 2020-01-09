@@ -33,8 +33,9 @@ sub test_print_token {
     }
     $token = `cat $basedir/$account/$agent.conf`; chomp $token;
     $uuid = `uuid`;chomp $uuid;
-    $json = `curl -H "Content-Type: application/json; charset=utf-8"  -H "Authorization: Bearer $token"  -d "{\"queryInput\":{\"text\":{\"text\":\"hi\",\"languageCode\":\"en\"}}}" "https://dialogflow.googleapis.com/v2/projects/$agent/agent/sessions/$uuid:detectIntent`;
+    $json = `curl -s -H "Content-Type: application/json; charset=utf-8"  -H "Authorization: Bearer $token"  -d "{'queryInput':{'text':{'text':'hi','languageCode':'en'}}}" "https://dialogflow.googleapis.com/v2/projects/$agent/agent/sessions/$uuid:detectIntent"`;
     $hash = decode_json($json);
+#warn $json;
 
     if ($hash && !$hash->{error}) {
         print "$account|$agent : OK!\n";
