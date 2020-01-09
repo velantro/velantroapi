@@ -54,7 +54,8 @@ sub generate_print_token {
         return;
     }
     
-    ($user = $account ."_" . $agent) =~ s/\W//g;
+    ($user = $account ."-" . $agent) =~ s/\W//g;
+    $user = substr $user, 0, 30;
     
     system("CLOUDSDK_CONFIG=$basedir/$account  $gcloud_bin config set project $agent");
     
