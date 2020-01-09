@@ -8,7 +8,7 @@ for $dir (glob("$basedir/*")) {
     $ac = substr $dir, length($basedir)+1;
     push @accounts, $ac;
 }
-
+@failed_array = ();
 for $ac (@accounts) {
     warn "list agents for account $ac!\n";
     $json = `CLOUDSDK_CONFIG=$basedir/$ac  $gcloud_bin  --format=json projects list`;
@@ -18,6 +18,13 @@ for $ac (@accounts) {
         warn "agent: " . $ag->{projectId} . "\n";
         if ($action eq 'check') {
             &test_print_token($ac, $ag->{projectId});
+        } elsif ($action eq 'checkandmake') {
+            $s = &test_print_token($ac, $ag->{projectId});
+            if (!$s) {
+                unlink("$basedir/$ac/" . $ag->{projectId} . ".conf");
+               &generate_print_token($ac, $ag->{projectId});
+            }
+            
         } else {        
             &generate_print_token($ac, $ag->{projectId});
         }
@@ -39,8 +46,10 @@ sub test_print_token {
 
     if ($hash && !$hash->{error}) {
         print "$account|$agent : OK!\n";
+        return 1;
     } else {
-        print "$account|$agent : FAIL!\n"
+        print "$account|$agent : FAIL!\n";
+        return;
     }
 }
 
