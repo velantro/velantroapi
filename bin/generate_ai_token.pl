@@ -54,7 +54,8 @@ sub generate_print_token {
         return;
     }
     
-    $user = "smsapi";
+    ($user = $account ."_" . $agent) =~ s/\W//g;
+    
     system("CLOUDSDK_CONFIG=$basedir/$account  $gcloud_bin config set project $agent");
     
     system("CLOUDSDK_CONFIG=$basedir/$account  $gcloud_bin  iam service-accounts create  $user");
