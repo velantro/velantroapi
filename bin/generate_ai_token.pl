@@ -16,6 +16,7 @@ for $ac (@accounts) {
     
     for $ag (@$hash) {
         warn "agent: " . $ag->{projectId} . "\n";
+        next if $ag->{projectId} eq 'utility-ratio-259606' || $ag->{projectId} eq 'online-shopping-hewsoy';
         if ($action eq 'check') {
             &test_print_token($ac, $ag->{projectId});
         } elsif ($action eq 'checkandmake') {
@@ -49,6 +50,7 @@ sub test_print_token {
         return 1;
     } else {
         print "$account|$agent : FAIL!\n";
+        warn $json;
         return;
     }
 }
@@ -64,17 +66,21 @@ sub generate_print_token {
     }
     
     ($user = $account ."-" . $agent) =~ s/\W//g;
-    $user = substr $user, 0, 30;
+    $user = substr $user, 0, 20;
     
-    system("CLOUDSDK_CONFIG=$basedir/$account  $gcloud_bin config set project $agent");
+    if (!-e "$basedir/$account/$agent-$user.json") {
+        system("CLOUDSDK_CONFIG=$basedir/$account  $gcloud_bin config set project $agent");
     
-    system("CLOUDSDK_CONFIG=$basedir/$account  $gcloud_bin  iam service-accounts create  $user");
+        system("CLOUDSDK_CONFIG=$basedir/$account  $gcloud_bin  iam service-accounts create  $user");
+        
+        system("CLOUDSDK_CONFIG=$basedir/$account  $gcloud_bin projects add-iam-policy-binding  $agent  --member \"serviceAccount:$user\@$agent.iam.gserviceaccount.com\" --role \"roles/owner\"");
+        
+        system("CLOUDSDK_CONFIG=$basedir/$account  $gcloud_bin iam service-accounts keys create $basedir/$account/$agent-$user.json --iam-account $user\@$agent.iam.gserviceaccount.com");
+    }
     
-    system("CLOUDSDK_CONFIG=$basedir/$account  $gcloud_bin projects add-iam-policy-binding  $agent  --member \"serviceAccount:$user\@$agent.iam.gserviceaccount.com\" --role \"roles/owner\"");
     
-    system("CLOUDSDK_CONFIG=$basedir/$account  $gcloud_bin iam service-accounts keys create /tmp/$agent.json --iam-account $user\@$agent.iam.gserviceaccount.com");
     
-    system("export GOOGLE_APPLICATION_CREDENTIALS=/tmp/$agent.json; CLOUDSDK_CONFIG=$basedir/$account  $gcloud_bin  auth application-default print-access-token > $basedir/$account/$agent.conf");
+    system("export GOOGLE_APPLICATION_CREDENTIALS=$basedir/$account/$agent-$user.json; CLOUDSDK_CONFIG=$basedir/$account  $gcloud_bin  auth application-default print-access-token > $basedir/$account/$agent.conf");
     
     system("cat $basedir/$account/$agent.conf");
 
