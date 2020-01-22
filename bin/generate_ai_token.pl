@@ -11,22 +11,44 @@ for $dir (glob("$basedir/*")) {
 @failed_array = ();
 for $ac (@accounts) {
     warn "list agents for account $ac!\n";
+    $need_make = 0;
+    $last_make_time = `cat $basedir/$ac/last_print_token_time`; chomp $last_make_time;
+    $time = time;
+    if (time - $last_make_time > 1200) {
+        $need_make = 1;
+        print "$account will be expired !\n";
+    }
+    
     $json = `CLOUDSDK_CONFIG=$basedir/$ac  $gcloud_bin  --format=json projects list`;
-    $hash = decode_json($json);
+    $hash = safe_decode_json($json) || next;
+    
+   
     
     for $ag (@$hash) {
         warn "agent: " . $ag->{projectId} . "\n";
         next if $ag->{projectId} eq 'utility-ratio-259606' || $ag->{projectId} eq 'online-shopping-hewsoy';
         if ($action eq 'check') {
-            &test_print_token($ac, $ag->{projectId});
+            if ($need_make) {
+                print "$ac:" . $ag->{projectId} . "Will be expired!\n";
+            } else {            
+                &test_print_token($ac, $ag->{projectId});
+            }
         } elsif ($action eq 'checkandmake') {
-            $s = &test_print_token($ac, $ag->{projectId});
+            if ($need_make) {
+                $s = 0;
+            } else {            
+                $s = &test_print_token($ac, $ag->{projectId});
+            }
             if (!$s) {
                 unlink("$basedir/$ac/" . $ag->{projectId} . ".conf");
-               &generate_print_token($ac, $ag->{projectId});
+                &generate_print_token($ac, $ag->{projectId});
             }
             
-        } else {        
+        } else {
+            if ($need_make) {
+                unlink("$basedir/$ac/" . $ag->{projectId} . ".conf");
+            }
+            
             &generate_print_token($ac, $ag->{projectId});
         }
     }
@@ -42,7 +64,7 @@ sub test_print_token {
     $token = `cat $basedir/$account/$agent.conf`; chomp $token;
     $uuid = `uuid`;chomp $uuid;
     $json = `curl -s -H "Content-Type: application/json; charset=utf-8"  -H "Authorization: Bearer $token"  -d "{'queryInput':{'text':{'text':'hi','languageCode':'en'}}}" "https://dialogflow.googleapis.com/v2/projects/$agent/agent/sessions/$uuid:detectIntent"`;
-    $hash = decode_json($json);
+    $hash = safe_decode_json($json);
 #warn $json;
 
     if ($hash && !$hash->{error}) {
@@ -64,6 +86,10 @@ sub generate_print_token {
         warn "$basedir/$account/$agent.conf alreay generated!!\n";
         return;
     }
+    $time = time;
+    open W, ">", "$basedir/$account/last_print_token_time";
+    print W $time;
+    close W;
     
     ($user = $account ."-" . $agent) =~ s/\W//g;
     $user = substr $user, 0, 20;
@@ -84,4 +110,15 @@ sub generate_print_token {
     
     system("cat $basedir/$account/$agent.conf");
 
+}
+
+sub safe_decode_json {
+    $json = shift || return;
+    eval {$hash = decode_json($json)};
+    if ($@) {
+        return;
+    }
+    
+    return $hash;
+    
 }
