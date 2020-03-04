@@ -17,11 +17,11 @@
 
     $credentials = new Aws\Credentials\Credentials($server_config['aws_access_key_id'], $server_config['aws_secret_access_key']);
 
-    $s3 = new Aws\S3\S3Client([
+    $s3 = new Aws\S3\S3Client(array(
         'version'     => 'latest',
         'region'      => $server_config['region'],
         'credentials' => $credentials
-    ]);
+    ));
     
     $result = $s3->listBuckets();
     
