@@ -9,25 +9,11 @@ use DBI;
 use Time::Local;
 #use Math::Round qw(:all);
 use URI::Escape;
+use Net::AMQP::RabbitMQ;
 use POSIX qw(strftime);
 use MIME::Base64;
-require "/salzh/velantroapi/lib/default.include.pl";
-&default_include_init();
+require "/usr/local/pbx/bin/default.include.pl";
 
-$default_include = "/salzh/velantroapi/lib/tools.database.pl";
-$SIG{CHLD} = \&reaper;
-$SIG{INT}          = \&_stop_server;
-$SIG{'__DIE__'}    = \&_die;
-$SIG{'__WARN__'}   = \&_warn;
-
-$pid = fork();
-if ($pid <= 0) {
-	&monitor_callback();
-	exit;
-}
-
-require $default_include;
-warn "domain_monitor_hold:$app{domain_monitor_hold}!\n";
 #======================================================
 
 
@@ -55,7 +41,73 @@ $default_host = '115.28.137.2';
 $host_prefix  = '';
 #======================================================
 
+#warn "tenant: $app{tenant}\nhost: $app{host}\n";
 
+
+#======================================================
+# arguments
+#======================================================
+$arguments = join(" ",@ARGV);
+$arguments = " \L$arguments ";
+if (index($arguments," version ") ne -1) {
+	print $version . "\n";
+	exit;
+}
+if (index($arguments," log ") ne -1) {
+	$debug = 1;
+}
+if (index($arguments," logverbose ") ne -1) {
+	$debug = 1;
+	$|=1;
+}
+if (index($arguments," daemon ") ne -1) {
+	$fork = 1;
+	$|=1;
+}
+if (index($arguments," restart ") ne -1) {
+	open FILE, "$file_pid " or die $!;
+	my @lines = <FILE>;
+	foreach(@lines) {
+		`kill -9 $_` 
+	}
+	close(FILE);
+	unlink("$file_pid");
+}
+#======================================================
+
+
+
+
+#======================================================
+# fork
+#======================================================
+if ($fork == 1) {
+	chdir '/'                 or die "Can't chdir to /: $!";
+	#umask 0;
+	open STDIN, '/dev/null'   or die "Can't read /dev/null: $!";
+	open STDOUT, ">> $file_log" or die "Can't write to $file_log: $!";
+	open STDERR, ">> $file_log" or die "Can't write to $file_log: $!";
+	defined(my $pid = fork)   or die "Can't fork: $!";
+	exit if $pid;
+	setsid                    or die "Can't start a new session: $!";
+	$pid = $$;
+	open FILE, ">", "$file_pid";
+	print FILE $pid;
+	close(FILE);
+}
+$t = getTime();
+if (index($arguments," restart ") ne -1) {
+	print STDERR "$t STATUS: Listener restarted\n";
+}
+#======================================================
+my $mq = Net::AMQP::RabbitMQ->new();
+$mq->connect("localhost", { user => "guest", password => "guest" });
+$mq->channel_open(1);
+$mq->queue_declare(1, "incoming");
+
+#======================================================
+# main loop
+#======================================================
 my @commands;
 reconnect:
 $remote = IO::Socket::INET->new(
@@ -70,7 +122,7 @@ $remote->autoflush(1);
 $logres = login_cmd("auth ClueCon$BLANK");
 sleep 1;
 
-$logres = login_cmd("event CHANNEL_HANGUP CHANNEL_UNHOLD CHANNEL_HOLD$BLANK");
+$logres = login_cmd("event CHANNEL_OUTGOING CHANNEL_BRIDGE CHANNEL_HANGUP CHANNEL_HANGUP_COMPLETE MEDIA_BUG_STOP CUSTOM callcenter::info$BLANK");
 $eventcount = 0;
 %Channel_Spool = ();
 local $| = 1;
@@ -96,11 +148,11 @@ while (<$remote>) {
 			($tmp1,$tmp2,$tmp3,$tmp4) = split(/\|/,$event{Type});
 			# call action
 			warn $event{'Event-Name'} . ' ==> ' . $event{'CC-Action'}  . "\n";
-			if ($event{'Event-Name'} eq "CHANNEL_HOLD"   ||
-				$event{'Event-Name'} eq "CHANNEL_UNHOLD" ||
-				$event{'Event-Name'} eq "CHANNEL_HANGUP") {
-				&do_hold(%event);
-			} 
+			if ($event{'Event-Name'} eq "CHANNEL_OUTGOING") {Dial(%event); }
+			elsif ($event{'Event-Name'} eq "CHANNEL_BRIDGE")			{ Bridge(%event); }
+			elsif ($event{'Event-Name'} eq "CHANNEL_HANGUP")		{ Hangup(%event); }
+			elsif ($event{'Event-Name'} eq "CHANNEL_HANGUP_COMPLETE") { End(%event); }
+			elsif ($event{'Event-Name'} eq "MEDIA_BUG_STOP") { Recording(%event); }
 			elsif ($event{'Event-Subclass'} eq "callcenter%3A%3Ainfo" &&  $event{'CC-Action'} eq 'agent-status-change') {&update_agent_status(%event);}
 				
 			
@@ -127,35 +179,6 @@ goto reconnect;
 #======================================================
 # poll actions
 #======================================================
-sub do_hold() {
-	local(%event) = @_;
-	#print Dumper(\%event); return;
-	local $uuid = $event{'Channel-Call-UUID'};
-	local $other_uuid = $event{'Other-Leg-Unique-ID'};
-	$other_uuid ||= $event{'Caller-Unique-ID'};
-
-	local $time  = uri_unescape($event{'Event-Date-Local'});
-	local $presence_id =  uri_unescape($event{'Channel-Presence-ID'});
-	local ($ext, $domain_name) = split '@', $presence_id;
-	
-	if (index(",$app{domain_monitor_hold},", ",$domain_name,") == -1) {
-		return;
-	}
-	
-	
-	if ($event{'Event-Name'} eq 'CHANNEL_HOLD') {
-		$sql = "insert into v_hold (channel_uuid,other_channel_uuid,hold_timestamp,ext, domain_name) values
-				('$uuid', '$other_uuid', now(), '$ext', '$domain_name')";
-	} elsif ($event{'Event-Name'} eq 'CHANNEL_UNHOLD' ||
-			$event{'Event-Name'} eq "CHANNEL_HANGUP") {
-		$sql = "delete from v_hold where channel_uuid='$uuid'";
-	}
-	warn "sql: $sql!\n";
-	&database_do($sql);
-	
-	return 1;
-}
-
 sub Bridge() {
 	local(%event) = @_;
 	print "Bridge: " ;
@@ -296,7 +319,7 @@ sub End() {
 	local $host = ($host_prefix . $event{'Caller-Context'}) || $default_host;
 	warn "Get Hangup-Complete " . $uuid;
 									
-	#print Dumper(\%event);
+	print Dumper(\%event);
 	local $now = &now();
  	local $a_uuid = $event{'variable_originating_leg_uuid'};
 
@@ -313,7 +336,7 @@ sub End() {
 	$domain_name = '' if $domain_name eq '_undef_';
 
 	if (!$domain_name) {
-		$domain_name = $event{'variable_domain_name'};
+		$domain_name = $event{'variable_domain_name'} || $event{variable_dialed_domain};
 		if ($event{'variable_cc_queue'}) {
 			$call_type = 'queue';
 		}
@@ -324,6 +347,10 @@ sub End() {
 	warn $event{'Caller-Caller-ID-Number'} . " end call with  " . $event{'Caller-Callee-ID-Number'};
 	$queue_name = $event{'variable_cc_queue'};
 	if ($queue_name) {
+		if ($event{'variable_hangup_cause'} eq 'LOSE_RACE' || $event{'Hangup-Cause'}  eq 'LOSE_RACE') {
+			return;
+		}
+		
 		local ($queue, $d) = split '@', $queue_name;
 		%hash = &database_select_as_hash("select 1,call_center_queue_uuid from v_call_center_queues left join v_domains on v_call_center_queues.domain_uuid=v_domains.domain_uuid where domain_name='$d' and queue_name='$queue'", 'call_center_queue_uuid');
 		$call_center_queue_uuid = $hash{1}{call_center_queue_uuid};
@@ -346,7 +373,6 @@ sub End() {
 	#warn $cmd;
 	#system($cmd);
 }
-
 
 sub update_agent_status() {
 	local(%event) = @_;
@@ -410,29 +436,6 @@ sub update_agent_status() {
 	return 1;
 }
 
-
-sub monitor_callback() {
-	require $default_include;
-	$app{callback_timeout} ||= 5;
-	while (1) {
-		$sql = "select channel_uuid,other_channel_uuid,hold_timestamp,ext,domain_name from v_hold where now()- interval '$app{callback_timeout} S' >= hold_timestamp"; 
-		warn "sql: $sql!\n";
-		%callback = &database_select_as_hash($sql, "other_channel_uuid,hold_timestamp,ext,domain_name");
-		
-		for $uuid (keys %callback) {
-			$cmd = "uuid_transfer $uuid  mc$callback{$uuid}{ext} XML $callback{$uuid}{domain_name}";
-			warn "cmd: $cmd!\n";
-			$res = `fs_cli -rx "$cmd"`;
-			
-			warn $res;
-			
-			&database_do("delete from v_hold where channel_uuid='$uuid'");
-		}
-		sleep 3;
-		&default_include_init();
-	}
-	
-}
 sub Recording() {
 	local(%event) = @_;
 	local $src_presence_id = uri_unescape($event{'Channel-Presence-ID'});
@@ -616,34 +619,3 @@ sub asterisk_debug_print(){
 }
 #======================================================
  
-sub reaper {
-   while ((my $child = waitpid(-1, WNOHANG)) > 0) {
-	   warn "process $child exit ...\n";
-   }
-}
-
-sub out() {
-    local $str = shift;
-    print "[", &now(), "] ", $str, "\n";
-}
-
-sub now() {
-    @v = localtime;
-    return sprintf("%04d-%02d-%02d %02d:%02d:%02d", 1900+$v[5],$v[4]+1,$v[3],$v[2],$v[1],$v[0]);
-}
-
-sub _stop_server {
-    &out("** catch INT SIGNAL, server will quit!");
-    exit 0;
-}
-
-
-sub _die {
-    &out("DIE: pid=$$ and cause= @_");
-    &_exit("quit with die");
-}
-
-sub _warn {
-    &out("WARN: pid=$$ and cause=@_");
-}
-
