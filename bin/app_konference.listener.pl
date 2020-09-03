@@ -187,6 +187,7 @@ sub Bridge() {
 	local $from = $event{'Caller-Caller-ID-Number'};
 	local $to =  $event{'Caller-Callee-ID-Number'};
 	local $uuid = $event{'Channel-Call-UUID'};
+	local $did  = $event{'variable_sip_req_user'};
 	local $domain_name = '';
 
 	#$uuid =~ s/\-//g;
@@ -204,7 +205,7 @@ sub Bridge() {
 			$res = `fs_cli -rx "uuid_setvar $agent_uuid originating_leg_uuid $uuid"`;
 	}
 	
-	local %hash = ('from' => $from, 'to' => $to, 'domain_name' => $domain_name, 'starttime' => $now, 'calltype' => $call_type, 'calluuid' => $uuid, 'callaction' => 'bridge');
+	local %hash = ('from' => $from, 'to' => $to, 'domain_name' => $domain_name, 'did' => $did, 'starttime' => $now, 'calltype' => $call_type, 'calluuid' => $uuid, 'callaction' => 'bridge');
 	
 	
 	local $json = &Hash2Json(%hash);
