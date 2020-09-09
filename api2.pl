@@ -472,9 +472,10 @@ sub do_unhold() {
 sub do_cdr() {
 	local $did = substr $query{did}, 0, 20;
 	local $st = substr $query{start_stamp}, 0, 20;
+	local $et = substr $query{end_stamp}, 0, 20;
+
 	$st =~ s/\+/ /g;
 	$et =~ s/\+/ /g;
-	local $et = substr $query{end_stamp}, 0, 20;
 	
 	@v = localtime();
 	$date = sprintf("%04d-%02d-%02d", 1900+$v[5],$v[4]+1,$v[3]);
