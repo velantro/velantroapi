@@ -470,7 +470,7 @@ sub do_unhold() {
 }
 	
 sub do_cdr() {
-	local $did = substr $query{uuid}, 0, 20;
+	local $did = substr $query{did}, 0, 20;
 	local $st = substr $query{start_stamp}, 0, 20;
 	local $et = substr $query{end_stamp}, 0, 20;
 	
