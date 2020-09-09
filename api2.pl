@@ -491,7 +491,7 @@ sub do_cdr() {
 	
 	$c = 0;
 	$list = [];
-	while (my $row = $sth->fetchrow_hashref;) {
+	while ($row = $sth->fetchrow_hashref) {
 		$c++;
 		
 		push @$list, {xml_cdr_uuid => $row->{xml_cdr_uuid}, domain_name => $row->{domain_name}, caller_id_number => $row->{caller_id_number},
