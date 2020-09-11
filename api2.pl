@@ -504,7 +504,7 @@ sub do_cdr() {
 		}
 		push @$list, {xml_cdr_uuid => $row->{xml_cdr_uuid}, domain_name => $row->{domain_name}, caller_id_number => $row->{caller_id_number},
 					  destination_number => $row->{destination_number}, did => $did, start_stamp => $row->{start_stamp}, end_stamp => $row->{end_stamp},
-					  billsec => $row->{billsec},duration => $row->{duration},reocrd_size => $recrod_size || 0,record_url => $recording_url};
+					  billsec => $row->{billsec},duration => $row->{duration},reocrd_size => $record_size || 0,record_url => $recording_url};
 	}
 	
 	
