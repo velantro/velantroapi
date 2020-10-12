@@ -1,3 +1,5 @@
+#!/usr/bin/perl
+
 use Net::AMQP::RabbitMQ;
 my $mq = Net::AMQP::RabbitMQ->new();
 $mq->connect("localhost", { user => "guest", password => "guest" });
