@@ -153,7 +153,11 @@ while (<$remote>) {
 			elsif ($event{'Event-Name'} eq "CHANNEL_HANGUP")		{ Hangup(%event); }
 			elsif ($event{'Event-Name'} eq "CHANNEL_HANGUP_COMPLETE") { End(%event); }
 			elsif ($event{'Event-Name'} eq "MEDIA_BUG_STOP") { Recording(%event); }
-			elsif ($event{'Event-Subclass'} eq "callcenter%3A%3Ainfo" &&  $event{'CC-Action'} eq 'agent-status-change') {&update_agent_status(%event);}
+			elsif ($event{'Event-Subclass'} eq "callcenter%3A%3Ainfo" &&  $event{'CC-Action'} eq 'agent-status-change') {
+				&update_agent_status(%event);
+			} elsif ($event{'Event-Subclass'} eq "callcenter%3A%3Ainfo" &&  $event{'CC-Action'} eq 'member-queue-start') {
+				&qc_answer_echo(%event);
+			}
 				
 			
 			$eventcount++;
@@ -434,6 +438,48 @@ sub update_agent_status() {
 		}
 		
 	}
+	return 1;
+}
+
+sub qc_start_echo() {
+	local(%event) = @_;
+	local $callback_number = "*91968888";
+	local $cn = $event{'Channel-Name'};
+	if ($cn =~ m{loopback/$callback_number\d+\-a}) {
+		warn "Start process callback member: $cn\n"
+	} else {
+		return;
+	}
+	
+	local $original_joined_epoch = $event{'original_joined_epoch'};
+	local $original_rejoined_epoch = $event{'original_rejoined_epoch'};
+	
+	local $dbh = DBI->connect("dbi:SQLite:dbname=/var/lib/freeswitch/db/callcenter.db","","");
+	local $uuid = $event{'Channel-Call-UUID'};
+	$sql = "update member set joined_epoch=$original_joined_epoch,rejoined_epoch=$original_rejoined_epoch where session_uuid='$uuid'";
+	warn $sql;
+	$sth = $dbh->prepare($sql);
+	$sth->execute();
+	
+	return 1;
+}
+
+sub qc_answer_echo() {
+	local(%event) = @_;
+	local $callback_number = "*91968888";
+	local $cn = $event{'CC-Member-DNIS'};
+	if ($cn =~ m{$callback_number(\d+)\-a}) {
+		$origination_caller_id_number = $1;
+		warn "Start process callback member: $cn:$1\n"
+	} else {
+		return;
+	}
+	
+	local $uuid = $event{'Channel-Call-UUID'};
+	local $domain_name = $event{'variable_domain_name'};
+	$cmd = "fs_cli -rx \"uuid_transfer $uuid -bleg $origination_caller_id_number XML $domain_name\"";
+	$res = `$cmd`;
+	warn "cmd: $cmd=$res";	
 	return 1;
 }
 
