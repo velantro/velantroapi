@@ -76,7 +76,7 @@ if ( session:ready() ) then
 				api = freeswitch.API();
 				echo_number = "*91968888" .. callback_number;
 				cmd_string = "originate {original_joined_epoch='" .. joined_epoch .. "',original_rejoined_epoch='" .. rejoined_epoch ..
-							 "',original_caller_id_number='" .. callback_number .. "'}sofia/internal" .. echo_number .. "@" .. domain_name .. " " .. queue_extension .. "  XML " .. domain_name;
+							 "',original_caller_id_number='" .. callback_number .. "'}sofia/internal/" .. echo_number .. "@" .. domain_name .. " " .. queue_extension .. "  XML " .. domain_name;
 				freeswitch.consoleLog("NOTICE", "[queue_callback]: "..cmd_string.."\n");
 				reply = api:executeString(cmd_string);
 				session:hangup();
