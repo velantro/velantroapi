@@ -53,6 +53,7 @@ if ( session:ready() ) then
 		max_digits = 15;
 		max_tries  = 3;
 		digit_timeout = 3000;
+		session:streamFile(recordings_dir .. "/queue_callback_number.wav")
 		session:execute('say', "en number iterated " .. caller_id_number);
 		
 		digits = session:playAndGetDigits(min_digits, max_digits, max_tries, digit_timeout, "#", recordings_dir .. "/queue_callback_main.wav", "", "\\d+");
