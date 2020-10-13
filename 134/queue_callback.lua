@@ -49,13 +49,34 @@ if ( session:ready() ) then
 	if (joined_epoch == nil) then
 		freeswitch.consoleLog("notice", "[queue_callback] joined epoch is nil, ignore\n");
 	else
-		api = freeswitch.API();
-		callback_number = "*91968888" .. caller_id_number;
-		cmd_string = "originate {original_joined_epoch='" .. joined_epoch .. "',original_rejoined_epoch='" .. rejoined_epoch ..
-				     "',original_caller_id_number='" .. caller_id_number .. "'}loopback/" .. callback_number .. "/" .. domain_name .. " " .. queue_extension .. "  XML " .. domain_name;
-		freeswitch.consoleLog("NOTICE", "[queue_callback]: "..cmd_string.."\n");
-		reply = api:executeString(cmd_string);
-		session:hangup();	
+		min_digits = 1;
+		max_digits = 15;
+		max_tries  = 3;
+		digit_timeout = 3000;
+		session:execute('say', "en number iterated " .. caller_id_number);
+		
+		digits = session:playAndGetDigits(min_digits, max_digits, max_tries, digit_timeout, "#", recordings_dir .. "/queue_callback_main.wav", "", "\\d+");
+		freeswitch.consoleLog("notice", "[queue_callback] keys: digits \n");
+
+		if (digits == '*' or digits == nil) then
+			--pin is correct
+			callback_number = caller_id_number
+		else
+			if (digits == '1') then
+				callback_number = caller_id_number
+			else
+				callback_number = digits;
+			end
+			
+			api = freeswitch.API();
+			echo_number = "*91968888" .. callback_number;
+			cmd_string = "originate {original_joined_epoch='" .. joined_epoch .. "',original_rejoined_epoch='" .. rejoined_epoch ..
+						 "',original_caller_id_number='" .. callback_number .. "'}loopback/" .. echo_number .. "/" .. domain_name .. " " .. queue_extension .. "  XML " .. domain_name;
+			freeswitch.consoleLog("NOTICE", "[queue_callback]: "..cmd_string.."\n");
+			reply = api:executeString(cmd_string);
+			session:hangup();	
+		end
+		
 	end
 end
 	
