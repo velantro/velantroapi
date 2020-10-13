@@ -50,7 +50,7 @@ if ( session:ready() ) then
 		freeswitch.consoleLog("notice", "[queue_callback] joined epoch is nil, ignore\n");
 	else
 		api = freeswitch.API();
-		callback_number = "*91968888" .. origination_caller_id_number;
+		callback_number = "*91968888" .. caller_id_number;
 		cmd_string = "originate {original_joined_epoch='" .. joined_epoch .. "',original_rejoined_epoch='" .. rejoined_epoch ..
 				     "',original_caller_id_number='" .. caller_id_number .. "'}loopback/" .. callback_number .. "/" .. domain_name .. " " .. queue_extension .. "  XML " .. domain_name;
 		freeswitch.consoleLog("NOTICE", "[queue_callback]: "..cmd_string.."\n");
