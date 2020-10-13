@@ -492,9 +492,7 @@ sub qc_answer_echo() {
 	$res = `$cmd`;
 	warn "cmd: $cmd=$res";
 	
-	$cmd = "fs_cli -rx \"uuid_hangup $session_uuid\"";
-	$res = `$cmd`;
-	warn "cmd: $cmd=$res";
+	
 	return 1;
 }
 
