@@ -188,7 +188,7 @@ goto reconnect;
 sub Bridge() {
 	local(%event) = @_;
 	print "Bridge: " ;
-	print Dumper(\%event);
+	#print Dumper(\%event);
 	warn $event{'Caller-Caller-ID-Number'} . " start talk with  " . $event{'Caller-Callee-ID-Number'};
 	local $from = $event{'Caller-Caller-ID-Number'};
 	local $to =  $event{'Caller-Callee-ID-Number'};
@@ -326,7 +326,7 @@ sub End() {
 	local $host = ($host_prefix . $event{'Caller-Context'}) || $default_host;
 	warn "Get Hangup-Complete " . $uuid;
 									
-	print Dumper(\%event);
+	#print Dumper(\%event);
 	local $now = &now();
  	local $a_uuid = $event{'variable_originating_leg_uuid'};
 
@@ -445,20 +445,23 @@ sub update_agent_status() {
 
 sub qc_start_echo() {
 	local(%event) = @_;
-	local $callback_number = "*91968888";
+	#local $callback_number = "\*91968888";
 	local $cn = $event{'Channel-Name'};
-	if ($cn =~ m{loopback/$callback_number\d+\-a}) {
+	warn "Channel Name: $cn";
+	# loopback/*9196888815149991234-a
+	if ($cn =~ m{loopback\/\*91968888\d+\-a}) {
 		warn "Start process callback member: $cn\n"
 	} else {
 		return;
 	}
 	
-	local $original_joined_epoch = $event{'original_joined_epoch'};
-	local $original_rejoined_epoch = $event{'original_rejoined_epoch'};
+	print Dumper(\%event);
+	local $original_joined_epoch = $event{'variable_original_joined_epoch'};
+	local $original_rejoined_epoch = $event{'variable_original_rejoined_epoch'};
 	
 	local $dbh = DBI->connect("dbi:SQLite:dbname=/var/lib/freeswitch/db/callcenter.db","","");
 	local $uuid = $event{'Channel-Call-UUID'};
-	$sql = "update member set joined_epoch=$original_joined_epoch,rejoined_epoch=$original_rejoined_epoch where session_uuid='$uuid'";
+	$sql = "update members set joined_epoch=$original_joined_epoch,rejoined_epoch=$original_rejoined_epoch where session_uuid='$uuid'";
 	warn $sql;
 	$sth = $dbh->prepare($sql);
 	$sth->execute();
@@ -468,15 +471,19 @@ sub qc_start_echo() {
 
 sub qc_answer_echo() {
 	local(%event) = @_;
-	local $callback_number = "*91968888";
+	#local $callback_number = "\*91968888";
 	local $cn = $event{'CC-Member-DNIS'};
-	if ($cn =~ m{$callback_number(\d+)\-a}) {
+	warn "Member RDNIS: $cn";
+#*9196888815149991234
+	if ($cn =~ m{\*91968888(\d+)}) {
 		$origination_caller_id_number = $1;
 		warn "Start process callback member: $cn:$1\n"
 	} else {
 		return;
 	}
 	
+	
+	print Dumper(\%event);
 	local $uuid = $event{'Channel-Call-UUID'};
 	local $domain_name = $event{'variable_domain_name'};
 	$cmd = "fs_cli -rx \"uuid_transfer $uuid -bleg $origination_caller_id_number XML $domain_name\"";

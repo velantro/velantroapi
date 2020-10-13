@@ -24,8 +24,8 @@ if ( session:ready() ) then
 	queue_original_id_number = session:getVariable("queue_original_id_number");
 	queue_name = session:getVariable("cc_queue");
 	member_uuid = session:getVariable("cc_member_uuid");
-	origination_caller_id_name = session:getVariable("origination_caller_id_name") or '15149991234';
-	origination_caller_id_number = session:getVariable("origination_caller_id_number") or '15149991234';
+	--origination_caller_id_name = session:getVariable("origination_caller_id_name") or '15149991234';
+	--origination_caller_id_number = session:getVariable("origination_caller_id_number") or '15149991234';
 	domain_name = session:getVariable("domain_name");
 	domain_uuid = session:getVariable("domain_uuid") or '';
 	accountcode = session:getVariable("accountcode") or '';
@@ -52,7 +52,7 @@ if ( session:ready() ) then
 		api = freeswitch.API();
 		callback_number = "*91968888" .. origination_caller_id_number;
 		cmd_string = "originate {original_joined_epoch='" .. joined_epoch .. "',original_rejoined_epoch='" .. rejoined_epoch ..
-				     "',original_caller_id_number='" .. origination_caller_id_number .. "'}loopback/" .. callback_number .. "/" .. domain_name .. " " .. queue_extension .. "  XML " .. domain_name;
+				     "',original_caller_id_number='" .. caller_id_number .. "'}loopback/" .. callback_number .. "/" .. domain_name .. " " .. queue_extension .. "  XML " .. domain_name;
 		freeswitch.consoleLog("NOTICE", "[queue_callback]: "..cmd_string.."\n");
 		reply = api:executeString(cmd_string);
 		session:hangup();	
