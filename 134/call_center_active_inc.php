@@ -374,7 +374,7 @@
 					if (substr($caller_name,0,9) == '*91968888') {					
 							
 						echo "<td>".'callback'."&nbsp;</td>\n";
-						echo "<td>".substr($caller_name, 10)."&nbsp;</td>\n";							
+						echo "<td>".substr($caller_name, 9)."&nbsp;</td>\n";							
 						
 					} else {
 					
