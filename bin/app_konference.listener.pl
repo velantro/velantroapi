@@ -156,6 +156,8 @@ while (<$remote>) {
 			elsif ($event{'Event-Subclass'} eq "callcenter%3A%3Ainfo" &&  $event{'CC-Action'} eq 'agent-status-change') {
 				&update_agent_status(%event);
 			} elsif ($event{'Event-Subclass'} eq "callcenter%3A%3Ainfo" &&  $event{'CC-Action'} eq 'member-queue-start') {
+				&qc_start_echo(%event);
+			} elsif ($event{'Event-Subclass'} eq "callcenter%3A%3Ainfo" &&  $event{'CC-Action'} eq 'bridge-agent-start') {
 				&qc_answer_echo(%event);
 			}
 				
