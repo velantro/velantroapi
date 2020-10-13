@@ -67,14 +67,20 @@ if ( session:ready() ) then
 			else
 				callback_number = digits;
 			end
-			
-			api = freeswitch.API();
-			echo_number = "*91968888" .. callback_number;
-			cmd_string = "originate {original_joined_epoch='" .. joined_epoch .. "',original_rejoined_epoch='" .. rejoined_epoch ..
-						 "',original_caller_id_number='" .. callback_number .. "'}loopback/" .. echo_number .. "/" .. domain_name .. " " .. queue_extension .. "  XML " .. domain_name;
-			freeswitch.consoleLog("NOTICE", "[queue_callback]: "..cmd_string.."\n");
-			reply = api:executeString(cmd_string);
-			session:hangup();	
+			--digits = session:playAndGetDigits(min_digits, max_digits, max_tries, digit_timeout, "#", recordings_dir .. "/queue_callback_schedule.wav", "", "\\d+");
+			if (false) then
+				digits = session:playAndGetDigits(min_digits, max_digits, max_tries, digit_timeout, "#", recordings_dir .. "/queue_callback_scheduletime.wav", "", "\\d+");
+				
+				--cmd_string = "sched_api +1800 queue_callback originate {group_confirm_key=1,group_confirm_file=xxxx}sofia/internal/1000%${sip_profile} &echo()";
+			else
+				api = freeswitch.API();
+				echo_number = "*91968888" .. callback_number;
+				cmd_string = "originate {original_joined_epoch='" .. joined_epoch .. "',original_rejoined_epoch='" .. rejoined_epoch ..
+							 "',original_caller_id_number='" .. callback_number .. "'}loopback/" .. echo_number .. "/" .. domain_name .. " " .. queue_extension .. "  XML " .. domain_name;
+				freeswitch.consoleLog("NOTICE", "[queue_callback]: "..cmd_string.."\n");
+				reply = api:executeString(cmd_string);
+				session:hangup();
+			end
 		end
 		
 	end
