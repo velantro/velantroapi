@@ -59,9 +59,8 @@ if ( session:ready() ) then
 		digits = session:playAndGetDigits(min_digits, max_digits, max_tries, digit_timeout, "#", recordings_dir .. "/queue_callback_main.wav", "", "\\d+");
 		freeswitch.consoleLog("notice", "[queue_callback] keys: digits \n");
 
-		if (digits == '*' or digits == nil) then
-			--pin is correct
-			callback_number = caller_id_number
+		if (digits == '0' or digits == nil) then
+			freeswitch.consoleLog("NOTICE", "[queue_callback]: continue wait\n");
 		else
 			if (digits == '1') then
 				callback_number = caller_id_number
