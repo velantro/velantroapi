@@ -486,9 +486,13 @@ sub qc_answer_echo() {
 	print Dumper(\%event);
 	local $uuid = $event{'Channel-Call-UUID'};
 	local $domain_name = $event{'variable_domain_name'};
-	$cmd = "fs_cli -rx \"uuid_transfer $uuid -bleg $origination_caller_id_number XML $domain_name\"";
+	$cmd = "fs_cli -rx \"uuid_transfer $uuid  $origination_caller_id_number XML $domain_name\"";
 	$res = `$cmd`;
-	warn "cmd: $cmd=$res";	
+	warn "cmd: $cmd=$res";
+	
+	$cmd = "fs_cli -rx \"uuid_hangup $session_uuid\"";
+	$res = `$cmd`;
+	warn "cmd: $cmd=$res";
 	return 1;
 }
 
