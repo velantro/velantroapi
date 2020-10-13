@@ -446,12 +446,12 @@ sub update_agent_status() {
 sub qc_start_echo() {
 	local(%event) = @_;
 	#local $callback_number = "\*91968888";
-	local $cn = $event{'Channel-Name'};
+	local $cn = $event{'variable_caller_id_number'};
 	warn "Channel Name: $cn";
 		print Dumper(\%event);
 
 	# loopback/*9196888815149991234-a
-	if ($cn =~ m{loopback\/\*91968888\d+\-a}) {
+	if ($cn =~ m{\*91968888(\d+)}) {
 		warn "Start process callback member: $cn\n"
 	} else {
 		return;
