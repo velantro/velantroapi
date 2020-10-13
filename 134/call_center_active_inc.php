@@ -371,14 +371,11 @@
 					echo "<tr class='list-row'>\n";
 					echo "<td>".escape($joined_length)."</td>\n";
 					//echo "<td>".escape($system_length)."</td>\n";
-					if ($caller_name == 'Outbound Call') {
-						$switch_command = "uuid_getvar $session_uuid chan_name";
-						$event_socket_str = trim(event_socket_request($fp, 'api '.$switch_command));
-						#echo $switch_command . " " . $event_socket_str;
-						if (preg_match('/loopback\/\*91968888(\d+)\-a/', $event_socket_str, $arr)){
-							echo "<td>".'callback'."&nbsp;</td>\n";
-							echo "<td>".$arr[1]."&nbsp;</td>\n";							
-						}
+					if (substr($caller_name,0,9) == '*91968888') {					
+							
+						echo "<td>".'callback'."&nbsp;</td>\n";
+						echo "<td>".substr($caller_name, 10)."&nbsp;</td>\n";							
+						
 					} else {
 					
 						echo "<td>".escape($caller_name)."&nbsp;</td>\n";
