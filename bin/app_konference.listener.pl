@@ -223,7 +223,7 @@ sub Bridge() {
 
 sub Dial() {
 	local(%event) = @_;
-	print Dumper(\%event);
+	#print Dumper(\%event);
 	return unless $event{'Channel-Call-State'} eq 'DOWN';
 	#	print Dumper(\%event);
 
@@ -448,6 +448,8 @@ sub qc_start_echo() {
 	#local $callback_number = "\*91968888";
 	local $cn = $event{'Channel-Name'};
 	warn "Channel Name: $cn";
+		print Dumper(\%event);
+
 	# loopback/*9196888815149991234-a
 	if ($cn =~ m{loopback\/\*91968888\d+\-a}) {
 		warn "Start process callback member: $cn\n"
@@ -455,7 +457,6 @@ sub qc_start_echo() {
 		return;
 	}
 	
-	print Dumper(\%event);
 	local $original_joined_epoch = $event{'variable_original_joined_epoch'};
 	local $original_rejoined_epoch = $event{'variable_original_rejoined_epoch'};
 	
@@ -474,6 +475,8 @@ sub qc_answer_echo() {
 	#local $callback_number = "\*91968888";
 	local $cn = $event{'CC-Member-DNIS'};
 	warn "Member RDNIS: $cn";
+	print Dumper(\%event);
+	
 #*9196888815149991234
 	if ($cn =~ m{\*91968888(\d+)}) {
 		$origination_caller_id_number = $1;
@@ -483,7 +486,6 @@ sub qc_answer_echo() {
 	}
 	
 	
-	print Dumper(\%event);
 	local $uuid = $event{'Channel-Call-UUID'};
 	local $domain_name = $event{'variable_domain_name'};
 	$cmd = "fs_cli -rx \"uuid_transfer $uuid  $origination_caller_id_number XML $domain_name\"";
