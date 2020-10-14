@@ -128,6 +128,7 @@ $eventcount = 0;
 local $| = 1;
 open $FH, ">> /tmp/incoming_call.log" or die $!;
 %channel_spool = ();
+%kill_bridged_uuids = ();
 while (<$remote>) {
 	
 	$_ =~ s/\r\n//g;
@@ -188,14 +189,23 @@ goto reconnect;
 sub Bridge() {
 	local(%event) = @_;
 	print "Bridge: " ;
-	#print Dumper(\%event);
+	print Dumper(\%event);
 	warn $event{'Caller-Caller-ID-Number'} . " start talk with  " . $event{'Caller-Callee-ID-Number'};
 	local $from = $event{'Caller-Caller-ID-Number'};
 	local $to =  $event{'Caller-Callee-ID-Number'};
 	local $uuid = $event{'Channel-Call-UUID'};
 	local $did  = $event{'variable_sip_req_user'};
 	local $domain_name = '';
-
+	local $variable_bridge_uuid = $event{variable_bridge_uuid};
+	
+	if ($kill_bridged_uuids{$variable_bridge_uuid}) {
+		$cmd = "fs_cli -rx \"uuid_kill $variable_bridge_uuid\"";
+		$res = `$cmd`;
+		warn "cmd: $cmd=$res";
+		
+		delete  $kill_bridged_uuids{$variable_bridge_uuid};
+	}
+	
 	#$uuid =~ s/\-//g;
 	
 	local $host = ($host_prefix . $event{'Caller-Context'}) || $default_host;
@@ -446,12 +456,13 @@ sub update_agent_status() {
 sub qc_start_echo() {
 	local(%event) = @_;
 	#local $callback_number = "\*91968888";
-	local $cn = $event{'variable_caller_id_number'};
+	local $cn = $event{'Channel-Name'}; #$event{'variable_caller_id_number'};
 	warn "Channel Name: $cn";
-		print Dumper(\%event);
+	print Dumper(\%event);
 
 	# loopback/*9196888815149991234-a
-	if ($cn =~ m{\*91968888(\d+)}) {
+	#if ($cn =~ m{\*91968888(\d+)}) {
+	if ($cn =~ /loopback\/\*91968888\d+\-a/) {
 		warn "Start process callback member: $cn\n"
 	} else {
 		return;
@@ -493,10 +504,11 @@ sub qc_answer_echo() {
 	warn "cmd: $cmd=$res";
 	
 	$session_uuid = $event{'CC-Member-Session-UUID'};
-	
-	$cmd = "fs_cli -rx \"uuid_kill $session_uuid\"";
-	$res = `$cmd`;
-	warn "cmd: $cmd=$res";
+	warn "MemberSessionUUID=$session_uuid";
+	#$cmd = "fs_cli -rx \"uuid_kill $session_uuid\"";
+	$kill_bridged_uuids{$session_uuid} = time;
+	#$res = `$cmd`;
+	#warn "cmd: $cmd=$res";
 	
 	return 1;
 }
