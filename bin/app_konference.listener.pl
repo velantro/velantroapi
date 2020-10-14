@@ -503,6 +503,10 @@ sub qc_answer_echo() {
 	$res = `$cmd`;
 	warn "cmd: $cmd=$res";
 	
+	$cmd = "fs_cli -rx \"uuid_display $uuid $origination_caller_id_number\"";
+	$res = `$cmd`;
+	warn "cmd: $cmd=$res";
+	
 	$session_uuid = $event{'CC-Member-Session-UUID'};
 	warn "MemberSessionUUID=$session_uuid";
 	#$cmd = "fs_cli -rx \"uuid_kill $session_uuid\"";
