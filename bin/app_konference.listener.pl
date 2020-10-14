@@ -492,6 +492,11 @@ sub qc_answer_echo() {
 	$res = `$cmd`;
 	warn "cmd: $cmd=$res";
 	
+	$session_uuid = $event{'CC-Member-Session-UUID'};
+	
+	$cmd = "fs_cli -rx \"uuid_kill $session_uuid\"";
+	$res = `$cmd`;
+	warn "cmd: $cmd=$res";
 	
 	return 1;
 }
