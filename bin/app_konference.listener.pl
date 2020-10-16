@@ -199,7 +199,9 @@ sub Bridge() {
 	local $variable_bridge_uuid = $event{variable_bridge_uuid};
 	
 	if ($kill_bridged_uuids{$variable_bridge_uuid}) {
-		$cmd = "fs_cli -rx \"uuid_kill $variable_bridge_uuid\"";
+		#$cmd = "fs_cli -rx \"uuid_kill $variable_bridge_uuid\"";
+		local $domain_name = $event{'variable_domain_name'};
+		$cmd = "fs_cli -rx \"uuid_transfer $variable_bridge_uuid *9196 XML $domain_name\"";
 		$res = `$cmd`;
 		warn "cmd: $cmd=$res";
 		
