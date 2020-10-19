@@ -501,7 +501,7 @@ sub qc_answer_echo() {
 	
 	local $uuid = $event{'Channel-Call-UUID'};
 	local $domain_name = $event{'variable_domain_name'};
-	$cmd = "fs_cli -rx \"uuid_transfer $uuid  $origination_caller_id_number XML $domain_name\"";
+	$cmd = "fs_cli -rx \"sched_transfer +1 $uuid  $origination_caller_id_number XML $domain_name\"";
 	$res = `$cmd`;
 	warn "cmd: $cmd=$res";
 	
