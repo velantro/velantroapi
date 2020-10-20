@@ -44,11 +44,22 @@ if ( session:ready() ) then
 	status = dbh:query(sql, function(row)
 		joined_epoch = row.joined_epoch;
 		rejoined_epoch = row.rejoined_epoch;
+		queue = row.queue
 	end);
 
 	if (joined_epoch == nil) then
 		freeswitch.consoleLog("notice", "[queue_callback] joined epoch is nil, ignore\n");
 	else
+		sql = [[select count(*) as order from members where joined_epoch<=]] ..joined_epoch .. [[]];
+	
+		if (debug["sql"]) then
+			freeswitch.consoleLog("notice", "[queue_callback] "..sql.."\n");
+		end
+		order = 0;
+		status = dbh:query(sql, function(row)
+			order = row.order
+		end);
+	
 		min_digits = 1;
 		max_digits = 15;
 		max_tries  = 3;
@@ -78,6 +89,10 @@ if ( session:ready() ) then
 				--cmd_string = "originate {original_joined_epoch='" .. joined_epoch .. "',original_rejoined_epoch='" .. rejoined_epoch ..
 				--			 "',original_caller_id_number='" .. callback_number .. "'}sofia/internal/" .. echo_number .. "@" .. domain_name .. " " .. queue_extension .. "  XML " .. domain_name;
 				
+				session:streamFile(recordings_dir .. "/queue_callback_order_pre.wav")
+				session:execute('say', "en number pronounced " .. order);
+				session:streamFile(recordings_dir .. "/queue_callback_order_after.wav")
+
 				cmd_string = "originate {original_joined_epoch='" .. joined_epoch .. "',original_rejoined_epoch='" .. rejoined_epoch ..
 							 "',original_caller_id_number='" .. callback_number .. "',origination_caller_id_name='callback " .. callback_number .."',origination_caller_id_number=" .. callback_number .. "}loopback/" .. echo_number .. "/" .. domain_name .. " " .. queue_extension .. "  XML " .. domain_name;
 				freeswitch.consoleLog("NOTICE", "[queue_callback]: "..cmd_string.."\n");
