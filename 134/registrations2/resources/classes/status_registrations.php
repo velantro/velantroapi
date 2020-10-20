@@ -21,7 +21,7 @@ function get_registrations($sip_profile_name) {
 	
 	//build the registration array
 		if (count($xml->registrations->registration) > 0) {
-			$registrations = '';
+			$registrations = array();
 			$x = 0;
 			foreach ($xml->registrations->registration as $row) {
 				//get the values from xml and set them to the channel array
