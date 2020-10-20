@@ -50,14 +50,14 @@ if ( session:ready() ) then
 	if (joined_epoch == nil) then
 		freeswitch.consoleLog("notice", "[queue_callback] joined epoch is nil, ignore\n");
 	else
-		sql = [[select count(*) as order from members where joined_epoch<=]] ..joined_epoch .. [[]];
+		sql = [[select count(*) as count from members where state != 'Abandoned' and queue=']] .. queue ..  [[' and joined_epoch<=]] ..joined_epoch .. [[]];
 	
 		if (debug["sql"]) then
 			freeswitch.consoleLog("notice", "[queue_callback] "..sql.."\n");
 		end
 		order = 0;
 		status = dbh:query(sql, function(row)
-			order = row.order
+			order = row.count
 		end);
 	
 		min_digits = 1;
