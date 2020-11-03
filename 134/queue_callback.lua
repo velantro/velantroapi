@@ -94,7 +94,7 @@ if ( session:ready() ) then
 				session:streamFile(recordings_dir .. "/queue_callback_order_after.wav")
 
 				cmd_string = "originate {original_joined_epoch='" .. joined_epoch .. "',original_rejoined_epoch='" .. rejoined_epoch ..
-							 "',original_caller_id_number='" .. callback_number .. "',origination_caller_id_name='callback " .. callback_number .."',origination_caller_id_number=" .. callback_number .. "}loopback/" .. echo_number .. "/" .. domain_name .. " " .. queue_extension .. "  XML " .. domain_name;
+							 "',original_caller_id_number='" .. callback_number .. "',origination_caller_id_name='callback " .. callback_number .."',origination_caller_id_number=" .. callback_number .. ",caller_id_number=" .. callback_number .. ",caller_id_name=callback " .. callback_number .."}loopback/" .. echo_number .. "/" .. domain_name .. " " .. queue_extension .. "  XML " .. domain_name;
 				freeswitch.consoleLog("NOTICE", "[queue_callback]: "..cmd_string.."\n");
 				reply = api:executeString(cmd_string);
 				session:hangup();
