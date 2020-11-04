@@ -67,7 +67,7 @@ if ( session:ready() ) then
 		session:streamFile(recordings_dir .. "/queue_callback_number.wav")
 		session:execute('say', "en number iterated " .. caller_id_number);
 		
-		digits = session:playAndGetDigits(min_digits, max_digits, max_tries, digit_timeout, "#", recordings_dir .. "/queue_callback_main.wav", "", "\\d+");
+		digits = session:playAndGetDigits(1, 1, max_tries, digit_timeout, "#", recordings_dir .. "/queue_callback_main.wav", "", "[12]");
 		freeswitch.consoleLog("notice", "[queue_callback] keys: digits \n");
 
 		if (digits == '0' or digits == nil) then
@@ -75,8 +75,28 @@ if ( session:ready() ) then
 		else
 			if (digits == '1') then
 				callback_number = caller_id_number
-			else
-				callback_number = digits;
+			elseif(digits == '2') then
+				while (true) then
+					tmp_number = session:playAndGetDigits(min_digits, max_digits, max_tries, digit_timeout, "#", recordings_dir .. "/queue_callback_enter_number.wav", "", "\\d+");
+					freeswitch.consoleLog("notice", "[queue_callback] keys: digits \n");
+					
+					session:streamFile(recordings_dir .. "/queue_callback_you_enter.wav")
+					session:execute('say', "en number iterated " .. tmp_number);
+					digits = session:playAndGetDigits(1, 1, max_tries, digit_timeout, "#", recordings_dir .. "/queue_callback_number_confirm.wav", "", "[12]");
+					freeswitch.consoleLog("notice", "[queue_callback] keys: digits \n");
+					if (digits == '1') then
+						callback_number = tmp_number;
+						break;
+					elseif (digits == '2') then
+						
+					else
+						break;
+					end
+				end
+				
+				if (not callback_number) then
+					session:hangup();
+				end
 			end
 			--digits = session:playAndGetDigits(min_digits, max_digits, max_tries, digit_timeout, "#", recordings_dir .. "/queue_callback_schedule.wav", "", "\\d+");
 			if (false) then
@@ -89,10 +109,13 @@ if ( session:ready() ) then
 				--cmd_string = "originate {original_joined_epoch='" .. joined_epoch .. "',original_rejoined_epoch='" .. rejoined_epoch ..
 				--			 "',original_caller_id_number='" .. callback_number .. "'}sofia/internal/" .. echo_number .. "@" .. domain_name .. " " .. queue_extension .. "  XML " .. domain_name;
 				
-				session:streamFile(recordings_dir .. "/queue_callback_order_pre.wav")
+				session:streamFile(recordings_dir .. "/queue_callback_order_pre1.wav")
+				session:streamFile(recordings_dir .. "/queue_callback_order_pre2.wav")
+				session:streamFile(recordings_dir .. "/queue_callback_order_pre3.wav")
 				session:execute('say', "en number pronounced " .. order);
 				session:streamFile(recordings_dir .. "/queue_callback_order_after.wav")
-
+				digits = session:playAndGetDigits(1, 1, max_tries, digit_timeout, "#", recordings_dir .. "/queue_callback_return.wav", "", "[12]");
+					freeswitch.consoleLog("notice", "[queue_callback] keys: digits \n");
 				cmd_string = "originate {original_joined_epoch='" .. joined_epoch .. "',original_rejoined_epoch='" .. rejoined_epoch ..
 							 "',original_caller_id_number='" .. callback_number .. "',origination_caller_id_name='callback " .. callback_number .."',origination_caller_id_number=" .. callback_number .. ",caller_id_number=" .. callback_number .. ",caller_id_name='callback " .. callback_number .."'}loopback/" .. echo_number .. "/" .. domain_name .. " " .. queue_extension .. "  XML " .. domain_name;
 				freeswitch.consoleLog("NOTICE", "[queue_callback]: "..cmd_string.."\n");
