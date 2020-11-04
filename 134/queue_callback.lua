@@ -76,7 +76,7 @@ if ( session:ready() ) then
 			if (digits == '1') then
 				callback_number = caller_id_number
 			elseif(digits == '2') then
-				while (true) then
+				while (true) do
 					tmp_number = session:playAndGetDigits(min_digits, max_digits, max_tries, digit_timeout, "#", recordings_dir .. "/queue_callback_enter_number.wav", "", "\\d+");
 					freeswitch.consoleLog("notice", "[queue_callback] keys: digits \n");
 					
