@@ -233,7 +233,9 @@ if ($query{action} eq 'addcallback') {
 	do_hold();
 } elsif ($query{action} eq 'unhold'){
 	do_unhold();
-}else {
+} elsif ($query{action} eq 'getcdrbydid'){
+	do_cdr();
+} else {
      print j({error => '1', 'message' => 'undefined action', 'actionid' => $query{actionid}});
     exit 0;
 }
@@ -467,6 +469,49 @@ sub do_unhold() {
     &do_hold();
 }
 	
+sub do_cdr() {
+	local $did = substr $query{did}, 0, 20;
+	local $st = substr $query{start_stamp}, 0, 20;
+	local $et = substr $query{end_stamp}, 0, 20;
+
+	$st =~ s/\+/ /g;
+	$et =~ s/\+/ /g;
+	
+	@v = localtime();
+	$date = sprintf("%04d-%02d-%02d", 1900+$v[5],$v[4]+1,$v[3]);
+	if (!$st) {
+		$st = "$date 00:00:00";
+	}
+	if (!$et) {
+		$et = "$date 23:59:59";
+	}
+	
+	
+	my $sql = "select * from v_xml_cdr where caller_destination='$did' and start_stamp >= '$st' and end_stamp <= '$et'";
+	warn $sql;
+	my $sth = $dbh->prepare($sql);
+	$sth   -> execute();
+	
+	$c = 0;
+	$list = [];
+	while ($row = $sth->fetchrow_hashref) {
+		$c++;
+		$recording_url = '';
+		$recording_filename = $row->{record_path} . '/' . $row->{record_name};
+		if (-e $recording_filename) {
+			$recording_url = "/app/recordings/recordings2.php?filename=" . encode_base64($recording_filename, '');
+			$record_size = -s $recording_filename;
+		}
+		push @$list, {xml_cdr_uuid => $row->{xml_cdr_uuid}, domain_name => $row->{domain_name}, caller_id_number => $row->{caller_id_number},
+					  destination_number => $row->{destination_number}, did => $did, start_stamp => $row->{start_stamp}, end_stamp => $row->{end_stamp},
+					  billsec => $row->{billsec},duration => $row->{duration},reocrd_size => $record_size || 0,record_url => $recording_url};
+	}
+	
+	
+	 print j({error => '0', 'message' => $output, 'actionid' => $query{actionid}, total => $c, list => $list});
+}
+
+
 sub hangup {
 	my $uuid = $query{uuid} || $query{callbackid};
 
