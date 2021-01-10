@@ -1,8 +1,8 @@
 <?php
 $descriptorspec = array(
    0 => array("pipe", "r"), 
-   1 => array("pipe", "w"),
-   2 => array("file", "/tmp/bc", "a")
+   2 => array("pipe", "w"),
+   1 => array("file", "/tmp/bc", "a")
 );
 
 $cwd = '/tmp';
@@ -33,8 +33,10 @@ if (is_resource($process)) {
     #fwrite($pipes[0], '');
     fclose($pipes[0]);
 
-    echo stream_get_contents($pipes[1]);
-    fclose($pipes[1]);
+    $out =  stream_get_contents($pipes[2]);
+	$out = preg_match('/(https:.+?)\n/', $out, $result);
+	#print_r($result);
+    #fclose($pipes[2]);
     
 
     $return_value = proc_close($process);
