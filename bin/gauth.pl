@@ -18,11 +18,30 @@ while( <Error>) {
 }
 
 if ($url) {
-                
-    if (-s "/tmp/googleauth/$username.out") {
-       open(FH, ""
-    }
-    
+    $outfile = "/tmp/googleauth/$username.out";           
+    if (-s $file) {
+		open FH, $outfile;
+		while (<FH>) {
+			chomp;
+			$code .= $_;
+		}
+		print "write $code ...\n";
+		print Write $code."\n";
+		
+		while (<READER) {
+			print $_;
+		}
+		
+		while (<ERROR>) {
+			print $_;
+		}
+		
+		print "Done!\n";
+		
+    } else {
+		print "$outfile not found, wait 5 secs ..\n";
+		sleep 5;
+	}   
 }
 
 close Writer;
