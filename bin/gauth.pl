@@ -19,9 +19,7 @@ while( <Error>) {
     
 }
 
-while (<Reader>) {
-	print $_;
-}
+
 if ($url) {
     $outfile = "/tmp/googleauth/$username.out";
 	while (1) {	
