@@ -28,7 +28,7 @@ if ($url) {
 		print "write $code ...\n";
 		print Write $code."\n";
 		
-		while (<READER) {
+		while (<READER>) {
 			print $_;
 		}
 		
