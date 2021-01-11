@@ -20,7 +20,7 @@ while( <Error>) {
 if ($url) {
     $outfile = "/tmp/googleauth/$username.out";
 	while (1) {	
-		if (-s $file) {
+		if (-s $outfile) {
 			open FH, $outfile;
 			while (<FH>) {
 				chomp;
