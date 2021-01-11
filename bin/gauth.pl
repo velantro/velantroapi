@@ -8,6 +8,10 @@ $sum = 2;
 
 
 #print Writer "$sum * $sum\n";
+while (<Reader>) {
+	print $_;
+}
+
 while( <Error>) {
     ($url) = $_ =~ /(https:.+)\n/;
     if ($url) {
@@ -29,9 +33,7 @@ if ($url) {
 			print "write $code ...\n";
 			print Write $code."\n";
 			
-			while (<Reader>) {
-				print $_;
-			}
+			
 			
 			while (<Error>) {
 				print $_;
