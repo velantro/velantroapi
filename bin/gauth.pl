@@ -8,19 +8,20 @@ $sum = 2;
 
 
 #print Writer "$sum * $sum\n";
-while (<Reader>) {
-	print $_;
-}
+
 
 while( <Error>) {
     ($url) = $_ =~ /(https:.+)\n/;
     if ($url) {
-        print $url;
+        print $url, "\n";
         last;
     }
     
 }
 
+while (<Reader>) {
+	print $_;
+}
 if ($url) {
     $outfile = "/tmp/googleauth/$username.out";
 	while (1) {	
