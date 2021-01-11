@@ -29,14 +29,14 @@ if ($url) {
 			print "write $code ...\n";
 			print Write $code."\n";
 			
-			while (<READER>) {
+			while (<Reader>) {
 				print $_;
 			}
 			
-			while (<ERROR>) {
+			while (<Error>) {
 				print $_;
 			}
-			
+			unlink $outfile;
 			print "Done!\n";
 			last;
 		} else {
