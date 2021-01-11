@@ -3,7 +3,7 @@ local (*Reader, *Writer, *Error);
 $username = 'zhongxiang721';
 $cmd = "CLOUDSDK_CONFIG=/var/www/$username /var/www/google-cloud-sdk/bin/gcloud auth login";
 local $| = 1;
-$pid = open3(\*Reader, \*Writer, \*Error, $cmd);
+$pid = open2(\*Write, \*Reader, \*Error, $cmd);
 $sum = 2;
 
 
