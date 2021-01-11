@@ -18,34 +18,35 @@ while( <Error>) {
 }
 
 if ($url) {
-    $outfile = "/tmp/googleauth/$username.out";           
-    if (-s $file) {
-		open FH, $outfile;
-		while (<FH>) {
-			chomp;
-			$code .= $_;
+    $outfile = "/tmp/googleauth/$username.out";
+	while (1) {	
+		if (-s $file) {
+			open FH, $outfile;
+			while (<FH>) {
+				chomp;
+				$code .= $_;
+			}
+			print "write $code ...\n";
+			print Write $code."\n";
+			
+			while (<READER>) {
+				print $_;
+			}
+			
+			while (<ERROR>) {
+				print $_;
+			}
+			
+			print "Done!\n";
+			last;
+		} else {
+			print "$outfile not found, wait 5 secs ..\n";
+			sleep 5;
 		}
-		print "write $code ...\n";
-		print Write $code."\n";
-		
-		while (<READER>) {
-			print $_;
-		}
-		
-		while (<ERROR>) {
-			print $_;
-		}
-		
-		print "Done!\n";
-		
-    } else {
-		print "$outfile not found, wait 5 secs ..\n";
-		sleep 5;
-	}   
+	}
 }
 
 close Writer;
 close Reader;
 close Error;
 waitpid($pid, 0);
-print "sum is $sum\n";
