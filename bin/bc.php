@@ -31,8 +31,8 @@ if (is_resource($process)) {
     
 
     #fwrite($pipes[0], '');
-    fclose($pipes[0]);
-
+    #fclose($pipes[0]);
+	fwrite($pipes[0], "1234\n");
     $out =  stream_get_contents($pipes[2]);
 	$out = preg_match('/(https:.+?)\n/', $out, $result);
 	#print_r($result);
