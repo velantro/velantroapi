@@ -13,22 +13,46 @@ if (!-e "/mnt/s3/iams3") {
       exit 0;
     }
 }
+@arr = localtime();
+$current_hour = $arr[2];
+$stop_hour = 6;
+if ($current_hour >= 20) {
+   $run_seconds = (24-$current_hour+5)*3600;
+} elsif($current_hour <6) {
+   $run_seconds = (5-$current_hours)*3600;
+} else {
+   warn "Please Run it after 20pm and before 6am!\n";
+   exit;
+}
+
+$start_time = time;
 for $f (split /\n/, `find $s -type f -mtime +3 -name "*.wav"  | grep  'archive'`) {
-        warn "mv $f\n";
-        next if -l $f;
-        ($dir, $n) = $f =~ /(.+)\/(.+\.wav)$/;
+   if (time - $start_time > $run_seconds) {
+      warn "Time Reached, Exit!\n";
+      system("umount -f /mnt/s3; umount -f /mnt/s3");
+      exit;
+   }
+   
+   warn "mv $f\n";
+   next if -l $f;
+   ($dir, $n) = $f =~ /(.+)\/(.+\.wav)$/;
 
-        $destdir = "/mnt/s3$dir";
-        if (!-d $destdir) {
-            system("mkdir -p $destdir");
+   $destdir = "/mnt/s3$dir";
+   if (!-d $destdir) {
+       system("mkdir -p $destdir");
 
-        }
+   }
 
-        warn "copy $f to $destdir\n";
-        system("mv $f $destdir");
+   if (!-e "/mnt/s3/iams3") {
+      warn "not found /mnt/s3/iams3, exit!\n";
+      exit;
+   }
+   
+   warn "copy $f to $destdir\n";
+   system("mv $f $destdir");
 
-        warn "ln -s $destdir/$n $f";
-        system("ln -s $destdir/$n $f");
-        system("chmod a+r $destdir/$n");
+   warn "ln -s $destdir/$n $f";
+   system("ln -s $destdir/$n $f");
+   system("chmod a+r $destdir/$n");
 
-    }
+}
