@@ -59,3 +59,4 @@ for $f (split /\n/, `find $s -type f -mtime +3 -name "*.wav"  | grep  'archive'`
    system("chmod a+r $destdir/$n");
 
 }
+system("umount -f /mnt/s3; umount -f /mnt/s3");
