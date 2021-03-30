@@ -242,5 +242,11 @@ zakstransportation.velantro.net
 /;
 
 for $d (@domains) {
-	print "rm -rfv /mnt/s3/usr/local/freeswitch/recordings/$d/archive/2019\n";
+	$cmd = "rm -rfv /mnt/s3/usr/local/freeswitch/recordings/$d/archive/2017\n";
+	system($cmd);
+	$cmd = "rm -rfv /mnt/s3/usr/local/freeswitch/recordings/$d/archive/2018\n";
+	system($cmd);
+	$cmd = "rm -rfv /mnt/s3/usr/local/freeswitch/recordings/$d/archive/2019\n";
+	system($cmd);
+	
 }
