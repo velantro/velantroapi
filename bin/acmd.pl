@@ -13,6 +13,7 @@ $lines = '
 67.227.80.56,22,velantro56,http://67.227.80.56
 67.227.80.20,22,velantro20,http://67.227.80.20
 67.227.80.12,22,velantro12,http://67.227.80.12
+67.227.80.6,22,velantro6,http://67.227.80.6
 208.76.253.122,22,velantro122,http://208.76.253.122/
 208.76.253.124,22,velantrogbm,http://gbmllc.velantro.net/
 208.76.253.121,22,velantro121,http://208.76.253.121/
@@ -109,5 +110,17 @@ if ($cmd eq 'updatemonitorscript') {
 			print "$cmd on  $name [$ip:$port]\n";
 			
 			system("ssh -p $port root\@$ip 'fs_cli -rx \"show calls\" | wc -l'");
+		}
+} elsif ($cmd eq 'checktollfree') {
+		$mon = shift;
+		$emon =  shift;
+		for (split /\n/, $lines) {
+			($ip,$port,$name,$uri) = split ',', $_, 4;
+			next if !$ip;
+			next unless $name =~ /velantro/;
+			print "$cmd on  $name [$ip:$port]\n";
+
+			
+			system("ssh -t -p $port root\@$ip sh /var/www/api/bin/check_toll_free.sh $mon $emon");
 		}
 }
