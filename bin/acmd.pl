@@ -130,7 +130,17 @@ if ($cmd eq 'updatemonitorscript') {
 			
 			system("ssh -t -p $port root\@$ip cat /etc/debian_version");
 		}
-} elsif ($cmd eq 'updatewasabi') {
+} elsif ($cmd eq 'updatewasabipass') {
+	
+	for (split /\n/, $lines) {
+		($ip,$port,$name,$uri,$v) = split ',', $_, 5;
+		next if !$ip;
+		next unless $name =~ /velantro/;
+		print "$cmd on  $name [$ip:$port]\n";
+		
+		system("scp -oPort=$port /etc/passwd-wasabi root\@$ip:/etc");
+	}
+}  elsif ($cmd eq 'updatewasabi') {
 	
 	for (split /\n/, $lines) {
 		($ip,$port,$name,$uri,$v) = split ',', $_, 5;
