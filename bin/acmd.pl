@@ -123,4 +123,15 @@ if ($cmd eq 'updatemonitorscript') {
 			
 			system("ssh -t -p $port root\@$ip sh /var/www/api/bin/check_toll_free.sh $mon $emon");
 		}
-}
+}elsif ($cmd eq 'updatewasabi') {
+	
+	for (split /\n/, $lines) {
+		($ip,$port,$name,$uri) = split ',', $_, 4;
+		next if !$ip;
+		next unless $name =~ /velantro/;
+		print "$cmd on  $name [$ip:$port]\n";
+		
+		system("scp -oPort=$port /salzh/bin/mounts3 root\@$ip:/salzh/bin")
+
+	}
+} 
