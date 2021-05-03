@@ -138,7 +138,7 @@ if ($cmd eq 'updatemonitorscript') {
 		next unless $v eq 'pbxv1';
 		print "$cmd on  $name [$ip:$port]\n";
 		
-		system("scp -oPort=$port /salzh/bin/mounts3 root\@$ip:/salzh/bin")
+		system("scp -oPort=$port /salzh/bin/mounts3 root\@$ip:/salzh/bin");
 		system("scp -oPort=$port /usr/local/bin/s3fsnew root\@$ip:/usr/local/bin/");
 	}
 } elsif ($cmd eq 'updatewasabi2') {
