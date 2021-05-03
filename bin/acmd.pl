@@ -123,7 +123,18 @@ if ($cmd eq 'updatemonitorscript') {
 			
 			system("ssh -t -p $port root\@$ip sh /var/www/api/bin/check_toll_free.sh $mon $emon");
 		}
-}elsif ($cmd eq 'updatewasabi') {
+} elsif ($cmd eq 'checkos') {
+		$mon = shift;
+		$emon =  shift;
+		for (split /\n/, $lines) {
+			($ip,$port,$name,$uri) = split ',', $_, 4;
+			next if !$ip;
+			print "$cmd on  $name [$ip:$port]\n";
+
+			
+			system("ssh -t -p $port root\@$ip cat /etc/debian_version");
+		}
+} elsif ($cmd eq 'updatewasabi') {
 	
 	for (split /\n/, $lines) {
 		($ip,$port,$name,$uri) = split ',', $_, 4;
