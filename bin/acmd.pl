@@ -7,7 +7,7 @@ $lines = '
 67.227.80.35,56443,velantro243,http://243.velantro.net/,pbxv1
 67.227.80.37,56443,velantro245,http://245.velantro.net,pbxv1
 208.76.253.123,56443,velantrovip,http://vip.velantro.net,pbxv1
-67.207.164.220,56443,velantro220,http://220.velantro.net
+67.207.164.220,56443,velantro220,http://220.velantro.net,pbxv1
 67.227.80.53,22,velantro53,http://67.227.80.53,pbxv1
 67.227.80.55,22,velantro55,http://67.227.80.55/,pbxv2
 67.227.80.56,22,velantro56,http://67.227.80.56,pbxv2
