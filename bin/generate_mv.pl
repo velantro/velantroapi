@@ -32,9 +32,12 @@
 ****/mnt/wasabi/usr/local/freeswitch/recordings/justelitetransport.velantro.net/archive/2021/Mar
 };
 
+$raw = `cat raw3.log`;
+@lines = split /\n/, $raw;
 print "#!/bin/sh\n";
 for $e (@lines) {
-   ($p, $d, $y, $m) = $e =~ m{\*\*\*\*/mnt/wasabi/(.+?)/freeswitch/recordings/(.+)/archive/(\d+)/(\w+)$};
-   $cmd = "cp -purfn /mnt/s3/$p/freeswitch/recordings/$d/archive/$y/$m /mnt/wasabi/$p/freeswitch/recordings/$d/archive/$y &";
+   chomp;
+   ($p, $d, $y, $m, $day) = $e =~ m{\*\*\*\*/mnt/wasabi/(.+?)/freeswitch/recordings/(.+)/archive/(\d+)/(\w+)/(\d+)$};
+   $cmd = "cp -purfn /mnt/s3/$p/freeswitch/recordings/$d/archive/$y/$m/$day /mnt/wasabi/$p/freeswitch/recordings/$d/archive/$y/$m &";
    print $cmd, "\n";
 }
