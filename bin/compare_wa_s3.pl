@@ -10,12 +10,12 @@ for $b (@base_dir) {
          next;
       }
       for $y (2020 .. 2021) {
-         if ((!-d "/mnt/s3/$b/recordings/$d/$y")) {
-            warn "/mnt/s3/$b/recordings/$d/$y not found\n";
+         if ((!-d "/mnt/s3/$b/recordings/$d/archive/$y")) {
+            warn "/mnt/s3/$b/recordings/$d/archive/$y not found\n";
             next;
          }
-         if ((!-d "/mnt/wasabi/$b/recordings/$d/$y")) {
-            print "*****/mnt/wasabi/$b/recordings/$d/$y not found\n";
+         if ((!-d "/mnt/wasabi/$b/recordings/$d/archive/$y")) {
+            print "*****/mnt/wasabi/$b/recordings/$d/archive/$y not found\n";
             next;
          }
          
@@ -26,22 +26,22 @@ for $b (@base_dir) {
          }
          
          for $m(@months) {
-            if ((!-d "/mnt/s3/$b/recordings/$d/$y/$m")) {
-               warn "/mnt/s3/$b/recordings/$d/$y/$m not found\n";
+            if ((!-d "/mnt/s3/$b/recordings/$d/archive/$y/$m")) {
+               warn "/mnt/s3/$b/recordings/$d/archive/$y/$m not found\n";
                next;
             }
-            if ((!-d "/mnt/wasabi/$b/recordings/$d/$y/$m")) {
-               print "****/mnt/wasabi/$b/recordings/$d/$y/$m not found\n";
+            if ((!-d "/mnt/wasabi/$b/recordings/$d/archive/$y/$m")) {
+               print "****/mnt/wasabi/$b/recordings/$d/archive/$y/$m not found\n";
                next;
             }
             for $d (1..31) {
                $d = sprintf("%02d", $d);
-               if ((!-d "/mnt/s3/$b/recordings/$d/$y/$m/$d")) {
-                  warn "/mnt/s3/$b/recordings/$d/$y/$m/$d not found\n";
+               if ((!-d "/mnt/s3/$b/recordings/$d/archive/$y/$m/$d")) {
+                  warn "/mnt/s3/$b/recordings/$d/archive/$y/$m/$d not found\n";
                   next;
                }
-               if ((!-d "/mnt/wasabi/$b/recordings/$d/$y/$m/$d")) {
-                  print "***/mnt/wasabi/$b/recordings/$d/$y/$m/$d not found\n";
+               if ((!-d "/mnt/wasabi/$b/recordings/$d/archive/$y/$m/$d")) {
+                  print "***/mnt/wasabi/$b/recordings/$d/archive/$y/$m/$d not found\n";
                   next;
                }
             }
