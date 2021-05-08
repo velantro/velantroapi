@@ -16,7 +16,7 @@
 };
 
 for $e (@lines) {
-   ($d) = $e =~ m{\*\*\*\*\*\*/mnt/wasabi/var/lib/freeswitch/recordings/(.+?)};
+   ($d) = $e =~ m{\*\*\*\*\*\*/mnt/wasabi/var/lib/freeswitch/recordings/(.+)$};
    $cmd = "setsid cp -purfn /mnt/s3/var/lib/freeswitch/recordings/$d /mnt/wasabi/var/lib/freeswitch/recordings";
    print $cmd, "\n";
 }
