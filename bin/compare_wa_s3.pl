@@ -3,19 +3,19 @@
 for $b (@base_dir) {
    while (</mnt/s3/$b/recordings/*>) {
       #print $_, "\n";
-      ($d) = $_ =~ m{recordings/(.+)$};
+      ($domain) = $_ =~ m{recordings/(.+)$};
       #print $d, "\n";
-      if ((!-d "/mnt/wasabi/$b/recordings/$d")) {
-         print "******/mnt/wasabi/$b/recordings/$d not found\n";
+      if ((!-d "/mnt/wasabi/$b/recordings/$domain")) {
+         print "******/mnt/wasabi/$b/recordings/$domain not found\n";
          next;
       }
       for $y (2020 .. 2021) {
-         if ((!-d "/mnt/s3/$b/recordings/$d/archive/$y")) {
-            warn "/mnt/s3/$b/recordings/$d/archive/$y not found\n";
+         if ((!-d "/mnt/s3/$b/recordings/$domain/archive/$y")) {
+            warn "/mnt/s3/$b/recordings/$domain/archive/$y not found\n";
             next;
          }
-         if ((!-d "/mnt/wasabi/$b/recordings/$d/archive/$y")) {
-            print "*****/mnt/wasabi/$b/recordings/$d/archive/$y not found\n";
+         if ((!-d "/mnt/wasabi/$b/recordings/$domain/archive/$y")) {
+            print "*****/mnt/wasabi/$b/recordings/$domain/archive/$y not found\n";
             next;
          }
          
@@ -26,22 +26,22 @@ for $b (@base_dir) {
          }
          
          for $m(@months) {
-            if ((!-d "/mnt/s3/$b/recordings/$d/archive/$y/$m")) {
-               warn "/mnt/s3/$b/recordings/$d/archive/$y/$m not found\n";
+            if ((!-d "/mnt/s3/$b/recordings/$domain/archive/$y/$m")) {
+               warn "/mnt/s3/$b/recordings/$domain/archive/$y/$m not found\n";
                next;
             }
-            if ((!-d "/mnt/wasabi/$b/recordings/$d/archive/$y/$m")) {
-               print "****/mnt/wasabi/$b/recordings/$d/archive/$y/$m not found\n";
+            if ((!-d "/mnt/wasabi/$b/recordings/$domain/archive/$y/$m")) {
+               print "****/mnt/wasabi/$b/recordings/$domain/archive/$y/$m not found\n";
                next;
             }
             for $d (1..31) {
                $d = sprintf("%02d", $d);
-               if ((!-d "/mnt/s3/$b/recordings/$d/archive/$y/$m/$d")) {
-                  warn "/mnt/s3/$b/recordings/$d/archive/$y/$m/$d not found\n";
+               if ((!-d "/mnt/s3/$b/recordings/$domain/archive/$y/$m/$d")) {
+                  warn "/mnt/s3/$b/recordings/$domain/archive/$y/$m/$d not found\n";
                   next;
                }
-               if ((!-d "/mnt/wasabi/$b/recordings/$d/archive/$y/$m/$d")) {
-                  print "***/mnt/wasabi/$b/recordings/$d/archive/$y/$m/$d not found\n";
+               if ((!-d "/mnt/wasabi/$b/recordings/$domain/archive/$y/$m/$d")) {
+                  print "***/mnt/wasabi/$b/recordings/$domain/archive/$y/$m/$d not found\n";
                   next;
                }
             }
