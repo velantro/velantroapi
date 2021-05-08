@@ -34,7 +34,7 @@
 
 print "#!/bin/sh\n";
 for $e (@lines) {
-   ($p, $d, $y, $m) = $e =~ m{\*\*\*\*\*/mnt/wasabi/(.+?)/freeswitch/recordings/(.+)/archive/(\d+)/(\w+)$};
+   ($p, $d, $y, $m) = $e =~ m{\*\*\*\*/mnt/wasabi/(.+?)/freeswitch/recordings/(.+)/archive/(\d+)/(\w+)$};
    $cmd = "cp -purfn /mnt/s3/$p/freeswitch/recordings/$d/archive/$y/$m /mnt/wasabi/$p/freeswitch/recordings/$d/archive/$y &";
    print $cmd, "\n";
 }
