@@ -39,7 +39,7 @@ for $b (@base_dir) {
                   next unless $filename =~ m{/mnt/s3/(.+)\.(wav|mp3)}i;
                   $wa_file = "/mnt/wasabi/$1.$2";
                   if (-e $wa_file) {
-                      print "unlink $wa_file\n";
+                      print "unlink $filename\n";
                   }        
                  
                }
