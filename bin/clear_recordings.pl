@@ -36,7 +36,7 @@ for $b (@base_dir) {
                }
                
                for $filename (glob "/mnt/s3/$b/recordings/$domain/archive/$y/$m/$d/*") {
-                  next unless /\.(?:wav|mp3)/i;
+                  next unless $filename =~ /\.(?:wav|mp3)/i;
                   print "/mnt/s3/$b/recordings/$domain/archive/$y/$m/$d/$filename";
                }
             }
