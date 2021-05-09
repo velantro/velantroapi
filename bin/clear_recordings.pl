@@ -4,7 +4,7 @@ for $b (@base_dir) {
    while (</mnt/wasabi/$b/recordings/*>) {
       #print $_, "\n";
       ($domain) = $_ =~ m{recordings/(.+)$};
-      print $d, "...\n";
+      print $domain, "...\n";
       $cmd = "find $_ -name \".wav\"";
       print "cmd: $cmd\n";
       $output = `$cmd`;
