@@ -37,7 +37,11 @@ for $b (@base_dir) {
                
                for $filename (glob "/mnt/s3/$b/recordings/$domain/archive/$y/$m/$d/*") {
                   next unless $filename =~ m{/mnt/s3/(.+)\.(wav|mp3)}i;
-                  print "unlink /mnt/wasabi/$1.$2\n";
+                  $wa_file = "/mnt/wasabi/$1.$2";
+                  if (-e $wa_file) {
+                      print "unlink $wa_file\n";
+                  }        
+                 
                }
             }
          }
