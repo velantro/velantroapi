@@ -40,6 +40,7 @@ for $b (@base_dir) {
                   $wa_file = "/mnt/wasabi/$1.$2";
                   if (-e $wa_file) {
                       print "unlink $filename\n";
+                      unlink $filename;
                   }        
                  
                }
