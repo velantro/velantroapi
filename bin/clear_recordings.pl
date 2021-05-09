@@ -1,3 +1,4 @@
+use File::Copy;
 @base_dir = ('var/lib/freeswitch', 'usr/local/freeswitch');
 
 for $b (@base_dir) {
@@ -38,11 +39,12 @@ for $b (@base_dir) {
                for $filename (glob "/mnt/s3/$b/recordings/$domain/archive/$y/$m/$d/*") {
                   next unless $filename =~ m{/mnt/s3/(.+)\.(wav|mp3)}i;
                   $wa_file = "/mnt/wasabi/$1.$2";
-                  if (-e $wa_file) {
-                      print "unlink $filename\n";
-                      unlink $filename;
-                  }        
-                 
+                  if (!-e $wa_file) {
+                     print "copy $filename to $wa_file!\n";
+                      copy($filename, $wa_file);
+                  }
+                  print "unlink $filename!\n";
+                  unlink $filename;                  
                }
             }
          }
