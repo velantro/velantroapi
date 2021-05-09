@@ -41,7 +41,8 @@ for $b (@base_dir) {
                   $wa_file = "/mnt/wasabi/$1.$2";
                   if (!-e $wa_file) {
                      print "copy $filename to $wa_file!\n";
-                      copy($filename, $wa_file);
+                     copy($filename, $wa_file) or next;
+                                         
                   }
                   print "unlink $filename!\n";
                   unlink $filename;                  
