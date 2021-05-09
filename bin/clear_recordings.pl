@@ -10,7 +10,7 @@ for $b (@base_dir) {
       $output = `$cmd`;
       for $rec (split /\n/, $output) {
          chomp $rec;
-         ($p) = $rec =~ m{/mnt/wasabi/(.+)};
+         ($p) = $rec =~ m{/mnt/s3/(.+)};
          if (-e "/mnt/wasabi/$p") {
             print "unlink /mnt/s3/$p\n";
          }         
