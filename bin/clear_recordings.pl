@@ -1,7 +1,7 @@
 @base_dir = ('var/lib/freeswitch', 'usr/local/freeswitch');
 
 for $b (@base_dir) {
-   while (</mnt/wasabi/$b/recordings/*>) {
+   while (</mnt/s3/$b/recordings/*>) {
       #print $_, "\n";
       ($domain) = $_ =~ m{recordings/(.+)$};
       print $domain, "...\n";
@@ -11,7 +11,7 @@ for $b (@base_dir) {
       for $rec (split /\n/, $output) {
          chomp $rec;
          ($p) = $rec =~ m{/mnt/wasabi/(.+)};
-         if (-e "/mnt/s3/$p") {
+         if (-e "/mnt/wasabi/$p") {
             print "unlink /mnt/s3/$p\n";
          }         
       }     
