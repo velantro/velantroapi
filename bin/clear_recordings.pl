@@ -22,7 +22,7 @@ for $b (@base_dir) {
       if ($select_domain eq 'rapidins.velantro.net') {
          @years = (2018,2019,2020,2021);
       } else {
-         @years = (2010,2021);
+         @years = (2020,2021);
       }
       
       for $y (@years) {
