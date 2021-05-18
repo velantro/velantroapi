@@ -19,8 +19,13 @@ for $b (@base_dir) {
          next;
       }      
       
+      if ($select_domain eq 'rapidins.velantro.net') {
+         @years = (2018,2019,2020,2021);
+      } else {
+         @years = (2010,2021);
+      }
       
-      for $y (2020 .. 2021) {
+      for $y (@years) {
          if ((!-d "/mnt/s3/$b/recordings/$domain/archive/$y")) {
             warn "/mnt/s3/$b/recordings/$domain/archive/$y not found\n";
             next;
