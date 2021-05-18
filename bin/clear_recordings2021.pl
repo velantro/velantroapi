@@ -13,7 +13,8 @@ for $b (@base_dir) {
       #print $_, "\n";
       ($domain) = $_ =~ m{recordings/(.+)$};
       if (not -d "/mnt/s3/$b/recordings/$domain/archive/2021") {
-         print "$domain: " . "/mnt/s3/$b/recordings/$domain/archive/2021 not found!\n"; 
+         print "$domain: " . "/mnt/s3/$b/recordings/$domain/archive/2021 not found!\n";
+         system(" rm -rf /mnt/s3/$b/recordings/$domain/");
       }      
    }   
 }
