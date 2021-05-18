@@ -8,13 +8,16 @@ if ($w == 1) {
    @base_dir = ('var/lib/freeswitch', 'usr/local/freeswitch');
 }
 
+$select_domain = shift;
 for $b (@base_dir) {
    while (</mnt/s3/$b/recordings/*>) {
       #print $_, "\n";
       ($domain) = $_ =~ m{recordings/(.+)$};
       #print $d, "\n";
       
-      
+      if ($select_domain && $select_domain ne $domain) {
+         next;
+      }      
       
       
       for $y (2020 .. 2021) {
