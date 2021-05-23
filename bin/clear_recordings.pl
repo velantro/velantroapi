@@ -57,8 +57,8 @@ for $b (@base_dir) {
                   if (!-e $wa_file) {
                      print "copy $filename to $wa_file!\n";
                      if (not -d "/mnt/wasabi/$b/recordings/$domain/archive/$y/$m/$d" ) {
-                        print "mdir \"/mnt/wasabi/$b/recordings/$domain/archive/$y/$m/$d\"\n";
-                        mkdir "/mnt/wasabi/$b/recordings/$domain/archive/$y/$m/$d";
+                        print "mdir -p \"/mnt/wasabi/$b/recordings/$domain/archive/$y/$m/$d\"\n";
+                        system("mkdir -p /mnt/wasabi/$b/recordings/$domain/archive/$y/$m/$d");
                      }                     
                      copy($filename, $wa_file) or next;                                         
                   }
