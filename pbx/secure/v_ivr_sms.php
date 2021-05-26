@@ -41,7 +41,7 @@ function send_sms($ivr_menu_uuid,$keypress,$f, $t) {
 		$r = $row["ivr_menu_option_description"];
 		break;
 	}
-	
+/*	
 	$sql = "SELECT carrier FROM  ";
 	$sql = $sql . " v_sms_destinations ";
 	$sql = $sql . "WHERE destination = '$f' and ";
@@ -58,7 +58,7 @@ function send_sms($ivr_menu_uuid,$keypress,$f, $t) {
 		$carrier = $row["carrier"];
 		break;
 	}
-	
+*/	
 	$carrier = $carrier ? $carrier : 'velantro';
 	
 	$sql = "SELECT default_setting_value FROM v_default_settings ";
