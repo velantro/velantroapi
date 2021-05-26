@@ -1,0 +1,2 @@
+
+insert into v_default_settings (default_setting_uuid,default_setting_category,default_setting_subcategory,default_setting_name,default_setting_value,default_setting_order,default_setting_enabled,default_setting_description) values('10bca379-9b46-491e-9fa5-a7d15877f221','sms','velantro_api_host','var','sms.velantro.net','0','true')
