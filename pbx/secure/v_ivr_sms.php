@@ -133,6 +133,8 @@ function send_sms($ivr_menu_uuid,$keypress,$f, $t) {
 	}
 	
 	$ch = curl_init();
+	$body=str_replace('\n', "\n", $body);
+	$body = urlencode($body);
 	$cmd = "key=$access_key&senderid=$f&type=text&contacts=$t&msg=$body";
 
 	curl_setopt($ch, CURLOPT_URL, "https://$api_host/app/smsapipost");
