@@ -173,4 +173,13 @@ if ($cmd eq 'updatemonitorscript') {
 		
 		system("scp -oPort=$port /salzh/bin/mountwasabi root\@$ip:/salzh/bin/mounts3");
 	}
-} 
+}  elsif ($cmd eq 'checkcoredb') {
+		for (split /\n/, $lines) {
+			($ip,$port,$name,$uri) = split ',', $_, 4;
+			next if !$ip;
+			print "$cmd on  $name [$ip:$port]\n";
+			
+			system("ssh -t -p $port root\@$ip grep 'SQL ERR' /usr/local/freeswitch/log/freeswitch.log");
+			system("ssh -t -p $port root\@$ip grep 'SQL ERR' /var/log/freeswitch/freeswitch.log");
+		}
+}
