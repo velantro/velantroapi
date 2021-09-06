@@ -19,12 +19,6 @@ $lines = '
 208.76.253.121,22,velantro121,http://208.76.253.121/,pbxv2
 208.76.253.116,22,velantro116,http://208.76.253.116/,pbxv2
 208.76.253.115,22,velantro115,http://208.76.253.115/,pbxv2
-208.76.253.118,22,velantro118,http://208.76.253.118/,pbxv2
-208.76.253.119,22,shy,http://ml.managedlogix.net
-67.227.80.11,56443,ml2,http://newmentor.managedlogix.net/
-67.227.80.10,56443,ml3,http://67.227.80.10
-67.227.80.21,22,serv1,http://67.227.80.21/
-67.227.80.23,22,serv2,http://67.227.80.23/
 ';
 
 $cmd = shift || exit;
@@ -179,7 +173,7 @@ if ($cmd eq 'updatemonitorscript') {
 			next if !$ip;
 			print "$cmd on  $name [$ip:$port]\n";
 			
-			system("ssh -t -p $port root\@$ip grep 'SQL ERR' /usr/local/freeswitch/log/freeswitch.log");
-			system("ssh -t -p $port root\@$ip grep 'SQL ERR' /var/log/freeswitch/freeswitch.log");
+			system("ssh -t -p $port root\@$ip \"grep 'SQL ERR' /usr/local/freeswitch/log/freeswitch.log\"");
+			system("ssh -t -p $port root\@$ip \"grep 'SQL ERR' /var/log/freeswitch/freeswitch.log\"");
 		}
 }
