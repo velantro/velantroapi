@@ -176,4 +176,12 @@ if ($cmd eq 'updatemonitorscript') {
 			system("ssh -t -p $port root\@$ip \"grep 'SQL ERR' /usr/local/freeswitch/log/freeswitch.log\"");
 			system("ssh -t -p $port root\@$ip \"grep 'SQL ERR' /var/log/freeswitch/freeswitch.log\"");
 		}
+} }  elsif ($cmd eq 'reloadacl') {
+		for (split /\n/, $lines) {
+			($ip,$port,$name,$uri) = split ',', $_, 4;
+			next if !$ip;
+			print "$cmd on  $name [$ip:$port]\n";
+			
+			system("ssh -t -p $port root\@$ip \"fs_cli -rx 'reloadacl'\"");
+		}
 }
