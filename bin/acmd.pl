@@ -11,6 +11,7 @@ $lines = '
 67.227.80.53,22,velantro53,http://67.227.80.53,pbxv1
 67.227.80.55,22,velantro55,http://67.227.80.55/,pbxv2
 67.227.80.56,22,velantro56,http://67.227.80.56,pbxv2
+67.227.80.57,22,goldenclawtranz,http://67.227.80.57,pbxv2
 67.227.80.20,22,velantro20,http://67.227.80.20,pbxv2
 67.227.80.12,22,velantro12,http://67.227.80.12,pbxv2
 67.227.80.6,22,velantro6,http://67.227.80.6,pbxv2
