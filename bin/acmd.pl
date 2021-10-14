@@ -185,3 +185,12 @@ if ($cmd eq 'updatemonitorscript') {
 			system("ssh -t -p $port root\@$ip \"fs_cli -rx 'reloadacl'\"");
 		}
 }
+ else {
+	for (split /\n/, $lines) {
+		($ip,$port,$name,$uri) = split ',', $_, 4;
+		next if !$ip;
+		print "$cmd on  $name [$ip:$port]\n";
+		
+		system("ssh -t -p $port root\@$ip \"$cmd\"");
+	}
+}

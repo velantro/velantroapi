@@ -235,6 +235,8 @@ if ($query{action} eq 'addcallback') {
 	do_unhold();
 } elsif ($query{action} eq 'getcdrbydid'){
 	do_cdr();
+} elsif ($query{action} eq 'getteledirectminutes'){
+	do_teledirect();
 } else {
      print j({error => '1', 'message' => 'undefined action', 'actionid' => $query{actionid}});
     exit 0;
