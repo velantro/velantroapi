@@ -246,6 +246,7 @@ sub Dial() {
 
 	local $from = $event{'Caller-Caller-ID-Number'};
 	local $to =  $event{'Caller-Callee-ID-Number'};
+	local $caller_destination = $event{'variable_caller_destination'};
 	#$uuid =~ s/\-//g;
 	local $now = &now();
 	local $host = ($host_prefix . $event{'Caller-Context'}) || $default_host;
@@ -283,7 +284,7 @@ sub Dial() {
 		$call_center_queue_uuid = $hash{1}{call_center_queue_uuid};
 	}
 	
-	local %hash = ('from' => $from, 'to' => $to, 'domain_name' => $domain_name, 'starttime' => $now, 'calltype' => $call_type, 'calluuid' => $uuid, 'callaction' => 'dial', queue => $cc_queue, call_state =>  $event{'Channel-Call-State'}, call_center_queue_uuid => $call_center_queue_uuid);
+	local %hash = ('from' => $from, 'to' => $to, 'domain_name' => $domain_name, 'starttime' => $now, 'calltype' => $call_type, 'calluuid' => $uuid, 'callaction' => 'dial', queue => $cc_queue, call_state =>  $event{'Channel-Call-State'}, call_center_queue_uuid => $call_center_queue_uuid, 'caller_destination' => $caller_destination);
 	
 	
 	local $json = &Hash2Json(%hash);
