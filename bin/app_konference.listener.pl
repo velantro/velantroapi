@@ -246,7 +246,7 @@ sub Dial() {
 
 	local $from = $event{'Caller-Caller-ID-Number'};
 	local $to =  $event{'Caller-Callee-ID-Number'};
-	local $caller_destination = $event{'variable_caller_destination'};
+	local $caller_destination = $event{'Caller-RDNIS'};
 	#$uuid =~ s/\-//g;
 	local $now = &now();
 	local $host = ($host_prefix . $event{'Caller-Context'}) || $default_host;
