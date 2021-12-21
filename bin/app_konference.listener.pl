@@ -256,6 +256,33 @@ sub Dial() {
 	$domain_name = '' if $domain_name eq '_undef_';
 	local $cc_queue = `fs_cli -rx "uuid_getvar $uuid cc_queue"`;
 	chomp $cc_queue;
+	if ($cc_queue) {
+		$csv = "uuid,direction,created,created_epoch,name,state,cid_name,cid_num,ip_addr,dest,application,application_data,dialplan,context,read_codec,read_rate,read_bit_rate,write_codec,write_rate,write_bit_rate,secure,hostname,presence_id,presence_data,accountcode,callstate,callee_name,callee_num,callee_direction,call_uuid,sent_callee_name,sent_callee_num,initial_cid_name,initial_cid_num,initial_ip_addr,initial_dest,initial_dialplan,initial_context";
+		#it is dialing agent, let's find the originator
+		$i = 0;
+		for(split ',', $csv) {
+			if ($_ eq 'context') {
+				$ci = $i;
+			}
+			
+			if ($_ eq 'initial_dest') {
+				$di = $i;
+			}
+			$i++;			
+		}
+		
+		local $calls = `fs_cli -rx "show channels"`;
+		chomp $calls;
+		for (split /\n/, $calls) {
+			@arr = split ',', $_;
+			if ($arr[1] eq 'inbound' && $arr[7] eq $from) {
+				
+				$domain_name = $arr[$ci];
+				$caller_destination = $arr[$di];
+			}
+			
+		}
+	}
 	
 	$cc_queue = '' if $cc_queue eq '_undef_';
 	local $ring_group_uuid = `fs_cli -rx "uuid_getvar $uuid ring_group_uuid"`;
