@@ -307,7 +307,7 @@ sub Dial() {
 	}
 	
 	if ($domain_name && $cc_queue) {
-		if ($cc_queue ~= /^\w{8}-\w{4}-\w{4}-\w{4}-\w{12}$/) {
+		if ($cc_queue =~ /^\w{8}-\w{4}-\w{4}-\w{4}-\w{12}$/) {
 			$call_center_queue_uuid = $cc_queue;
 		} else {
 		
