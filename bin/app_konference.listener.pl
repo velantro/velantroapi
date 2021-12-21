@@ -271,12 +271,13 @@ sub Dial() {
 			$i++;			
 		}
 		
+		warn "ci=$ci, di=$di\n";
 		local $calls = `fs_cli -rx "show channels"`;
 		chomp $calls;
 		for (split /\n/, $calls) {
 			@arr = split ',', $_;
 			if ($arr[1] eq 'inbound' && $arr[7] eq $from) {
-				
+				warn $_, "\n";
 				$domain_name = $arr[$ci];
 				$caller_destination = $arr[$di];
 			}
