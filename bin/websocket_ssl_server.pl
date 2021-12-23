@@ -81,7 +81,7 @@ $server = Net::WebSocket::Server->new(
    	tick_period => 1,
     on_tick => \&check_incoming_event,
 );
-&
+
 $server->start;
 
 sub check_incoming_event () {
