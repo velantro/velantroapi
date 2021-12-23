@@ -110,14 +110,15 @@ sub check_connection () {
 	}
 }
 
-sub reaper{
-	&_warn( "Get a signal $!, stop server!");
-	$server->shutdown();
-}
-
-sub _warn( {
+sub _warn {
 	$msg =  shift;
 	($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime();
 	#print "昨天时间和日期：";
 	warn sprintf("[%d-%d-%d %d:%d:%d]:",$year+1900,$mon+1,$mday,$hour,$min,$sec) . $msg . "\n";
 }
+
+sub reaper{
+	&_warn( "Get a signal $!, stop server!");
+	$server->shutdown();
+}
+
