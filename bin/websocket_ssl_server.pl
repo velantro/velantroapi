@@ -85,7 +85,7 @@ $server->start;
 sub check_incoming_event () {
 	($serv) = @_;
 	$msg = $mq->get(1, "incoming");
-  	&_warn( "GET NEW MSG: " . $msg->{body} . "\n" if $msg->{body});
+  	&_warn( "GET NEW MSG: " . $msg->{body} . "\n" ) if $msg->{body};
   	$event_str = $msg->{body};
   	
 		local %hash = &Json2Hash($event_str);
