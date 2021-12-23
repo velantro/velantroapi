@@ -68,7 +68,7 @@ $server = Net::WebSocket::Server->new(
             disconnect => sub {
             	local ($connection, $code, $reason) = @_;
             	$uuid = &check_connection($connection);
-				print "Get disconnect from " . $connection->ip() . ':' . $connection->port(). " ... \n";)
+				print "Get disconnect from " . $connection->ip() . ':' . $connection->port(). " ... \n");
 				$connection->disconnect();
             	if ($uuid) {
             		delete $incoming_connections{$uuid};
