@@ -17,13 +17,14 @@ $mq->queue_declare(1, "incoming");
 
 %incoming_connection = ();
 $ssl_server = IO::Socket::SSL->new(
-  Listen        => 5,
+  Listen        => 10,
   LocalPort     => 8443,
   Proto         => 'tcp',
   SSL_cert_file => '/etc/ssl/certs/nginx.crt',
   SSL_key_file  => '/etc/ssl/private/nginx.key',
-) or die "fail to create ssl";
+) or die "fail to create ssl: $!";
 
+&_warn("Server started!");
 $server = Net::WebSocket::Server->new(
     #listen => 8088,
     listen => $ssl_server,
@@ -80,6 +81,7 @@ $server = Net::WebSocket::Server->new(
    	tick_period => 1,
     on_tick => \&check_incoming_event,
 );
+&
 $server->start;
 
 sub check_incoming_event () {
@@ -114,7 +116,7 @@ sub _warn {
 	$msg =  shift;
 	($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime();
 	#print "昨天时间和日期：";
-	warn sprintf("[%d-%d-%d %d:%d:%d]:",$year+1900,$mon+1,$mday,$hour,$min,$sec) . $msg . "\n";
+	warn sprintf("[%04d-%02d-%02d %02d:%02d:%02d]:",$year+1900,$mon+1,$mday,$hour,$min,$sec) . $msg . "\n";
 }
 
 sub reaper{
