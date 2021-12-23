@@ -68,7 +68,7 @@ $server = Net::WebSocket::Server->new(
             disconnect => sub {
             	local ($connection, $code, $reason) = @_;
             	$uuid = &check_connection($connection);
-				print "Get disconnect from " . $connection->ip() . ':' . $connection->port(). " ... \n");
+				&_warn( "Get disconnect from " . $connection->ip() . ':' . $connection->port(). " ... \n");
 				$connection->disconnect();
             	if ($uuid) {
             		delete $incoming_connections{$uuid};
@@ -85,7 +85,7 @@ $server->start;
 sub check_incoming_event () {
 	($serv) = @_;
 	$msg = $mq->get(1, "incoming");
-  	print "GET NEW MSG: " . $msg->{body} . "\n" if $msg->{body});
+  	&_warn( "GET NEW MSG: " . $msg->{body} . "\n" if $msg->{body});
   	$event_str = $msg->{body};
   	
 		local %hash = &Json2Hash($event_str);
@@ -94,7 +94,7 @@ sub check_incoming_event () {
 				($hash{to} eq $incoming_connections{$uuid}{agent})) &&
 				$hash{domain_name} eq $incoming_connections{$uuid}{domain_name}) {
 					$conn = $incoming_connections{$uuid}{conn};
-					print "send $event_str to " . $conn->ip() . ':' . $conn->port(). " ... \n");
+					&_warn( "send $event_str to " . $conn->ip() . ':' . $conn->port(). " ... \n");
 					$conn->send_utf8($event_str) if $event_str;
 			}
    	}
