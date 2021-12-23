@@ -7,6 +7,8 @@ use LWP::Simple;
 
 $SIG{INT}  = \&reaper;
 $SIG{TERM} = \&reaper;
+$SIG{KILL} = \&reaper;
+
 %sms_connections = ();
 my $mq = Net::AMQP::RabbitMQ->new();
 $mq->connect("localhost", { user => "guest", password => "guest" });
