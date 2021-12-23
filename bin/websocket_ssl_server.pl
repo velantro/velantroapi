@@ -5,6 +5,8 @@ require "/usr/local/pbx/bin/default.include.pl";
 
 use LWP::Simple;
 
+$SIG{INT}  = \&reaper;
+$SIG{TERM} = \&reaper;
 %sms_connections = ();
 my $mq = Net::AMQP::RabbitMQ->new();
 $mq->connect("localhost", { user => "guest", password => "guest" });
@@ -20,7 +22,7 @@ $ssl_server = IO::Socket::SSL->new(
   SSL_key_file  => '/etc/ssl/private/nginx.key',
 ) or die "fail to create ssl";
 
-Net::WebSocket::Server->new(
+$server = Net::WebSocket::Server->new(
     #listen => 8088,
     listen => $ssl_server,
     on_connect => sub {
@@ -75,7 +77,8 @@ Net::WebSocket::Server->new(
     },
    	tick_period => 1,
     on_tick => \&check_incoming_event,
-)->start;
+);
+$server->start;
 
 sub check_incoming_event () {
 	($serv) = @_;
@@ -103,4 +106,9 @@ sub check_connection () {
 			return $uuid;
 		}
 	}
+}
+
+sub reaper{
+	warn "Get a signal $!";
+	$server->shutdown();
 }
