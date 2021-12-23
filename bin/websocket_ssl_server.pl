@@ -87,18 +87,24 @@ $server->start;
 sub check_incoming_event () {
 	($serv) = @_;
 	$msg = $mq->get(1, "incoming");
-  	&_warn( "GET NEW MSG: " . $msg->{body} . "\n" ) if $msg->{body};
-  	$event_str = $msg->{body};
+	$event_str = $msg->{body};
+	return if !$event_str; 	
   	
-		local %hash = &Json2Hash($event_str);
-		for $uuid (keys %incoming_connections) {
-			if ((($hash{from} eq $incoming_connections{$uuid}{agent}) ||
-				($hash{to} eq $incoming_connections{$uuid}{agent})) &&
-				$hash{domain_name} eq $incoming_connections{$uuid}{domain_name}) {
-					$conn = $incoming_connections{$uuid}{conn};
-					&_warn( "send $event_str to " . $conn->ip() . ':' . $conn->port(). " ... \n");
-					$conn->send_utf8($event_str) if $event_str;
-			}
+  	&_warn( "GET NEW MSG: " .$event_str . "\n" );
+	local %hash = &Json2Hash($event_str);
+	
+	use YAML;
+	print Dump(\%hash);
+	
+	for $uuid (keys %incoming_connections) {
+		if ((($hash{from} eq $incoming_connections{$uuid}{agent}) ||
+			($hash{to} eq $incoming_connections{$uuid}{agent})) &&
+			$hash{domain_name} eq $incoming_connections{$uuid}{domain_name}) {
+				warn $hash{to} . '=' . $incoming_connections{$uuid}{agent} .'   ' . $hash{domain_name} . '=' . $incoming_connections{$uuid}{domain_name};
+				$conn = $incoming_connections{$uuid}{conn};
+				&_warn( "send $event_str to " . $conn->ip() . ':' . $conn->port(). " ... \n");
+				$conn->send_utf8($event_str) if $event_str;
+		}
    	}
     
 }
