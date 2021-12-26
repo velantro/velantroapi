@@ -507,7 +507,7 @@ sub do_cdr() {
 	
 	
 	my $sql = "select * from v_xml_cdr where caller_destination='$did' and start_stamp >= '$st' and end_stamp <= '$et' " .
-			($caller_id_number ? " and caller_id_number='$caller_id_number' ") .
+			($caller_id_number ? " and caller_id_number='$caller_id_number' " : '') .
 			"order by start_stamp desc limit $limit offset $s";
 	warn $sql;
 	my $sth = $dbh->prepare($sql);
