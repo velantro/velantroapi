@@ -486,6 +486,7 @@ sub do_unhold() {
 	
 sub do_cdr() {
 	local $did = substr $query{did}, 0, 20;
+	local $caller_id_number = substr $query{caller_id_number}, 0, 20;
 	local $st = substr $query{start_stamp}, 0, 20;
 	local $et = substr $query{end_stamp}, 0, 20;
 	local $page = $query{page} || 0;
@@ -505,8 +506,9 @@ sub do_cdr() {
 	}
 	
 	
-	my $sql = "select * from v_xml_cdr where caller_destination='$did' and start_stamp >= '$st' and end_stamp <= '$et'
-	order by start_stamp desc limit $limit offset $s";
+	my $sql = "select * from v_xml_cdr where caller_destination='$did' and start_stamp >= '$st' and end_stamp <= '$et' " .
+			($caller_id_number ? " and caller_id_number='$caller_id_number' ") .
+			"order by start_stamp desc limit $limit offset $s";
 	warn $sql;
 	my $sth = $dbh->prepare($sql);
 	$sth   -> execute();

@@ -245,6 +245,8 @@ sub Dial() {
 	$uuid = $event{'Channel-Call-UUID'} if !$uuid;
 
 	local $from = $event{'Caller-Caller-ID-Number'};
+	local $caller_name = $event{'Caller-Callee-ID-Name'};
+	
 	local $to =  $event{'Caller-Callee-ID-Number'};
 	local $caller_destination = $event{'Caller-RDNIS'};
 	#$uuid =~ s/\-//g;
@@ -317,7 +319,7 @@ sub Dial() {
 		}
 	}
 	
-	local %hash = ('from' => $from, 'to' => $to, 'domain_name' => $domain_name, 'starttime' => $now, 'calltype' => $call_type, 'calluuid' => $uuid, 'callaction' => 'dial', queue => $cc_queue, call_state =>  $event{'Channel-Call-State'}, call_center_queue_uuid => $call_center_queue_uuid, 'caller_destination' => $caller_destination);
+	local %hash = ('from' => $from, 'caller_name' => $caller_name, 'to' => $to, 'domain_name' => $domain_name, 'starttime' => $now, 'calltype' => $call_type, 'calluuid' => $uuid, 'callaction' => 'dial', queue => $cc_queue, call_state =>  $event{'Channel-Call-State'}, call_center_queue_uuid => $call_center_queue_uuid, 'caller_destination' => $caller_destination);
 	
 	
 	local $json = &Hash2Json(%hash);
