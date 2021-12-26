@@ -192,6 +192,7 @@ sub Bridge() {
 	print Dumper(\%event);
 	warn $event{'Caller-Caller-ID-Number'} . " start talk with  " . $event{'Caller-Callee-ID-Number'};
 	local $from = $event{'Caller-Caller-ID-Number'};
+	local $caller_name = $event{'Caller-Callee-ID-Name'};
 	local $to =  $event{'Caller-Callee-ID-Number'};
 	local $uuid = $event{'Channel-Call-UUID'};
 	local $did  = $event{'variable_sip_req_user'};
@@ -223,7 +224,7 @@ sub Bridge() {
 			$res = `fs_cli -rx "uuid_setvar $agent_uuid originating_leg_uuid $uuid"`;
 	}
 	
-	local %hash = ('from' => $from, 'to' => $to, 'domain_name' => $domain_name, 'did' => $did, 'starttime' => $now, 'calltype' => $call_type, 'calluuid' => $uuid, 'callaction' => 'bridge');
+	local %hash = ('from' => $from, 'caller_name' => $caller_name, 'to' => $to, 'domain_name' => $domain_name, 'did' => $did, 'starttime' => $now, 'calltype' => $call_type, 'calluuid' => $uuid, 'callaction' => 'bridge');
 	
 	
 	local $json = &Hash2Json(%hash);
@@ -348,6 +349,7 @@ sub Hangup() {
 	warn "Get Hangup";
 	return;
 	$from = $event{'Caller-Caller-ID-Number'};
+	local $caller_name = $event{'Caller-Callee-ID-Name'};
 	$to =  $event{'Caller-Callee-ID-Number'};
 	$uuid = $event{'Channel-Call-UUID'};
 	$causetxt = $event{'Hangup-Cause'};
@@ -363,6 +365,7 @@ sub Hangup() {
 sub End() {
 	local(%event) = @_;
 	local $from = $event{'Caller-Caller-ID-Number'};
+	local $caller_name = $event{'Caller-Callee-ID-Name'};
 	local $to =  $event{'Caller-Callee-ID-Number'};
 	local $uuid = $event{'Channel-Call-UUID'};
 	#$uuid =~ s/\-//g;
@@ -417,7 +420,7 @@ sub End() {
 		$recording_url = "http://$domain_name/app/recordings/recordings2.php?filename=" . encode_base64($recording_filename, '');
 	}
 	#warn $recording_url;
-	local %hash = ('from' => $from, 'to' => $to, 'domain_name' => $domain_name, 'starttime' => $now, 'calltype' => $call_type, 'calluuid' => $uuid, 'callaction' => 'hangup',duration => $duration, billsec => $billsec,starttime => $starttime, endtime => $endtime, 'recording_url' => $recording_url, call_center_queue_uuid => $call_center_queue_uuid, queue => $queue_name);
+	local %hash = ('from' => $from, 'caller_name' => $caller_name, 'to' => $to, 'domain_name' => $domain_name, 'starttime' => $now, 'calltype' => $call_type, 'calluuid' => $uuid, 'callaction' => 'hangup',duration => $duration, billsec => $billsec,starttime => $starttime, endtime => $endtime, 'recording_url' => $recording_url, call_center_queue_uuid => $call_center_queue_uuid, queue => $queue_name);
 	
 	
 	local $json = &Hash2Json(%hash);
