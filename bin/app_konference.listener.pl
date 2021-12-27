@@ -291,7 +291,7 @@ sub Dial() {
 			}
 			
 			if ($found) {
-				break;
+				last;
 			}
 			warn "Original channel not found, recheck in 1 second ...";
 			sleep 1;
