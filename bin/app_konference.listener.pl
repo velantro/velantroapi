@@ -275,17 +275,26 @@ sub Dial() {
 		}
 		
 		warn "ci=$ci, di=$di\n";
-		sleep 1;
-		local $calls = `fs_cli -rx "show channels"`;
-		chomp $calls;
-		for (split /\n/, $calls) {
-			@arr = split ',', $_;
-			if ($arr[1] eq 'inbound' && $arr[7] eq $from) {
-				warn $_, "\n";
-				$domain_name = $arr[$ci];
-				$caller_destination = $arr[$di];
+		
+		for (1..5) {
+			local $calls = `fs_cli -rx "show channels"`;
+			chomp $calls;
+			for (split /\n/, $calls) {
+				@arr = split ',', $_;
+				if ($arr[1] eq 'inbound' && $arr[7] eq $from) {
+					$found = 1;
+					warn $_, "\n";
+					$domain_name = $arr[$ci];
+					$caller_destination = $arr[$di];
+				}
+				
 			}
 			
+			if ($found) {
+				break;
+			}
+			warn "Original channel not found, recheck in 1 second ..."
+			sleep 1;
 		}
 	}
 	
