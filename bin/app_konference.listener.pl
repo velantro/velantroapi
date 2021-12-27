@@ -275,7 +275,7 @@ sub Dial() {
 		}
 		
 		warn "ci=$ci, di=$di\n";
-		
+		$found = 0;
 		for (1..5) {
 			local $calls = `fs_cli -rx "show channels"`;
 			chomp $calls;
