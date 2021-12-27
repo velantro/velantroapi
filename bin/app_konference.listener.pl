@@ -293,7 +293,7 @@ sub Dial() {
 			if ($found) {
 				break;
 			}
-			warn "Original channel not found, recheck in 1 second ..."
+			warn "Original channel not found, recheck in 1 second ..."k
 			sleep 1;
 		}
 	}
