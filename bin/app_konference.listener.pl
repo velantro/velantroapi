@@ -246,7 +246,7 @@ sub Dial() {
 	$uuid = $event{'Channel-Call-UUID'} if !$uuid;
 
 	local $from = $event{'Caller-Caller-ID-Number'};
-	local $caller_name = $event{'Caller-Callee-ID-Name'};
+	local $caller_name = $event{'Caller-Caller-ID-Name'};
 	
 	local $to =  $event{'Caller-Callee-ID-Number'};
 	local $caller_destination = $event{'Caller-RDNIS'};
