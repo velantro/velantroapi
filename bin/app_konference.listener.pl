@@ -192,7 +192,7 @@ sub Bridge() {
 	print Dumper(\%event);
 	warn $event{'Caller-Caller-ID-Number'} . " start talk with  " . $event{'Caller-Callee-ID-Number'};
 	local $from = $event{'Caller-Caller-ID-Number'};
-	local $caller_name = $event{'Caller-Callee-ID-Name'};
+	local $caller_name = $event{'Caller-Caller-ID-Name'};
 	local $to =  $event{'Caller-Callee-ID-Number'};
 	local $uuid = $event{'Channel-Call-UUID'};
 	local $did  = $event{'variable_sip_req_user'};
@@ -375,7 +375,7 @@ sub Hangup() {
 sub End() {
 	local(%event) = @_;
 	local $from = $event{'Caller-Caller-ID-Number'};
-	local $caller_name = $event{'Caller-Callee-ID-Name'};
+	local $caller_name = $event{'Caller-Caller-ID-Name'};
 	local $to =  $event{'Caller-Callee-ID-Number'};
 	local $uuid = $event{'Channel-Call-UUID'};
 	#$uuid =~ s/\-//g;
