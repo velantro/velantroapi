@@ -10,6 +10,7 @@ $SIG{TERM} = \&reaper;
 $SIG{KILL} = \&reaper;
 
 %sms_connections = ();
+%msg_pool = ();
 my $mq = Net::AMQP::RabbitMQ->new();
 $mq->connect("localhost", { user => "guest", password => "guest" });
 $mq->channel_open(1);
@@ -65,6 +66,12 @@ $server = Net::WebSocket::Server->new(
 	            $str = &Hash2Json(%result);
 	            &_warn( "Reply: $str");
 	            $conn->send_utf8($str);
+				$pending_msg = $msg_pool{$hash{agent}.'@'.$hash{domain_name}};
+				if ($pending_msg) {
+					&_warn( "Send Saved MSG: $pending_msg");
+					$conn->send_utf8($pending_msg);
+				}
+				
             },
             disconnect => sub {
             	local ($connection, $code, $reason) = @_;
@@ -93,8 +100,8 @@ sub check_incoming_event () {
   	&_warn( "GET NEW MSG: " .$event_str . "\n" );
 	local %hash = &Json2Hash($event_str);
 	
-	use YAML;
-	print Dump(\%hash);
+	#use YAML;
+	#print Dump(\%hash);
 	
 	for $uuid (keys %incoming_connections) {
 		if ((($hash{from} eq $incoming_connections{$uuid}{agent}) ||
@@ -106,6 +113,14 @@ sub check_incoming_event () {
 				$conn->send_utf8($event_str) if $event_str;
 		}
    	}
+	
+	$msg_key = $hash{to}.'@' . $hash{domain_name};
+	if ($hash{callaction} ne 'hangup') {
+		$msg_pool{$msg_key} = $event_str;
+	} else {
+		delete $msg_pool{$msg_key};
+	}
+	
     
 }
 
