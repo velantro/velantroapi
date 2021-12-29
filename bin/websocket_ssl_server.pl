@@ -142,7 +142,7 @@ sub _warn {
 
 sub reaper{
 	&_warn( "Get a signal $!, stop server!");
-	$ssl_server->shutdown();
+	$ssl_server->close();
 	$server->shutdown();
 }
 
