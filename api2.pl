@@ -508,10 +508,10 @@ sub do_cdr() {
 	
 	
 	my $sql = "select * from v_xml_cdr where " .
-			($did ? "caller_destination like '%$did' " : '') .
-			($destination_number ? " and destination_number='$destination_number' " : '').			  
-			($caller_id_number ? " and caller_id_number like '%$caller_id_number' " : '') .
-			" and start_stamp >= '$st' and end_stamp <= '$et' " .
+			($did ? "caller_destination like '%$did' and " : '') .
+			($destination_number ? " destination_number='$destination_number' and " : '').			  
+			($caller_id_number ? " and caller_id_number like '%$caller_id_number' and " : '') .
+			"  start_stamp >= '$st' and end_stamp <= '$et' " .
 			" order by start_stamp desc limit $limit offset $s";
 	warn $sql;
 	my $sth = $dbh->prepare($sql);
