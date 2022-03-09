@@ -487,6 +487,7 @@ sub do_unhold() {
 sub do_cdr() {
 	local $did = substr $query{did}, 0, 20;
 	local $caller_id_number = substr $query{caller_id_number}, 0, 20;
+	local $extension = substr $query{extension}, 0, 20;
 	local $st = substr $query{start_stamp}, 0, 20;
 	local $et = substr $query{end_stamp}, 0, 20;
 	local $page = $query{page} || 0;
@@ -506,9 +507,12 @@ sub do_cdr() {
 	}
 	
 	
-	my $sql = "select * from v_xml_cdr where caller_destination like '%$did' and start_stamp >= '$st' and end_stamp <= '$et' " .
+	my $sql = "select * from v_xml_cdr where " .
+			($did ? "caller_destination like '%$did' " : '') .
+			($extension ? " and destination_number='$extension' " : '').			  
 			($caller_id_number ? " and caller_id_number like '%$caller_id_number' " : '') .
-			"order by start_stamp desc limit $limit offset $s";
+			" and start_stamp >= '$st' and end_stamp <= '$et' " .
+			" order by start_stamp desc limit $limit offset $s";
 	warn $sql;
 	my $sth = $dbh->prepare($sql);
 	$sth   -> execute();
