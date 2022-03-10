@@ -521,6 +521,8 @@ sub do_cdr() {
 	$c = $row->{total};
 	
 	$sql = "select * from v_xml_cdr where $cond order by start_stamp desc limit $limit offset $s";
+	$sth = $dbh->prepare($sql);
+	$sth   -> execute();
 	#$c = 0;
 	$list = [];
 	while ($row = $sth->fetchrow_hashref) {
