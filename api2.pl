@@ -508,7 +508,7 @@ sub do_cdr() {
 	
 	my $cond = ($did ? "caller_destination like '%$did' and " : '') .
 			($destination_number ? " destination_number='$destination_number' and " : '').			  
-			($caller_id_number ? " and caller_id_number like '%$caller_id_number' and " : '') .
+			($caller_id_number ? "  caller_id_number like '%$caller_id_number' and " : '') .
 			"  start_stamp >= '$st' and end_stamp <= '$et' ";
 	my $sql = "select count(*) as total from v_xml_cdr where $cond";
 			
