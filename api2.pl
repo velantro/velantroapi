@@ -528,7 +528,7 @@ sub do_cdr() {
 			$record_size = -s $recording_filename;
 		}
 		push @$list, {xml_cdr_uuid => $row->{xml_cdr_uuid}, domain_name => $row->{domain_name}, caller_id_number => $row->{caller_id_number},caller_id_name => $row->{caller_id_name},
-					  destination_number => $row->{destination_number}, did => $did, start_stamp => $row->{start_stamp}, end_stamp => $row->{end_stamp},
+					  destination_number => $row->{destination_number}, did => $row->{caller_destination}, start_stamp => $row->{start_stamp}, end_stamp => $row->{end_stamp},
 					  billsec => $row->{billsec},duration => $row->{duration},reocrd_size => $record_size || 0,record_url => $recording_url};
 	}
 	
