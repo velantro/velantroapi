@@ -506,21 +506,25 @@ sub do_cdr() {
 		$et = "$date 23:59:59";
 	}
 	
-	
-	my $sql = "select * from v_xml_cdr where " .
-			($did ? "caller_destination like '%$did' and " : '') .
+	my $cond = ($did ? "caller_destination like '%$did' and " : '') .
 			($destination_number ? " destination_number='$destination_number' and " : '').			  
 			($caller_id_number ? " and caller_id_number like '%$caller_id_number' and " : '') .
-			"  start_stamp >= '$st' and end_stamp <= '$et' " .
-			" order by start_stamp desc limit $limit offset $s";
+			"  start_stamp >= '$st' and end_stamp <= '$et' ";
+	my $sql = "select count(*) as total from v_xml_cdr where $cond";
+			
+			
+			
 	warn $sql;
 	my $sth = $dbh->prepare($sql);
 	$sth   -> execute();
+	$row = $sth->fetchrow_hashref;
+	$c = $row->{total};
 	
-	$c = 0;
+	$sql = "select * from v_xml_cdr where $cond order by start_stamp desc limit $limit offset $s";
+	#$c = 0;
 	$list = [];
 	while ($row = $sth->fetchrow_hashref) {
-		$c++;
+		#$c++;
 		$recording_url = '';
 		$recording_filename = $row->{record_path} . '/' . $row->{record_name};
 		if (-e $recording_filename) {
