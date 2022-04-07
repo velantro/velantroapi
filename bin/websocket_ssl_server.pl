@@ -1,5 +1,5 @@
 use Net::WebSocket::Server;
-Net::WebSocket::Server::Connection;
+use Net::WebSocket::Server::Connection;
 use IO::Socket::SSL;
 use Net::AMQP::RabbitMQ;
 require "/usr/local/pbx/bin/default.include.pl";
