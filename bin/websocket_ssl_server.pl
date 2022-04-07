@@ -102,7 +102,7 @@ sub check_incoming_event () {
 	
 	for $c (keys %nomsg_connections) {
 		if (time - $nomsg_connections{$c}{created_time} > 5) {
-			$server->disconnect($nomsg_connections{$c}{conn});
+			$serv->disconnect($nomsg_connections{$c}{conn});
 			delete $nomsg_connections{$c};
 		}		
 	}
