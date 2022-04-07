@@ -34,8 +34,9 @@ $server = Net::WebSocket::Server->new(
     on_connect => sub {
         my ($serv, $conn) = @_;
         &_warn( "Get connection from " . $conn->ip() . "\n" );
-		$nomsg_connections{$conn} = 1;
-		$nomsg_connections{$conn}{created_time} = time;
+		$uuid = &genuuid();
+		$nomsg_connections{$uuid}{conn} = $conn;
+		$nomsg_connections{$uuid}{created_time} = time;
         $conn->on(
             utf8 => sub {
                 my ($conn, $msg) = @_;
@@ -101,7 +102,7 @@ sub check_incoming_event () {
 	
 	for $c (keys %nomsg_connections) {
 		if (time - $nomsg_connections{$c}{created_time} > 5) {
-			$c->disconnect();
+			$server->disconnect($nomsg_connections{$c}{conn});
 			delete $nomsg_connections{$c};
 		}		
 	}
