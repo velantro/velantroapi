@@ -21,6 +21,7 @@ $ssl_server = IO::Socket::SSL->new(
   Listen        => 10,
   LocalPort     => 8443,
   Proto         => 'tcp',
+  silence_max	=> 50,
   SSL_cert_file => '/etc/ssl/certs/nginx.crt',
   SSL_key_file  => '/etc/ssl/private/nginx.key',
 ) or die "fail to create ssl: $!";
@@ -32,6 +33,8 @@ $server = Net::WebSocket::Server->new(
     on_connect => sub {
         my ($serv, $conn) = @_;
         &_warn( "Get connection from " . $conn->ip() . "\n" );
+		$nomsg_connections{$conn} = 1;
+		$nomsg_connections{$conn}{created_time} = time;
         $conn->on(
             utf8 => sub {
                 my ($conn, $msg) = @_;
@@ -48,6 +51,7 @@ $server = Net::WebSocket::Server->new(
                 
                 %result = ();
                 if ($action eq 'login') {
+					delete $nomsg_connections{$conn};
                 	$uuid = &genuuid();
                 	$old_uuid = &check_connection($conn);
                 	if ($old_uuid) {
@@ -90,12 +94,25 @@ $server = Net::WebSocket::Server->new(
 );
 
 $server->start;
-
+$last_check_time = time;
 sub check_incoming_event () {
 	($serv) = @_;
+	
+	for $c (keys %nomsg_connections) {
+		if (time - $nomsg_connections{$c}{created_time} > 5) {
+			$serv->disconnect($c);
+			delete $nomsg_connections{$c};
+		}		
+	}
+	
 	$msg = $mq->get(1, "incoming");
 	$event_str = $msg->{body};
-	return if !$event_str; 	
+	if (!$event_str) {
+		
+		
+		return;
+	}
+	$last_check_time = time;
   	
   	&_warn( "GET NEW MSG: " .$event_str . "\n" );
 	local %hash = &Json2Hash($event_str);
@@ -107,6 +124,7 @@ sub check_incoming_event () {
 		if ((($hash{from} eq $incoming_connections{$uuid}{agent}) ||
 			($hash{to} eq $incoming_connections{$uuid}{agent})) &&
 			$hash{domain_name} eq $incoming_connections{$uuid}{domain_name}) {
+				$incoming_connections{$uuid} = time;
 				warn $hash{to} . '=' . $incoming_connections{$uuid}{agent} .'   ' . $hash{domain_name} . '=' . $incoming_connections{$uuid}{domain_name};
 				$conn = $incoming_connections{$uuid}{conn};
 				&_warn( "send $event_str to " . $conn->ip() . ':' . $conn->port(). " ... \n");
