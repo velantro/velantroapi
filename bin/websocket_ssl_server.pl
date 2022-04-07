@@ -53,6 +53,13 @@ $server = Net::WebSocket::Server->new(
                 
                 %result = ();
                 if ($action eq 'login') {
+					for $c (keys %nomsg_connections) {
+						if ($nomsg_connections{$c}{conn} == $conn) {							
+							&_warn("delete $c from nomsg_connections!");
+							delete $nomsg_connections{$c};
+							last;
+						}		
+					}
 					delete $nomsg_connections{$conn};
                 	$uuid = &genuuid();
                 	$old_uuid = &check_connection($conn);
