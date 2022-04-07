@@ -59,7 +59,7 @@ $server = Net::WebSocket::Server->new(
                 	if ($old_uuid) {
                 		delete $incoming_connections{$old_uuid};
                 	}
-                	
+                	$incoming_connections{$uuid}{active_time} = time;
                 	$incoming_connections{$uuid}{conn} = $conn;
                 	$incoming_connections{$uuid}{agent} = $hash{agent};
                 	$incoming_connections{$uuid}{domain_name} = $hash{domain_name};
@@ -126,7 +126,7 @@ sub check_incoming_event () {
 		if ((($hash{from} eq $incoming_connections{$uuid}{agent}) ||
 			($hash{to} eq $incoming_connections{$uuid}{agent})) &&
 			$hash{domain_name} eq $incoming_connections{$uuid}{domain_name}) {
-				$incoming_connections{$uuid} = time;
+				$incoming_connections{$uuid}{active_time} = time;
 				warn $hash{to} . '=' . $incoming_connections{$uuid}{agent} .'   ' . $hash{domain_name} . '=' . $incoming_connections{$uuid}{domain_name};
 				$conn = $incoming_connections{$uuid}{conn};
 				&_warn( "send $event_str to " . $conn->ip() . ':' . $conn->port(). " ... \n");
@@ -141,7 +141,16 @@ sub check_incoming_event () {
 		delete $msg_pool{$msg_key};
 	}
 	
-    
+    for $uuid (keys %incoming_connections) {
+		if (time - $incoming_connections{$uuid}{active_time} > 180) {
+			$conn = $incoming_connections{$uuid}{conn};
+			$event_str = "no msg timeout, disconnect!";
+			&_warn( "send  $event_str to" . $conn->ip() . ':' . $conn->port(). " ... \n");
+			$conn->send_utf8($event_str) if $event_str;
+			$serv->disconnect($incoming_connections{$uuid}{conn}->socket);
+			delete $incoming_connections{$uuid};
+		}
+	}
 }
 
 sub check_connection () {
