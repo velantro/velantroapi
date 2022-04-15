@@ -2748,7 +2748,7 @@ sub get_freeside_daily_cdr {
 		if ($did_str) {
 			$did_str .= ',';
 		}
-		if ($did !~ /^1/) {
+		if ($d !~ /^1/) {
 			$did_str .= "'1$d',";
 		}
 		
