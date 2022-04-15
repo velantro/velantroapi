@@ -2761,7 +2761,6 @@ sub get_freeside_daily_cdr {
 	$sth   -> execute();
 	my $result_str;
 	while (my $row = $sth->fetchrow_hashref) {
-		$result_str .= "\n";
 		$result_str .= $domain_name . "," .
 					   $row->{caller_id_number} . "," .
 					   $row->{from_did} . "," .
@@ -2773,7 +2772,7 @@ sub get_freeside_daily_cdr {
 					   $row->{end_stamp} . ',' .
 					   "ANSWERED" . ',' .
 					   "DOCUMENTATION" . ',' .
-					   $row->{uuid};
+					   $row->{uuid} . "\n";
 				
 	}
 	
