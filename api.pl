@@ -2732,7 +2732,7 @@ sub get_freeside_daily_cdr {
 	$day = $query{day};
 	if (!$day) {
 		@arr = localtime();
-		$day = ($arr[5]+1900) . '-' . sprintf("%02d", $arr[4]) . '-' . sprintf("%02d", $arr[3]);
+		$day = ($arr[5]+1900) . '-' . sprintf("%02d", $arr[4]+1) . '-' . sprintf("%02d", $arr[3]);
 	}
 	$tenant = $query{tenant};
 	if ($tenant =~ /\./) {
