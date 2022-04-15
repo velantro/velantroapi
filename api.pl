@@ -2748,11 +2748,9 @@ sub get_freeside_daily_cdr {
 		if ($did_str) {
 			$did_str .= ',';
 		}
-		if ($d !~ /^1/) {
-			$did_str .= "'1$d',";
-		}
+		($d10) = $d =~ /^1?(\d+)$/;
 		
-		$did_str .= "'$d'";
+		$did_str .= "'$d10','1$d10'";
 	}
 	
 	my $sql = "select uuid,caller_id_number,caller_id_name,from_did,start_stamp,answer_stamp,end_stamp,duration,billsec from v_xml_cdr where domain_name='$domain_name' and from_did in ($did_str) and hangup_cause='NORMAL_CLEARING' and start_stamp >= '$day 00:00:00' and start_stamp <= '$day 23:59:59'";
