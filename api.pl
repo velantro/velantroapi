@@ -218,6 +218,8 @@ if ($query{action} eq 'addwidget') {
 	do_transfer();
 } elsif ($query{action} eq 'updateaws'){
 	do_aws();
+} elsif ($query{action} eq 'getdailycdrfreeside'){
+	get_freeside_daily_cdr();
 } else {
      print j({error => '1', 'message' => 'undefined action', 'actionid' => $query{actionid}});
     exit 0;
