@@ -2773,7 +2773,7 @@ sub get_freeside_daily_cdr {
 					   $row->{end_stamp} . ',' .
 					   "ANSWERED" . ',' .
 					   "DOCUMENTATION" . ',' .
-					   $row->{uuid} . "\n";
+					   $row->{uuid};
 				
 	}
 	
