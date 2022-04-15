@@ -2766,7 +2766,7 @@ sub get_freeside_daily_cdr {
 					   $row->{from_did} . "," .
 					   $domain_name . "," .
 					   $row->{caller_id_name} . "," .
-					   ',,,,,' .
+					   ',,,,' .
 					   $row->{start_stamp} . ",".
 					   $row->{answer_stamp} . ','.
 					   $row->{end_stamp} . ',' .
