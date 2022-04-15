@@ -2729,19 +2729,19 @@ sub records {
 }
 
 sub get_freeside_daily_cdr {
-	$day = shift;
+	$day = $query{day};
 	if (!$day) {
 		@arr = localtime();
 		$day = ($arr[5]+1900) . '-' . sprintf("%02d", $arr[4]) . '-' . sprintf("%02d", $arr[3]);
 	}
-	$tenant = shift;
+	$tenant = $query{tenant};
 	if ($tenant =~ /\./) {
 		$domain_name = $tenant;
 	} else {
 		$domain_name = "$tenant.velantro.net";
 	}
 	
-	$did = shift;
+	$did = $query{did};
 	@dids = split ',', $did;
 	
 	for $d (@dids) {
