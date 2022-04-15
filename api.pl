@@ -2770,6 +2770,8 @@ sub get_freeside_daily_cdr {
 					   $row->{start_stamp} . ",".
 					   $row->{answer_stamp} . ','.
 					   $row->{end_stamp} . ',' .
+					   $row->{duration} . ',' .
+					   $row->{billsec} . ',' .
 					   "ANSWERED" . ',' .
 					   "DOCUMENTATION" . ',' .
 					   $row->{uuid} . "\n";
