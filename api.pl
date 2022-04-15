@@ -2748,6 +2748,9 @@ sub get_freeside_daily_cdr {
 		if ($did_str) {
 			$did_str .= ',';
 		}
+		if ($did !~ /^1/) {
+			$did_str .= "'1$d',";
+		}
 		
 		$did_str .= "'$d'";
 	}
@@ -2755,7 +2758,7 @@ sub get_freeside_daily_cdr {
 	my $sql = "select uuid,caller_id_number,caller_id_name,from_did,start_stamp,answer_stamp,end_stamp,duration,billsec from v_xml_cdr where domain_name='$domain_name' and from_did in ($did_str) and hangup_cause='NORMAL_CLEARING' and start_tamp >= '$day 00:00:00' and start_stamp <= '$day 23:59:59";
 	warn "get_freeside_daily_cdr: $sql\n";
 	my $sth = $dbh->prepare($sql);
-	$sth   -> execute($query{channels});
+	$sth   -> execute();
 	my $result_str;
 	while (my $row = $sth->fetchrow_hashref) {
 		$result_str .= "\n";
