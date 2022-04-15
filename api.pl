@@ -2725,3 +2725,53 @@ sub records {
 
         return \@fields;
 }
+
+sub get_freeside_daily_cdr {
+	$day = shift;
+	if (!$day) {
+		@arr = localtime();
+		$day = ($arr[5]+1900) . '-' . sprintf("%02d", $arr[4]) . '-' . sprintf("%02d", $arr[3]);
+	}
+	$tenant = shift;
+	if ($tenant =~ /\./) {
+		$domain_name = $tenant;
+	} else {
+		$domain_name = "$tenant.velantro.net";
+	}
+	
+	$did = shift;
+	@dids = split ',', $did;
+	
+	for $d (@dids) {
+		if ($did_str) {
+			$did_str .= ',';
+		}
+		
+		$did_str .= "'$d'";
+	}
+	
+	my $sql = "select uuid,caller_id_number,caller_id_name,from_did,start_stamp,answer_stamp,end_stamp,duration,billsec from v_xml_cdr where domain_name='$domain_name' and from_did in ($did_str) and hangup_cause='NORMAL_CLEARING' and start_tamp >= '$day 00:00:00' and start_stamp <= '$day 23:59:59";
+	warn "get_freeside_daily_cdr: $sql\n";
+	my $sth = $dbh->prepare($sql);
+	$sth   -> execute($query{channels});
+	my $result_str;
+	while (my $row = $sth->fetchrow_hashref) {
+		$result_str .= "\n";
+		$result_str .= $domain_name . "," .
+					   $row->{caller_id_number} . "," .
+					   $row->{from_did} . "," .
+					   $domain_name . "," .
+					   $row->{caller_id_name} . "," .
+					   ',,,,,' .
+					   $row->{start_stamp} . ",".
+					   $row->{answer_stamp} . ','.
+					   $row->{end_stamp} . ',' .
+					   "ANSWERED" . ',' .
+					   "DOCUMENTATION" . ',' .
+					   $row->{uuid} . "\n";
+				
+	}
+	
+	print $result_str;
+	
+}
