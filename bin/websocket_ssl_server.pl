@@ -180,5 +180,6 @@ sub reaper{
 	&_warn( "Get a signal $!, stop server!");
 	$ssl_server->close();
 	$server->shutdown();
+	exit 0;
 }
 
