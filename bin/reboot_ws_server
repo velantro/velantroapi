@@ -5,7 +5,7 @@ echo "pid=$pid"
 kill $pid
 sleep 5
 
-setsid perl  /salzh/velantroapi/bin/websocket_ssl_server.pl >> /tmp/w.log 2>&1 &
+setsid perl  /salzh/velantroapi/bin/websocket_ssl_server.pl >> /tmp/w.log 2>&1
 
 
 
