@@ -2785,7 +2785,8 @@ sub get_freeside_daily_cdr {
 sub do_checkdid {
 	($did10) = $query{did} =~ /^1?(\d{10})$/;
 	if (!$did10) {
-		return "error: " . $query{did} . " format error!";
+		print "error: " . $query{did} . " format error!";
+		return;
 	}
 	$did11 = "1$did10";
 	
@@ -2801,6 +2802,7 @@ sub do_checkdid {
 		return 'ok';
 	}
 	
-	return "error: not found";
+	print "error: not found";
+	return;
 	
 }
