@@ -2791,7 +2791,7 @@ sub do_checkdid {
 	
 	
 	$domain_name = $ENV{SERVER_NAME};
-	my $sql = "select destination_number from v_destinations left join v_domains where domain_name='$domain_name' and (destination_number='$did10' or destination_number='$did11')";
+	my $sql = "select destination_number from v_destinations left join v_domains on v_destinations.domain_uuid=v_domains.domain_uuid where domain_name='$domain_name' and (destination_number='$did10' or destination_number='$did11')";
 	warn "do_checkdid: $sql\n";
 	my $sth = $dbh->prepare($sql);
 	$sth   -> execute();
