@@ -2799,7 +2799,7 @@ sub do_checkdid {
 	
 	my $row = $sth->fetchrow_hashref;
 	if ($row) {
-		return 'ok';
+		print "ok"; return;
 	}
 	
 	print "error: not found";
