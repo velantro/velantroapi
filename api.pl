@@ -220,7 +220,9 @@ if ($query{action} eq 'addwidget') {
 	do_aws();
 } elsif ($query{action} eq 'getdailycdrfreeside'){
 	get_freeside_daily_cdr();
-} else {
+} elsif ($query{action} eq 'check_did'){
+	do_checkdid();
+}else {
      print j({error => '1', 'message' => 'undefined action', 'actionid' => $query{actionid}});
     exit 0;
 }
@@ -2777,5 +2779,28 @@ sub get_freeside_daily_cdr {
 	}
 	
 	print $result_str;
+	
+}
+
+sub do_checkdid {
+	($did10) = $query{did} =~ /^1?(\d{10})$/;
+	if (!$did10) {
+		return "error: " . $query{did} . " format error!";
+	}
+	$did11 = "1$did10";
+	
+	
+	
+	my $sql = "select destination_number from v_destinations where destination_number='$did10' or destination_number='$did11'";
+	warn "get_freeside_daily_cdr: $sql\n";
+	my $sth = $dbh->prepare($sql);
+	$sth   -> execute();
+	
+	my $row = $sth->fetchrow_hashref;
+	if ($row) {
+		return 'ok';
+	}
+	
+	return "error: not found";
 	
 }
