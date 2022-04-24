@@ -2790,7 +2790,7 @@ sub do_checkdid {
 	$did11 = "1$did10";
 	
 	
-	$domain_name = $_SERVER['SERVER_NAME']
+	$domain_name = $_SERVER['SERVER_NAME'];
 	my $sql = "select destination_number from v_destinations left join v_domains where domain_name='$domain_name' and (destination_number='$did10' or destination_number='$did11')";
 	warn "do_checkdid: $sql\n";
 	my $sth = $dbh->prepare($sql);
