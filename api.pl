@@ -220,7 +220,7 @@ if ($query{action} eq 'addwidget') {
 	do_aws();
 } elsif ($query{action} eq 'getdailycdrfreeside'){
 	get_freeside_daily_cdr();
-} elsif ($query{action} eq 'check_did'){
+} elsif ($query{action} eq 'checkdid'){
 	do_checkdid();
 }else {
      print j({error => '1', 'message' => 'undefined action', 'actionid' => $query{actionid}});
@@ -2790,9 +2790,9 @@ sub do_checkdid {
 	$did11 = "1$did10";
 	
 	
-	
-	my $sql = "select destination_number from v_destinations where destination_number='$did10' or destination_number='$did11'";
-	warn "get_freeside_daily_cdr: $sql\n";
+	$domain_name = $_SERVER['SERVER_NAME']
+	my $sql = "select destination_number from v_destinations left join v_domains where domain_name='$domain_name' and (destination_number='$did10' or destination_number='$did11')";
+	warn "do_checkdid: $sql\n";
 	my $sth = $dbh->prepare($sql);
 	$sth   -> execute();
 	
