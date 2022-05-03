@@ -2812,7 +2812,7 @@ sub do_checkdid {
 sub get_agent_status {
 	$agent = $query{agent};
 	$domain_name = $ENV{SERVER_NAME};
-	my $sql = "select call_center_agent_uuid from v_call_center_agents where agent_name='$agent' and agent_contact like '\%$domain_name')";
+	my $sql = "select call_center_agent_uuid from v_call_center_agents where agent_name='$agent' and agent_contact like '\%$domain_name'";
 	warn "get_agent_status: $sql\n";
 	my $sth = $dbh->prepare($sql);
 	$sth   -> execute();
