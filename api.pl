@@ -2826,6 +2826,10 @@ sub get_agent_status {
 	} else {	
 		my $result = `fs_cli -x 'callcenter_config agent get status $agent_uuid'`;
 		chomp $result;
+		if ($result eq 'On Break') {
+			$result = 'Break';
+		}
+		
 		print j({error => '0', 'status' => $result});
 	}
 	
@@ -2834,9 +2838,13 @@ sub get_agent_status {
 sub set_agent_status {
 	$agent = $query{agent};
 	$status = $query{status};
+	if ($status =~ /break/i) {
+		$status = 'On Break';
+	}
+	
 	$domain_name = $ENV{SERVER_NAME};
 	my $sql = "select call_center_agent_uuid from v_call_center_agents where agent_name='$agent' and agent_contact like '\%$domain_name'";
-	warn "get_agent_status: $sql\n";
+	warn "set_agent_status: $sql\n";
 	my $sth = $dbh->prepare($sql);
 	$sth   -> execute();
 	
