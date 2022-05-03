@@ -222,7 +222,9 @@ if ($query{action} eq 'addwidget') {
 	get_freeside_daily_cdr();
 } elsif ($query{action} eq 'checkdid'){
 	do_checkdid();
-}else {
+} elsif ($query{action} eq 'getagentstatus'){
+	get_agent_status();
+} else {
      print j({error => '1', 'message' => 'undefined action', 'actionid' => $query{actionid}});
     exit 0;
 }
@@ -2804,5 +2806,25 @@ sub do_checkdid {
 	
 	print "error: not found";
 	return;
+	
+}
+
+sub get_agent_status {
+	$agent = $query{agent};
+	$domain_name = $ENV{SERVER_NAME};
+	my $sql = "select call_center_agent_uuid from v_call_center_agents where agent_name='$agent' and agent_contact like '\%$domain_name')";
+	warn "get_agent_status: $sql\n";
+	my $sth = $dbh->prepare($sql);
+	$sth   -> execute();
+	
+	my $row = $sth->fetchrow_hashref;
+	$agent_uuid = $row->{call_center_agent_uuid};
+	if (!$agent_uuid) {
+		print j({error => '1', 'message' => "agent=$agent not found"}); 
+	} else {	
+		my $result = `fs_cli -x 'callcenter_config agent get status $agent_uuid'`;
+		chomp $result;
+		print j({error => '1', 'status' => $result});
+	}
 	
 }
