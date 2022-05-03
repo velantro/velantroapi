@@ -2829,6 +2829,9 @@ sub get_agent_status {
 		if ($result eq 'On Break') {
 			$result = 'Break';
 		}
+		if ($status eq 'Logged Out') {
+			$status = 'Logout';
+		}
 		
 		print j({error => '0', 'status' => $result});
 	}
@@ -2840,6 +2843,9 @@ sub set_agent_status {
 	$status = $query{status};
 	if ($status =~ /break/i) {
 		$status = 'On Break';
+	}
+	if ($status =~ /logout/i) {
+		$status = 'Logged Out';
 	}
 	
 	$domain_name = $ENV{SERVER_NAME};
