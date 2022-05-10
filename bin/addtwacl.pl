@@ -51,9 +51,9 @@ if (!$access_control_uuid) {
 }
 
 $uuid = `uuid -v 4`;chomp $uuid;
-$dbh->prepare("insert into v_access_control_nodes (access_control_node_uuid,access_control_uuid,node_type,node_cidr,node_description) values ('$uuid','$access_control_uuid','allow','54.172.60.0/24','twilio'")->execute();
+$dbh->prepare("insert into v_access_control_nodes (access_control_node_uuid,access_control_uuid,node_type,node_cidr,node_description) values ('$uuid','$access_control_uuid','allow','54.172.60.0/24','twilio')")->execute();
 $uuid = `uuid -v 4`;chomp $uuid;
-$dbh->prepare("insert into v_access_control_nodes (access_control_node_uuid,access_control_uuid,node_type,node_cidr,node_description) values ('$uuid','$access_control_uuid','allow','54.244.51.0/24','twilio'")->execute();
+$dbh->prepare("insert into v_access_control_nodes (access_control_node_uuid,access_control_uuid,node_type,node_cidr,node_description) values ('$uuid','$access_control_uuid','allow','54.244.51.0/24','twilio')")->execute();
 
 
 system("fs_cli -rx 'reloadacl'");
