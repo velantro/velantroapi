@@ -50,9 +50,9 @@ if (!$access_control_uuid) {
 	die "not found domains in access_control!\n";
 }
 
-$uuid = `uuid -4`;chomp $uuid;
+$uuid = `uuid -v 4`;chomp $uuid;
 $dbh->prepare("insert into v_access_control_nodes (access_control_node_uuid,access_control_uuid,node_type,node_cidr,node_description) values ('$uuid','$access_control_uuid','allow','54.172.60.0/24','twilio'");
-$uuid = `uuid -4`;chomp $uuid;
+$uuid = `uuid -v 4`;chomp $uuid;
 $dbh->prepare("insert into v_access_control_nodes (access_control_node_uuid,access_control_uuid,node_type,node_cidr,node_description) values ('$uuid','$access_control_uuid','allow','54.244.51.0/24','twilio'");
 
 
