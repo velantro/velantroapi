@@ -215,8 +215,14 @@ if ($cmd eq 'updatemonitorscript') {
 			print "$cmd on  $name [$ip:$port]\n";
 			
 			mkdir "/tmp/$ip";
-			system("scp -oPort=$port  root\@$ip:/usr/local/freeswitch/scripts/app/xml_handler/resources/scripts/dialplan/dialplan.lua /tmp/$ip-dialplan.lua");
-			system("scp -oPort=$port  root\@$ip:/usr/share/freeswitch/scripts/app/xml_handler/resources/scripts/dialplan/dialplan.lua /tmp/$ip-dialplan.lua");
+			#system("scp -oPort=$port  root\@$ip:/usr/local/freeswitch/scripts/app/xml_handler/resources/scripts/dialplan/dialplan.lua /tmp/$ip-dialplan.lua");
+			#system("scp -oPort=$port  root\@$ip:/usr/share/freeswitch/scripts/app/xml_handler/resources/scripts/dialplan/dialplan.lua /tmp/$ip-dialplan.lua");
+			$out = `ssh -t -p $port root\@$ip \"fs_cli -rx 'version'\"`;
+			($version) = $out =~ /Version ([\d\.]+)/;
+			$hash{$ip} = $version;
+		}
+		for (keys %$hash) {
+			print "$ip:$version\n";
 		}
 }
  else {
