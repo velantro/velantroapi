@@ -221,7 +221,7 @@ if ($cmd eq 'updatemonitorscript') {
 			($version) = $out =~ /Version ([\d\.]+)/;
 			$hash{$ip} = $version;
 		}
-		for (keys %$hash) {
+		for (keys %hash) {
 			print "$ip:$version\n";
 		}
 }
