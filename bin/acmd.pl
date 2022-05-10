@@ -208,6 +208,16 @@ if ($cmd eq 'updatemonitorscript') {
 				system("ssh -t -p $port root\@$ip \"fs_cli -rx 'reloadacl'\"");
 			}			
 		}
+} elsif ($cmd eq 'updatedialplan') {
+		for (split /\n/, $lines) {
+			($ip,$port,$name,$uri) = split ',', $_, 4;
+			next if !$ip;
+			print "$cmd on  $name [$ip:$port]\n";
+			
+			mkdir "/tmp/$ip";
+			system("scp -oPort=$port  root\@$ip:/usr/local/freeswitch/scripts/app/xml_handler/resources/scripts/dialplan/dialplan.lua /tmp/$ip");
+			system("scp -oPort=$port  root\@$ip:/usr/share/freeswitch/scripts/app/xml_handler/resources/scripts/dialplan/dialplan.lua /tmp/$ip");
+		}
 }
  else {
 	for (split /\n/, $lines) {
