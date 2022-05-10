@@ -193,15 +193,20 @@ if ($cmd eq 'updatemonitorscript') {
 			next if !$ip;
 			print "$cmd on  $name [$ip:$port]\n";
 			
+			next if $name eq 'velantrovip';
 			#$out = `ssh -t -p $port root\@$ip \"fs_cli -rx 'version'\"`;
 			#($version) = $out =~ /Version ([\d\.]+)/;
 			#print "$name: $version\n";
+			system("scp -oPort=$port /var/www/api/bin/addtwacl.pl root\@$ip:/var/www/api/bin/");
 			$out = `ssh -t -p $port root\@$ip 'ls /usr/local/freeswitch/conf/autoload_configs/acl.conf.xml 2>/dev/null | grep -v cannot'`;
 			chomp $out;
 			if ($out) {
 				warn "cp acl.conf.xml!\n";
-			}
-			
+				system("scp -oPort=$port /usr/local/freeswitch/conf/autoload_configs/acl.conf.xml root\@$ip:/usr/local/freeswitch/conf/autoload_configs/");
+			} else {
+				system("ssh -t -p $port root\@$ip \"perl  /var/www/api/bin/addtwacl.pl");
+				system("ssh -t -p $port root\@$ip \"fs_cli -rx 'reloadacl'\"");
+			}			
 		}
 }
  else {
