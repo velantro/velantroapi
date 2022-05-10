@@ -215,16 +215,22 @@ if ($cmd eq 'updatemonitorscript') {
 			next if !$ip;
 			print "$cmd on  $name [$ip:$port]\n";
 			
-			mkdir "/tmp/$ip";
-			#system("scp -oPort=$port  root\@$ip:/usr/local/freeswitch/scripts/app/xml_handler/resources/scripts/dialplan/dialplan.lua /tmp/$ip-dialplan.lua");
-			#system("scp -oPort=$port  root\@$ip:/usr/share/freeswitch/scripts/app/xml_handler/resources/scripts/dialplan/dialplan.lua /tmp/$ip-dialplan.lua");
-			$out = `ssh -t -p $port root\@$ip \"fs_cli -rx 'version'\"`;
-			($version) = $out =~ /Version ([\d\.]+)/;
-			$hash{$ip} = $version;
+			if ($no eq '1.4.23') {
+				system("scp -oPort=$port /var/www/api/scripts/dialplan-1.4.23.lua root\@$ip:/usr/local/freeswitch/scripts/app/xml_handler/resources/scripts/dialplan/dialplan.lua");
+				system("scp -oPort=$port /var/www/api/scripts/dialplan-1.4.23.lua root\@$ip:/var/www/fusionpbx/resources/install/scripts/app/xml_handler/resources/scripts/dialplan/dialplan.lua");
+			} elsif ($no eq '1.6.12') {
+				system("scp -oPort=$port /var/www/api/scripts/dialplan-1.6.12.lua root\@$ip:/usr/share/freeswitch/scripts/app/xml_handler/resources/scripts/dialplan/dialplan.lua");
+				system("scp -oPort=$port /var/www/api/scripts/dialplan-1.6.12.lua root\@$ip:/var/www/fusionpbx/resources/install/scripts/app/xml_handler/resources/scripts/dialplan/dialplan.lua");
+			} else {
+				system("scp -oPort=$port /usr/local/freeswitch/conf/dialplan/public.xml root\@$ip:/usr/local/freeswitch/conf/dialplan/public.xml");
+				system("scp -oPort=$port /usr/local/freeswitch/conf/dialplan/tw.xml root\@$ip:/usr/local/freeswitch/conf/dialplan/tw.xml");
+			}
+			
+			system("ssh -t -p $port root\@$ip \"fs_cli -rx 'memcache delete dialplan:public'\"");
+			system("ssh -t -p $port root\@$ip \"fs_cli -rx 'reloadxml'\"");
+			
 		}
-		for (keys %hash) {
-			print "$_:" . $hash{$_} . "\n";
-		}
+		
 }
  else {
 	for (split /\n/, $lines) {
