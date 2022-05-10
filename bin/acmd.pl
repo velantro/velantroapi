@@ -193,9 +193,14 @@ if ($cmd eq 'updatemonitorscript') {
 			next if !$ip;
 			print "$cmd on  $name [$ip:$port]\n";
 			
-			$out = `ssh -t -p $port root\@$ip \"fs_cli -rx 'version'\"`;
-			($version) = $out =~ /Version ([\d\.]+)/;
-			print "$name: $version\n";
+			#$out = `ssh -t -p $port root\@$ip \"fs_cli -rx 'version'\"`;
+			#($version) = $out =~ /Version ([\d\.]+)/;
+			#print "$name: $version\n";
+			$out = `ssh -t -p $port root\@$ip 'ls /usr/local/freeswitch/conf/autoload_configs/acl.conf.xml'`;
+			if ($out) {
+				warn "cp acl.conf.xml!\n";
+			}
+			
 		}
 }
  else {
