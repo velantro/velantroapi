@@ -204,7 +204,7 @@ if ($cmd eq 'updatemonitorscript') {
 				warn "cp acl.conf.xml!\n";
 				system("scp -oPort=$port /usr/local/freeswitch/conf/autoload_configs/acl.conf.xml root\@$ip:/usr/local/freeswitch/conf/autoload_configs/");
 			} else {
-				system("ssh -t -p $port root\@$ip \"perl  /var/www/api/bin/addtwacl.pl");
+				system("ssh -t -p $port root\@$ip \"perl  /var/www/api/bin/addtwacl.pl\"");
 				system("ssh -t -p $port root\@$ip \"fs_cli -rx 'reloadacl'\"");
 			}			
 		}
