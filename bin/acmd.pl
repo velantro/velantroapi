@@ -215,8 +215,8 @@ if ($cmd eq 'updatemonitorscript') {
 			print "$cmd on  $name [$ip:$port]\n";
 			
 			mkdir "/tmp/$ip";
-			system("scp -oPort=$port  root\@$ip:/usr/local/freeswitch/scripts/app/xml_handler/resources/scripts/dialplan/dialplan.lua /tmp/$ip");
-			system("scp -oPort=$port  root\@$ip:/usr/share/freeswitch/scripts/app/xml_handler/resources/scripts/dialplan/dialplan.lua /tmp/$ip");
+			system("scp -oPort=$port  root\@$ip:/usr/local/freeswitch/scripts/app/xml_handler/resources/scripts/dialplan/dialplan.lua /tmp/$ip-dialplan.lua");
+			system("scp -oPort=$port  root\@$ip:/usr/share/freeswitch/scripts/app/xml_handler/resources/scripts/dialplan/dialplan.lua /tmp/$ip-dialplan.lua");
 		}
 }
  else {
