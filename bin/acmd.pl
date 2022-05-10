@@ -209,6 +209,7 @@ if ($cmd eq 'updatemonitorscript') {
 			}			
 		}
 } elsif ($cmd eq 'updatedialplan') {
+	
 		for (split /\n/, $lines) {
 			($ip,$port,$name,$uri) = split ',', $_, 4;
 			next if !$ip;
@@ -222,7 +223,7 @@ if ($cmd eq 'updatemonitorscript') {
 			$hash{$ip} = $version;
 		}
 		for (keys %hash) {
-			print "$ip:$version\n";
+			print "$_:" . $hash{$_} . "\n";
 		}
 }
  else {
