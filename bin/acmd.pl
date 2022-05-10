@@ -1,8 +1,8 @@
 $lines = '
 67.227.80.76,22,velantro76,http://76.velantro.net/,pbxv1
 67.227.80.67,22,velantro67,http://67.227.80.67/,pbxv1
-67.227.80.69,22,velantro67,http://67.227.80.68/,pbxv1
-67.227.80.69,22,velantro67,http://67.227.80.69/,pbxv1
+67.227.80.69,22,velantro68,http://67.227.80.68/,pbxv1
+67.227.80.69,22,velantro69,http://67.227.80.69/,pbxv1
 67.227.80.71,22,velantro71,http://67.227.80.71/,pbxv1
 67.227.80.83,22,velantro204,http://204.velantro.net/,pbxv1
 67.227.80.51,56443,velantro19,http://19.velantro.net/,pbxv1
