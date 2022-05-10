@@ -185,6 +185,16 @@ if ($cmd eq 'updatemonitorscript') {
 			
 			system("ssh -t -p $port root\@$ip \"fs_cli -rx 'reloadacl'\"");
 		}
+} elsif ($cmd eq 'addtwacl') {
+		for (split /\n/, $lines) {
+			($ip,$port,$name,$uri) = split ',', $_, 4;
+			next if !$ip;
+			print "$cmd on  $name [$ip:$port]\n";
+			
+			$out = `ssh -t -p $port root\@$ip \"fs_cli -rx 'version'\"`;
+			($version) = $out =~ /Version ([\d\.]+)/;
+			print "$name: $version\n";
+		}
 }
  else {
 	for (split /\n/, $lines) {
