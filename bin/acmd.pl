@@ -159,6 +159,18 @@ if ($cmd eq 'updatemonitorscript') {
 		system("scp -oPort=$port /salzh/bin/mounts3 root\@$ip:/salzh/bin");
 		system("ssh -t -p $port root\@$ip cp -f /usr/local/bin/s3fs /usr/local/bin/s3fsnew");
 	}
+} elsif ($cmd eq 'updatemounts3') {
+	
+	for (split /\n/, $lines) {
+		($ip,$port,$name,$uri,$v) = split ',', $_, 5;
+		next if !$ip;
+		next if $name eq 'velantrovip' || $name eq 'velantro118';
+
+		print "$cmd on  $name [$ip:$port]\n";
+		system("umount -f /mnt/s3; umount -f /mnt/s3");
+		system("scp -oPort=$port /salzh/bin/mounts3 root\@$ip:/salzh/bin");
+	
+	}
 } elsif ($cmd eq 'updatewasabi3') {
 	
 	for (split /\n/, $lines) {
