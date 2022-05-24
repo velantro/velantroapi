@@ -38,7 +38,7 @@ sub connect_db() {
 	}
 }
 
-$sql = "delete from v_access_control_nodes where node_cidr in ('54.172.60.0/24', '54.244.51.0/24','192.76.120.10','64.16.250.10')";
+$sql = "delete from v_access_control_nodes where node_cidr in ('54.172.60.0/24', '54.244.51.0/24','192.76.120.10/32','64.16.250.10/32')";
 $dbh->do($sql);
 
 
@@ -55,9 +55,9 @@ $dbh->prepare("insert into v_access_control_nodes (access_control_node_uuid,acce
 $uuid = `uuid -v 4`;chomp $uuid;
 $dbh->prepare("insert into v_access_control_nodes (access_control_node_uuid,access_control_uuid,node_type,node_cidr,node_description) values ('$uuid','$access_control_uuid','allow','54.244.51.0/24','twilio')")->execute();
 $uuid = `uuid -v 4`;chomp $uuid;
-$dbh->prepare("insert into v_access_control_nodes (access_control_node_uuid,access_control_uuid,node_type,node_cidr,node_description) values ('$uuid','$access_control_uuid','allow','192.76.120.10','telynx')")->execute();
+$dbh->prepare("insert into v_access_control_nodes (access_control_node_uuid,access_control_uuid,node_type,node_cidr,node_description) values ('$uuid','$access_control_uuid','allow','192.76.120.10/32','telynx')")->execute();
 $uuid = `uuid -v 4`;chomp $uuid;
-$dbh->prepare("insert into v_access_control_nodes (access_control_node_uuid,access_control_uuid,node_type,node_cidr,node_description) values ('$uuid','$access_control_uuid','allow','64.16.250.10','telynx2')")->execute();
+$dbh->prepare("insert into v_access_control_nodes (access_control_node_uuid,access_control_uuid,node_type,node_cidr,node_description) values ('$uuid','$access_control_uuid','allow','64.16.250.10/32','telynx2')")->execute();
 
 system("fs_cli -rx 'reloadacl'");
 
