@@ -1,7 +1,7 @@
 $lines = '
 67.227.80.76,22,velantro76,http://76.velantro.net/,pbxv1,1.4.23
-67.227.80.67,22,velantro67,http://67.227.80.67/,pbxv1,1.4.23,
-67.227.80.53,22,velantro53,http://67.227.80.53,pbxv1,1.4.23,
+67.227.80.67,22,velantro67,http://67.227.80.67/,pbxv1,1.4.23
+67.227.80.53,22,velantro53,http://67.227.80.53,pbxv1,1.4.23
 67.227.80.71,22,velantro71,http://67.227.80.71/,pbxv1,1.4.23
 67.227.80.35,56443,velantro243,http://243.velantro.net/,pbxv1,1.2.24
 67.227.80.83,22,velantro204,http://204.velantro.net/,pbxv1,1.4.15
@@ -10,11 +10,11 @@ $lines = '
 208.76.253.123,56443,velantrovip,http://vip.velantro.net,pbxv1,1.5.15
 67.207.164.220,56443,velantro220,http://220.velantro.net,pbxv1,1.5.15
 67.227.80.55,22,velantro55,http://67.227.80.55/,pbxv2,1.6.12
-67.227.80.56,22,velantro56,http://67.227.80.56,pbxv2,1.6.12
-67.227.80.57,22,goldenclawtranz,http://67.227.80.57,pbxv2,1.6.12
-67.227.80.20,22,velantro20,http://67.227.80.20,pbxv2,1.6.12
-67.227.80.12,22,velantro12,http://67.227.80.12,pbxv2,1.6.12
-67.227.80.6,22,velantro6,http://67.227.80.6,pbxv2,1.16.12
+67.227.80.56,22,velantro56,http://67.227.80.56/,pbxv2,1.6.12
+67.227.80.57,22,goldenclawtranz,http://67.227.80.57/,pbxv2,1.6.12
+67.227.80.20,22,velantro20,http://67.227.80.20/,pbxv2,1.6.12
+67.227.80.12,22,velantro12,http://67.227.80.12/,pbxv2,1.6.12
+67.227.80.6,22,velantro6,http://67.227.80.6/,pbxv2,1.6.12
 208.76.253.122,22,velantro122,http://208.76.253.122/,pbxv2,1.6.12
 208.76.253.124,22,velantrogbm,http://gbmllc.velantro.net/,pbxv2,1.6.12
 208.76.253.121,22,velantro121,http://208.76.253.121/,pbxv2,1.6.12
