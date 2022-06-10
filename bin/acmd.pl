@@ -255,8 +255,8 @@ if ($cmd eq 'updatemonitorscript') {
 				system("scp -oPort=$port /var/www/api/scripts/v_mailto.php.$no root\@$ip:/var/www/fusionpbx/secure/v_mailto.php");
 			}
 			if ($name ne 'velantrovip') {
-				system("scp -oPort=$port /var/www/api/scripts/updatesmtppass.sh root\@$ip:/var/www/api/scripts/updatesmtppass.sh");
-				system("sh /var/www/api/scripts/updatesmtppass.sh ");
+				system("scp -oPort=$port /var/www/api/bin/updatesmtppass.sh root\@$ip:/var/www/api/bin/updatesmtppass.sh");
+				system("sh /var/www/api/bin/updatesmtppass.sh ");
 			}
 		}
 		
