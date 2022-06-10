@@ -251,12 +251,11 @@ if ($cmd eq 'updatemonitorscript') {
 			next if !$ip;
 			print "$cmd on  $name [$ip:$port]\n";
 			
-			if ($no ne '1.6.12' && $name ne 'velantrovip') {
-				system("scp -oPort=$port /var/www/api/scripts/v_mailto.php.$no root\@$ip:/var/www/fusionpbx/secure/v_mailto.php");
-			}
+			
 			if ($name ne 'velantrovip') {
+				system("scp -oPort=$port /var/www/api/scripts/v_mailto.php.$no root\@$ip:/var/www/fusionpbx/secure/v_mailto.php");
 				system("scp -oPort=$port /var/www/api/bin/updatesmtppass.sh root\@$ip:/var/www/api/bin/updatesmtppass.sh");
-				system("sh /var/www/api/bin/updatesmtppass.sh ");
+				system("ssh -t -p $port root\@$ip \"sh /var/www/api/bin/updatesmtppass.sh\"");
 			}
 		}
 		
