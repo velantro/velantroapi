@@ -259,6 +259,20 @@ if ($cmd eq 'updatemonitorscript') {
 			}
 		}
 		
+} elsif ($cmd eq 'updateflaglogo') {
+	
+		for (split /\n/, $lines) {
+			($ip,$port,$name,$uri,$v,$no) = split ',', $_, 6;
+			next if !$ip;
+			print "$cmd on  $name [$ip:$port]\n";
+			
+			
+			if (1) {
+				system("scp -oPort=$port /var/www/fusionpbx/themes/default/images/logo.png root\@$ip:/var/www/fusionpbx/themes/default/images/");
+				system("scp -oPort=$port /var/www/fusionpbx/themes/default/images/logo.png root\@$ip:/var/www/fusionpbx/themes/enhanced/images/");
+			}
+		}
+		
 }
 
  else {
