@@ -271,8 +271,8 @@ if ($cmd eq 'updatemonitorscript') {
 				system("scp -oPort=$port /var/www/fusionpbx/themes/default/images/logo.png root\@$ip:/var/www/fusionpbx/themes/default/images/");
 				system("scp -oPort=$port /var/www/fusionpbx/themes/default/images/logo.png root\@$ip:/var/www/fusionpbx/themes/enhanced/images/");
 				
-				system("scp -oPort=$port /var/www/fusionpbx/themes/default/images/logo.png root\@$ip:/var/www/fusionpbx/themes/default/");
-				system("scp -oPort=$port /var/www/fusionpbx/themes/default/images/logo.png root\@$ip:/var/www/fusionpbx/themes/enhanced/");
+				system("scp -oPort=$port /var/www/fusionpbx/themes/default/images/favicon.ico root\@$ip:/var/www/fusionpbx/themes/default/");
+				system("scp -oPort=$port /var/www/fusionpbx/themes/default/images/favicon.ico root\@$ip:/var/www/fusionpbx/themes/enhanced/");
 			}
 		}
 		
