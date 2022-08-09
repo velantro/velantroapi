@@ -55,11 +55,13 @@ sub connect_db() {
 
 $sth = $dbh->prepare("select domain_name from v_domains");
 $sth->execute();
-
+$str = 'api:api123@@';
 while ($row = $sth->fetchrow_hashref) {
     ($tenant) = $row->{domain_name} =~ /(\w+)\./;
-    print $tenant, "\n";
+    $str .= "\n$tenant" . md5($tenant);
 }
+
+print $str;
 
 
 
