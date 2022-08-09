@@ -100,8 +100,17 @@ if (!$dbh) {
 }
 warn "login db: OK!\n";
 
-my $txt = `cat /etc/api.conf`; chomp $txt;
-my ($username, $password) = split ':', $txt, 2;
+my $txt = `cat /etc/api.conf`; #chomp $txt;
+#my ($username, $password) = split ':', $txt, 2;
+my %config = ();
+for (split /\n/, $txt) {
+	my ($key, $val)	= split /=/, $_, 2;
+	
+	if ($key) {
+		$login{$key} = $val;
+		#warn "$key=$val\n";
+	}
+}
 #warn "$username==$password";
 if ($query{action} eq 'login') {
 	my $error = 0;
@@ -112,7 +121,7 @@ if ($query{action} eq 'login') {
 		$dbh->prepare("delete from v_api_session where  session_uuid='$old_session_uuid'")->execute();
 	}
 		
-	if ($query{username} eq $username && $query{password} eq $password) {	
+	if ($login{$query{username}} && $login{$query{username}} eq $password) {	
 
 		my $uuid = _uuid();
 		my $cookie1 = $cgi->cookie( -name  => 'session_uuid',
