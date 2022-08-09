@@ -121,7 +121,7 @@ if ($query{action} eq 'login') {
 		$dbh->prepare("delete from v_api_session where  session_uuid='$old_session_uuid'")->execute();
 	}
 		
-	if ($login{$query{username}} && $login{$query{username}} eq $password) {	
+	if ($login{$query{username}} && $login{$query{username}} eq $query{password}) {	
 
 		my $uuid = _uuid();
 		my $cookie1 = $cgi->cookie( -name  => 'session_uuid',
