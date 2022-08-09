@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 
 use DBI;
+use Digest::MD5 qw(md5_hex);
 
 
 
