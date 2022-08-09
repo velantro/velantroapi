@@ -59,7 +59,7 @@ $sth->execute();
 $str = 'api:api123@@';
 while ($row = $sth->fetchrow_hashref) {
     ($tenant) = $row->{domain_name} =~ /(\w+)\./;
-    $str .= "\n$tenant" . md5_hex($tenant);
+    $str .= "\n$tenant:" . md5_hex($tenant);
 }
 
 print $str;
