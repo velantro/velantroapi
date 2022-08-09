@@ -120,7 +120,7 @@ if ($query{action} eq 'login') {
 		#remove old session in db if relogin
 		$dbh->prepare("delete from v_api_session where  session_uuid='$old_session_uuid'")->execute();
 	}
-	print $query{username}, ":" , $query{password}, ":", $login{$query{username}}
+	#print $query{username}, ":" , $query{password}, ":", $login{$query{username}};
 	if ($login{$query{username}} && $login{$query{username}} eq $query{password}) {	
 
 		my $uuid = _uuid();
