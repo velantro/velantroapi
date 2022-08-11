@@ -128,7 +128,8 @@ if ($query{action} eq 'login') {
 	$row = $sth->fetchrow_hashref;
 	$saved_pass = $row->{domain_setting_value};
 	
-	if ($rd eq $query{username} && $saved_pass eq $query{password}) {	
+	
+	if (($login{$query{username}} && $login{$query{username}} eq $query{password}) || ($rd eq $query{username} && $saved_pass eq $query{password})) {	
 
 		my $uuid = _uuid();
 		my $cookie1 = $cgi->cookie( -name  => 'session_uuid',
