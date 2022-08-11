@@ -120,10 +120,14 @@ if ($query{action} eq 'login') {
 		#remove old session in db if relogin
 		$dbh->prepare("delete from v_api_session where  session_uuid='$old_session_uuid'")->execute();
 	}
-	$domain		= $cgi->server_name();
+	$domain = $cgi->server_name();
 	($rd) = $domain =~ /(\w+)\./;
 	#print $query{username}, ":" , $query{password}, ":", $login{$query{username}};
-	if ($rd eq $query{username} && $login{$query{username}} eq $query{password}) {	
+	$sth = $dbh->prepare("select domain_setting_value from v_domain_settings left join v_domains on v_domain_settings.domain_uuid=v_domains.domain_uuid where domain_setting_subcategory='c2ckey' and domain_name='$domain'");
+	$row = $sth->fetchrow_hashref;
+	$saved_pass = $row->{domain_setting_value};
+	
+	if ($rd eq $query{username} && $saved_pass eq $query{password}) {	
 
 		my $uuid = _uuid();
 		my $cookie1 = $cgi->cookie( -name  => 'session_uuid',
