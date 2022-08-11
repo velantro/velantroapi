@@ -124,6 +124,7 @@ if ($query{action} eq 'login') {
 	($rd) = $domain =~ /(\w+)\./;
 	#print $query{username}, ":" , $query{password}, ":", $login{$query{username}};
 	$sth = $dbh->prepare("select domain_setting_value from v_domain_settings left join v_domains on v_domain_settings.domain_uuid=v_domains.domain_uuid where domain_setting_subcategory='c2ckey' and domain_name='$domain'");
+	$sth->execute;
 	$row = $sth->fetchrow_hashref;
 	$saved_pass = $row->{domain_setting_value};
 	
