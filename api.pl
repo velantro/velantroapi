@@ -820,9 +820,14 @@ sub _delete_piwik_site {
 }
 
 sub j {
+	$h = shift;
+	$d = shift;
 	$out = encode_json(shift);
+	if ($d) {
+		print W '[' . now() . '] - ' .$out. "\n";
+	}	
 	
-	print W '[' . now() . '] - ' . $out."\n";
+	
     return $out;
 }
 
@@ -1891,7 +1896,7 @@ sub send_callback {
 		if ($query{from} eq 'firefox') {
 			template_print($template_file, {error => '1', 'message' => 'error: no dest define', 'actionid' => $query{actionid}});
 		} else {
-			print j({error => '1', 'message' => 'error: no dest define', 'actionid' => $query{actionid}});
+			print j({error => '1', 'message' => 'error: no dest define', 'actionid' => $query{actionid}},1);
 		}
 		exit 0;
 	}
@@ -1931,7 +1936,7 @@ sub send_callback {
 	if ($query{from} eq 'firefox') {
 		template_print($template_file, {error => '0', 'message' => 'ok', 'actionid' => $query{actionid},callbackid => $uuid,dest=>$dest, src => $ext});
 	} else {
-		print j({error => '0', 'message' => 'ok', 'actionid' => $query{actionid},callbackid => $uuid});
+		print j({error => '0', 'message' => 'ok', 'actionid' => $query{actionid},callbackid => $uuid}, 1);
 	}
 
 }
