@@ -38,7 +38,7 @@ for (@names) {
 	#warn "$_ : $v";
 }
 =cut
-open W, ">> api.log";
+open W, ">> /var/www/c2capi/api.log";
 $query_string = uri_unescape($cgi->query_string());
 for (split /&|&&/, $query_string) {
 	warn $_;
