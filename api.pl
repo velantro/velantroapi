@@ -820,9 +820,10 @@ sub _delete_piwik_site {
 }
 
 sub j {
-	$out = shift;
+	$out = encode_json(shift);
+	
 	print W '[' . now() . '] - ' . $out."\n";
-    return encode_json($out);
+    return $out;
 }
 
 sub get_country {
