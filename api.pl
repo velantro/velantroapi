@@ -38,6 +38,7 @@ for (@names) {
 	#warn "$_ : $v";
 }
 =cut
+open W, ">> api.log";
 $query_string = uri_unescape($cgi->query_string());
 for (split /&|&&/, $query_string) {
 	warn $_;
@@ -46,6 +47,8 @@ for (split /&|&&/, $query_string) {
 	
 	warn "$var ==> $val";
 }
+print W '[' . now() . '] - ' .$query_string. "\n";
+
 if ($query{msgid}) {
 	$query{action} = 'savesms';
 }
@@ -817,7 +820,9 @@ sub _delete_piwik_site {
 }
 
 sub j {
-    return encode_json(shift);
+	$out = shift;
+	print W '[' . now() . '] - ' . $out."\n";
+    return encode_json($out);
 }
 
 sub get_country {
@@ -2668,6 +2673,12 @@ sub get_today {
 	my $d	= sprintf("%02d", $arr[3]);
 	
 	return ($y, $m, $d);
+}
+
+sub now {
+	@v = localtime();
+	$str = sprintf("%04d-%02d-%02d %02d:%02d:%02d", 1900+$v[5],$v[4]+1,$v[3], $v[2], $v[1], $v[0]);
+	return $str;	
 }
 
 sub _uuid {
