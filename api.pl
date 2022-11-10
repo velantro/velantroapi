@@ -822,7 +822,7 @@ sub _delete_piwik_site {
 sub j {
 	$h = shift;
 	$d = shift;
-	$out = encode_json(shift);
+	$out = encode_json($h);
 	if ($d) {
 		print W '[' . now() . '] - ' .$out. "\n";
 	}	
