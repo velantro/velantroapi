@@ -38,7 +38,7 @@ for (@names) {
 	#warn "$_ : $v";
 }
 =cut
-open W, ">> /var/www/c2capi/api.log";
+#open W, ">> /var/www/c2capi/api.log";
 $query_string = uri_unescape($cgi->query_string());
 for (split /&|&&/, $query_string) {
 	warn $_;
@@ -47,7 +47,7 @@ for (split /&|&&/, $query_string) {
 	
 	warn "$var ==> $val";
 }
-print W '[' . now() . '] - ' .$query_string. "\n";
+#print W '[' . now() . '] - ' .$query_string. "\n";
 
 if ($query{msgid}) {
 	$query{action} = 'savesms';
@@ -824,7 +824,7 @@ sub j {
 	$d = shift;
 	$out = encode_json($h);
 	if ($d) {
-		print W '[' . now() . '] - ' .$out. "\n";
+		#print W '[' . now() . '] - ' .$out. "\n";
 	}	
 	
 	
