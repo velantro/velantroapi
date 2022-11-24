@@ -49,7 +49,7 @@ if ($cgi->request_method eq 'GET') {
 } else {
 	for my $key ($cgi->url_param) {
 		$query{$key} = $cgi->url_param($key);
-		warn "POST $key ==> "  . $cgi->url_param($key);
+		print W "POST $key ==> "  . $cgi->url_param($key) . "\n";
 	}
 	for my $key ($cgi->param) {
 		$query{$key} = $cgi->param($key);
