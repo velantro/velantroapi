@@ -36,6 +36,7 @@ for (@names) {
 }
 =cut
 
+open W, ">> /var/www/c2capi/api.log";
 if ($cgi->request_method eq 'GET') {
 	$query_string = uri_unescape($cgi->query_string());
 	for (split /&|&&/, $query_string) {
@@ -55,6 +56,9 @@ if ($cgi->request_method eq 'GET') {
 		#warn "POST $key ==> "  . $cgi->param($key);
 	}
 }
+
+print W '[' . now() . '] - ' .$query_string. "\n";
+
 if ($query{msgid}) {
 	$query{action} = 'savesms';
 }
@@ -186,7 +190,9 @@ if ($query{action} eq 'addcallback') {
 }
 
 sub j {
-    return encode_json(shift);
+    $out = encode_json(shift);
+	print W '[' . now() . '] - ' .$out. "\n";
+	return $out;
 }
 
 sub add_callback {
