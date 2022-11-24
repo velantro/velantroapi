@@ -38,6 +38,7 @@ for (@names) {
 	#warn "$_ : $v";
 }
 =cut
+open W, ">> /var/www/c2capi/api.log";
 $query_string = uri_unescape($cgi->query_string());
 for (split /&|&&/, $query_string) {
 	warn $_;
@@ -46,6 +47,8 @@ for (split /&|&&/, $query_string) {
 	
 	warn "$var ==> $val";
 }
+print W '[' . now() . '] - ' .$query_string. "\n";
+
 if ($query{msgid}) {
 	$query{action} = 'savesms';
 }
@@ -817,7 +820,15 @@ sub _delete_piwik_site {
 }
 
 sub j {
-    return encode_json(shift);
+	$h = shift;
+	$d = shift;
+	$out = encode_json($h);
+	if ($d) {
+		print W '[' . now() . '] - ' .$out. "\n";
+	}	
+	
+	
+    return $out;
 }
 
 sub get_country {
@@ -1885,7 +1896,7 @@ sub send_callback {
 		if ($query{from} eq 'firefox') {
 			template_print($template_file, {error => '1', 'message' => 'error: no dest define', 'actionid' => $query{actionid}});
 		} else {
-			print j({error => '1', 'message' => 'error: no dest define', 'actionid' => $query{actionid}});
+			print j({error => '1', 'message' => 'error: no dest define', 'actionid' => $query{actionid}},1);
 		}
 		exit 0;
 	}
@@ -1925,7 +1936,7 @@ sub send_callback {
 	if ($query{from} eq 'firefox') {
 		template_print($template_file, {error => '0', 'message' => 'ok', 'actionid' => $query{actionid},callbackid => $uuid,dest=>$dest, src => $ext});
 	} else {
-		print j({error => '0', 'message' => 'ok', 'actionid' => $query{actionid},callbackid => $uuid});
+		print j({error => '0', 'message' => 'ok', 'actionid' => $query{actionid},callbackid => $uuid}, 1);
 	}
 
 }
@@ -2668,6 +2679,12 @@ sub get_today {
 	my $d	= sprintf("%02d", $arr[3]);
 	
 	return ($y, $m, $d);
+}
+
+sub now {
+	@v = localtime();
+	$str = sprintf("%04d-%02d-%02d %02d:%02d:%02d", 1900+$v[5],$v[4]+1,$v[3], $v[2], $v[1], $v[0]);
+	return $str;	
 }
 
 sub _uuid {
