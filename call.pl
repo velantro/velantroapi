@@ -1201,3 +1201,9 @@ sub runswitchcommand {
 	$res = `fs_cli -x "$cmd"`;
 	return $res;
 }
+
+sub now {
+	@v = localtime();
+	$str = sprintf("%04d-%02d-%02d %02d:%02d:%02d", 1900+$v[5],$v[4]+1,$v[3], $v[2], $v[1], $v[0]);
+	return $str;	
+}
