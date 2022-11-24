@@ -49,15 +49,15 @@ if ($cgi->request_method eq 'GET') {
 } else {
 	for my $key ($cgi->url_param) {
 		$query{$key} = $cgi->url_param($key);
-		print W "POST $key ==> "  . $cgi->url_param($key) . "\n";
+		print W '[' . now() . ']' . ":POST $key ==> "  . $cgi->url_param($key) . "\n";
 	}
 	for my $key ($cgi->param) {
 		$query{$key} = $cgi->param($key);
-		#warn "POST $key ==> "  . $cgi->param($key);
+		print W '[' . now() . ']' .":POST $key ==> "  . $cgi->url_param($key) . "\n";
 	}
 }
 
-print W '[' . now() . '] - ' .$query_string. "\n";
+print W '[' . now() . ']:  ' .$query_string. "\n";
 
 if ($query{msgid}) {
 	$query{action} = 'savesms';

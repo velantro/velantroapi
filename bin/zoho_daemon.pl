@@ -125,6 +125,7 @@ local $| = 1;
 open $FH, ">> /tmp/incoming_call.log" or die $!;
 %channel_spool = ();
 %kill_bridged_uuids = ();
+%zoho_tokens = ();
 while (<$remote>) {
 	
 	$_ =~ s/\r\n//g;
@@ -145,6 +146,7 @@ while (<$remote>) {
 			($tmp1,$tmp2,$tmp3,$tmp4) = split(/\|/,$event{Type});
 			# call action
 			warn $event{'Event-Name'} . ' ==> ' . $event{'CC-Action'}  . "\n";
+			&refresh_zoho_tokens();
 			if ($event{'Event-Name'} eq "CHANNEL_OUTGOING") {Dial(%event); }
 			elsif ($event{'Event-Name'} eq "CHANNEL_BRIDGE")			{ Bridge(%event); }
 			elsif ($event{'Event-Name'} eq "CHANNEL_HANGUP")		{ Hangup(%event); }
@@ -326,17 +328,9 @@ sub Dial() {
 		}
 	}
 	
-	local %hash = ('from' => $from, 'caller_name' => $caller_name, 'to' => $to, 'domain_name' => $domain_name, 'starttime' => $now, 'calltype' => $call_type, 'calluuid' => $uuid, 'callaction' => 'dial', queue => $cc_queue, call_state =>  $event{'Channel-Call-State'}, call_center_queue_uuid => $call_center_queue_uuid, 'caller_destination' => $caller_destination);
-	
-	
-	local $json = &Hash2Json(%hash);
-	
-	#$cmd = "curl -d 'callerid1=$from&callerid2=$to&callerIdNumber=$from&requestUrl=agi%3A%2F%2F115.28.137.2%2Fincoming.agi&context=from-internal&channel=SIP%2Fa2b-000007b0&vtigersignature=1940898792584673c6e9a8a&callerId=$from&callerIdName=$from&event=AgiEvent&type=SIP&uniqueId=1481543422.1968&StartTime=$now&callUUID=$uuid&callstatus=StartApp' http://$host/vtigercrm/modules/PBXManager/callbacks/PBXManager.php";
-	warn "Send Event: $json\n";
-	$mq->publish(1, "incoming", $json);
-	#warn $cmd;
-	#system($cmd);
-	
+	#local %hash = ('from' => $from, 'caller_name' => $caller_name, 'to' => $to, 'domain_name' => $domain_name, 'starttime' => $now, 'calltype' => $call_type, 'calluuid' => $uuid, 'callaction' => 'dial', queue => $cc_queue, call_state =>  $event{'Channel-Call-State'}, call_center_queue_uuid => $call_center_queue_uuid, 'caller_destination' => $caller_destination);
+	$data = "type=received&state=ringing&id=$uuid&from=$from&to=$to";
+	&send_zoho_request("$to" . '@' . $domain_name, $data);	
 }
 
 sub Newchannel() {
@@ -649,6 +643,19 @@ S
 	}
 
 }
+
+sub refresh_zoho_token($tokens) {
+	%$tokens = &database_select_as_hash("select ext,zohouser,access_token from v_zoho_users", "zohouser,access_token");
+}
+
+sub send_zoho_request($ext, $data) {
+	$code = $zoho_tokens{$ext}{access_token};
+	$cmd = "curl https://www.zohoapis.com/phonebridge/v3/callnotify -X POST -d '$data' -H 'Authorization: Zoho-oauthtoken $code' -H 'Content-Type: application/x-www-form-urlencoded'";
+	$res = `$cmd`;
+	log_debug("cmd:$cmd\nresponse: $res\n");
+	return $res;
+}
+
 sub log_debug() {
 	$msg = shift;
 	$t = getTime();

@@ -3,7 +3,7 @@
 # load head
 #======================================================
 use IO::Socket;
-use Switch;
+#use Switch;
 use Data::Dumper;
 use DBI;
 use Time::Local;
