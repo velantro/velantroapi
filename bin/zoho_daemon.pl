@@ -649,7 +649,8 @@ sub refresh_zoho_tokens() {
 	%zoho_tokens = &database_select_as_hash("select ext,zohouser,access_token from v_zoho_users where ext is not null", "zohouser,access_token");
 }
 
-sub send_zoho_request($type, $ext, $data) {
+sub send_zoho_request() {
+	local ($type, $ext, $data) = @_;
 	if ($type eq 'callnotify') {
 		$url = 'https://www.zohoapis.com/phonebridge/v3/callnotify';
 	}
