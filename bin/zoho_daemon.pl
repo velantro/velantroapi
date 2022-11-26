@@ -648,7 +648,7 @@ S
 }
 
 sub refresh_zoho_tokens($tokens) {
-	%$tokens = &database_select_as_hash("select ext,zohouser,access_token from v_zoho_users", "zohouser,access_token");
+	%$tokens = &database_select_as_hash("select ext,zohouser,access_token from v_zoho_users where ext is not null", "zohouser,access_token");
 }
 
 sub send_zoho_request($ext, $data) {
