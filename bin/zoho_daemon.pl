@@ -333,7 +333,7 @@ sub Dial() {
 	
 	#local %hash = ('from' => $from, 'caller_name' => $caller_name, 'to' => $to, 'domain_name' => $domain_name, 'starttime' => $now, 'calltype' => $call_type, 'calluuid' => $uuid, 'callaction' => 'dial', queue => $cc_queue, call_state =>  $event{'Channel-Call-State'}, call_center_queue_uuid => $call_center_queue_uuid, 'caller_destination' => $caller_destination);
 	$data = "type=received&state=ringing&id=$uuid&from=$from&to=$to";
-	&send_zoho_request("$to" . '@' . $domain_name, $data);	
+	&send_zoho_request('callnotify', "$to" . '@' . $domain_name, $data);	
 }
 
 sub Newchannel() {
@@ -360,9 +360,11 @@ sub Hangup() {
 	$host = ($host_prefix . $event{'Caller-Context'}) || $default_host;
 	
 	$now = &now();
-	$cmd = "curl -d 'server=null&calleridname=$from&channel=SIP%2F801-000007b1&cause=16&vtigersignature=1940898792584673c6e9a8a&privilege=call&sequencenumber=null&calleridnum=$to&causetxt=Normal+Clearing&callerid=$from&systemHashcode=1214198952&event=HangupEvent&uniqueid=1481543423.1969&timestamp=$now&callUUID=$uuid&causetxt=$causetxt&callstatus=Hangup' http://$host/vtigercrm/modules/PBXManager/callbacks/PBXManager.php";
-	warn $cmd;
-	system($cmd);
+	#$cmd = "curl -d 'server=null&calleridname=$from&channel=SIP%2F801-000007b1&cause=16&vtigersignature=1940898792584673c6e9a8a&privilege=call&sequencenumber=null&calleridnum=$to&causetxt=Normal+Clearing&callerid=$from&systemHashcode=1214198952&event=HangupEvent&uniqueid=1481543423.1969&timestamp=$now&callUUID=$uuid&causetxt=$causetxt&callstatus=Hangup' http://$host/vtigercrm/modules/PBXManager/callbacks/PBXManager.php";
+	#warn $cmd;
+	#system($cmd);
+	
+	
 }
 
 sub End() {
@@ -425,14 +427,10 @@ sub End() {
 	#warn $recording_url;
 	local %hash = ('from' => $from, 'caller_name' => $caller_name, 'to' => $to, 'domain_name' => $domain_name, 'starttime' => $now, 'calltype' => $call_type, 'calluuid' => $uuid, 'callaction' => 'hangup',duration => $duration, billsec => $billsec,starttime => $starttime, endtime => $endtime, 'recording_url' => $recording_url, call_center_queue_uuid => $call_center_queue_uuid, queue => $queue_name);
 	
+	$data = "type=received&state=ended&id=$uuid&from=$from&to=$to&start_time=$starttime&duration=$billsec";
 	
-	local $json = &Hash2Json(%hash);
 	
-	#$cmd = "curl -d 'callerid1=$from&callerid2=$to&callerIdNumber=$from&requestUrl=agi%3A%2F%2F115.28.137.2%2Fincoming.agi&context=from-internal&channel=SIP%2Fa2b-000007b0&vtigersignature=1940898792584673c6e9a8a&callerId=$from&callerIdName=$from&event=AgiEvent&type=SIP&uniqueId=1481543422.1968&StartTime=$now&callUUID=$uuid&callstatus=StartApp' http://$host/vtigercrm/modules/PBXManager/callbacks/PBXManager.php";
-	warn "Send Event: $json\n";
-	$mq->publish(1, "incoming", $json);
-	#warn $cmd;
-	#system($cmd);
+	&send_zoho_request('callnotify', "$to" . '@' . $domain_name, $data);	
 }
 
 sub update_agent_status() {
@@ -651,9 +649,13 @@ sub refresh_zoho_tokens() {
 	%zoho_tokens = &database_select_as_hash("select ext,zohouser,access_token from v_zoho_users where ext is not null", "zohouser,access_token");
 }
 
-sub send_zoho_request($ext, $data) {
+sub send_zoho_request($type, $ext, $data) {
+	if ($type eq 'callnotify') {
+		$url = 'https://www.zohoapis.com/phonebridge/v3/callnotify';
+	}
+	warn "$type, $ext, $data";
 	$code = $zoho_tokens{$ext}{access_token};
-	$cmd = "curl https://www.zohoapis.com/phonebridge/v3/callnotify -X POST -d '$data' -H 'Authorization: Zoho-oauthtoken $code' -H 'Content-Type: application/x-www-form-urlencoded'";
+	$cmd = "curl  $url -X POST -d '$data' -H 'Authorization: Zoho-oauthtoken $code' -H 'Content-Type: application/x-www-form-urlencoded'";
 	$res = `$cmd`;
 	log_debug("cmd:$cmd\nresponse: $res\n");
 	return $res;
