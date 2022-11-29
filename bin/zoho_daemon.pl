@@ -444,9 +444,9 @@ sub End() {
 	#warn $recording_url;
 	local %hash = ('from' => $from, 'caller_name' => $caller_name, 'to' => $to, 'domain_name' => $domain_name, 'starttime' => $now, 'calltype' => $call_type, 'calluuid' => $uuid, 'callaction' => 'hangup',duration => $duration, billsec => $billsec,starttime => $starttime, endtime => $endtime, 'recording_url' => $recording_url, call_center_queue_uuid => $call_center_queue_uuid, queue => $queue_name);
 	
-	if ($zoho_tokens{$to.'@' . $domain_name} {
+	if ($zoho_tokens{$to.'@' . $domain_name}) {
 		$type = 'received';
-	} elsif ($zoho_tokens{$from.'@' . $domain_name} {
+	} elsif ($zoho_tokens{$from.'@' . $domain_name}) {
 		$type = 'dialed';
 	} else {
 		$type = 'unknown';
@@ -457,13 +457,7 @@ sub End() {
 	} else {
 		$state = 'ended';
 	}
-	if ($zoho_tokens{$to.'@' . $domain_name}) {
-		$type = 'received';
-	} elsif ($zoho_tokens{$from.'@' . $domain_name}) {
-		$type = 'dialed';
-	} else {
-		$type = 'unknown';
-	}
+	
 	$data = "type=$type&state=ended&id=$uuid&from=$from&to=$to&start_time=$starttime&duration=$billsec";
 	
 	
