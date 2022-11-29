@@ -234,9 +234,9 @@ sub Bridge() {
 	#warn "Send Event: $json\n";
 	#$mq->publish(1, "incoming", $json);
 	
-	if ($zoho_tokens{$to.'@' . $domain_name} {
+	if ($zoho_tokens{$to.'@' . $domain_name}} {
 		$type = 'received';
-	} elsif ($zoho_tokens{$from.'@' . $domain_name} {
+	} elsif ($zoho_tokens{$from.'@' . $domain_name}} {
 		$type = 'dialed';
 	} else {
 		$type = 'unknown';
@@ -342,9 +342,9 @@ sub Dial() {
 	}
 	
 	#local %hash = ('from' => $from, 'caller_name' => $caller_name, 'to' => $to, 'domain_name' => $domain_name, 'starttime' => $now, 'calltype' => $call_type, 'calluuid' => $uuid, 'callaction' => 'dial', queue => $cc_queue, call_state =>  $event{'Channel-Call-State'}, call_center_queue_uuid => $call_center_queue_uuid, 'caller_destination' => $caller_destination);
-	if ($zoho_tokens{$to.'@' . $domain_name} {
+	if ($zoho_tokens{$to.'@' . $domain_name}} {
 		$type = 'received';
-	} elsif ($zoho_tokens{$from.'@' . $domain_name} {
+	} elsif ($zoho_tokens{$from.'@' . $domain_name}} {
 		$type = 'dialed';
 	} else {
 		$type = 'unknown';
@@ -457,7 +457,13 @@ sub End() {
 	} else {
 		$state = 'ended';
 	}
-	
+	if ($zoho_tokens{$to.'@' . $domain_name}} {
+		$type = 'received';
+	} elsif ($zoho_tokens{$from.'@' . $domain_name}} {
+		$type = 'dialed';
+	} else {
+		$type = 'unknown';
+	}
 	$data = "type=$type&state=ended&id=$uuid&from=$from&to=$to&start_time=$starttime&duration=$billsec";
 	
 	
