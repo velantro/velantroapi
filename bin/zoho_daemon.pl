@@ -659,7 +659,7 @@ sub refresh_zoho_tokens() {
 				$zoho_tokens{$key}{access_token} = $h{access_token};
 				$sql =  "update v_zoho_users set access_token='" . $h{access_token} . "',update_date=now() where ext='$key'";
 				warn "sql: $sql\n";
-				&datbase_do($sql);
+				&database_do($sql);
 			}
 			
 		}
