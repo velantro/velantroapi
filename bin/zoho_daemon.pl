@@ -437,13 +437,7 @@ sub End() {
 	#warn $recording_url;
 	local %hash = ('from' => $from, 'caller_name' => $caller_name, 'to' => $to, 'domain_name' => $domain_name, 'starttime' => $now, 'calltype' => $call_type, 'calluuid' => $uuid, 'callaction' => 'hangup',duration => $duration, billsec => $billsec,starttime => $starttime, endtime => $endtime, 'recording_url' => $recording_url, call_center_queue_uuid => $call_center_queue_uuid, queue => $queue_name);
 	
-	local $iscallback = `fs_cli -rx "uuid_getvar $uuid iscallback"`;
-	chomp $iscallback; $iscallback = '' if $iscallback eq '_undef_';
-	if ($iscallback) {
-		if ($to ne $iscallback) {
-			$from = $iscallback;
-		}		
-	}
+	
 	warn "Hangup Call from $from to $to";
 	if ($zoho_tokens{$to.'@' . $domain_name}) {
 		$type = 'received';
