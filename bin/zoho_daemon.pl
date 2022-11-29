@@ -40,7 +40,7 @@ $BLANK 				= $EOL x 2;
 $default_host = '115.28.137.2';
 $host_prefix  = '';
 #======================================================
-
+%callback_spool = ();
 #warn "tenant: $app{tenant}\nhost: $app{host}\n";
 
 
@@ -360,6 +360,7 @@ sub Dial() {
 			$from = $iscallback;
 		}		
 		
+		$callback_spool{$uuid} = time;
 	}
 	if ($zoho_tokens{$to.'@' . $domain_name}) {
 		$type = 'received';
@@ -368,7 +369,7 @@ sub Dial() {
 		$type = 'dialed';
 		$ext = $from.'@' . $domain_name;
 	} else {
-		$type = 'unknown';
+		return;
 	}
 	$data = "type=$type&state=ringing&id=$uuid&from=$from&to=$to";
 	&send_zoho_request('callnotify', $ext, $data);	
@@ -442,6 +443,12 @@ sub End() {
 			$from = $iscallback;
 		}		
 		
+		if (!$callback_spool{$uuid}) {
+			warn "call=$uuid not in callback_spool, ingore!";
+			return;
+		}
+		delete $callback_spool{$uuid};
+		
 	}
 	warn "Hangup Call from $from to $to";
 	if ($zoho_tokens{$to.'@' . $domain_name}) {
@@ -451,7 +458,7 @@ sub End() {
 		$type = 'dialed';
 		$ext = $from.'@' . $domain_name;
 	} else {
-		$type = 'unknown';
+		return;
 	}
 	
 	if (!$billsec || $billsec <= 0) {
