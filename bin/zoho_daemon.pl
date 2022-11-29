@@ -407,9 +407,11 @@ sub Hangup() {
 
 sub End() {
 	local(%event) = @_;
-	local $from = $event{'Caller-Caller-ID-Number'};
+	local $from = $event{'variable_caller_id_number'};
 	local $caller_name = $event{'Caller-Caller-ID-Name'};
-	local $to =  $event{'Caller-Callee-ID-Number'};
+	local $to =  $event{'variable_callee_id_number'};
+	local $domain_name =  $event{'variable_domain_name'};
+	local $iscallback =  $event{'iscallback'};
 	local $uuid = $event{'Channel-Call-UUID'};
 	#$uuid =~ s/\-//g;
 	local $duration = $event{'variable_duration'};
@@ -422,40 +424,10 @@ sub End() {
 									
 	#print Dumper(\%event);
 	local $now = &now();
- 	local $a_uuid = $event{'variable_originating_leg_uuid'};
-
-	if (0 && !$event{'variable_cc_member_uuid'}) {
-		
-		return unless $a_uuid;
-		warn $a_uuid;
-	}
-	$presence_id =  uri_unescape($event{'variable_presence_id'});
-	
-	local $domain_name = $channel_spool{$uuid}{domain_name} ||  $channel_spool{$a_uuid}{domain_name};
-	
-	local $call_type   = $channel_spool{$uuid}{calltype} || $channel_spool{$a_uuid}{calltype};
-	$domain_name = '' if $domain_name eq '_undef_';
-
-	if (!$domain_name) {
-		$domain_name = $event{'variable_domain_name'} || $event{variable_dialed_domain};
-		if ($event{'variable_cc_queue'}) {
-			$call_type = 'queue';
-		}
-	}
-	
+ 	
 	#warn " $presence_id eq $to\@$domain_name";
 	#return unless $presence_id eq "$to\@$domain_name";
-	warn $event{'Caller-Caller-ID-Number'} . " end call with  " . $event{'Caller-Callee-ID-Number'};
-	$queue_name = $event{'variable_cc_queue'};
-	if ($queue_name) {
-		if ($event{'variable_hangup_cause'} eq 'LOSE_RACE' || $event{'Hangup-Cause'}  eq 'LOSE_RACE') {
-			return;
-		}
-		
-		local ($queue, $d) = split '@', $queue_name;
-		%hash = &database_select_as_hash("select 1,call_center_queue_uuid from v_call_center_queues left join v_domains on v_call_center_queues.domain_uuid=v_domains.domain_uuid where domain_name='$d' and queue_name='$queue'", 'call_center_queue_uuid');
-		$call_center_queue_uuid = $hash{1}{call_center_queue_uuid};
-	}
+
 	local $recording_filename = "/var/lib/freeswitch/recordings/$domain_name/archive/". strftime('%Y', localtime($start_epoch)) . "/" . strftime('%b',  localtime($start_epoch)) . "/" . strftime('%d', localtime($start_epoch)) .  "/$a_uuid.wav";
 	#warn $recording_filename;
 	$recording_url = '';
@@ -472,6 +444,7 @@ sub End() {
 			$from = $iscallback;
 		}		
 	}
+	warn "Hangup Call from $from to $to";
 	if ($zoho_tokens{$to.'@' . $domain_name}) {
 		$type = 'received';
 		$ext = $to.'@' . $domain_name;
