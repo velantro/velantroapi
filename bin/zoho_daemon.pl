@@ -657,11 +657,12 @@ sub refresh_zoho_tokens() {
 			%h = &Json2Hash($out);
 			if ($h{access_token}) {
 				$zoho_tokens{$key}{access_token} = $h{access_token};
-				$sql =  "update v_zoho_users set access_token='" . $h{access_token} . "',update_date=now() where ext='$key'";
+				$sql =  "update v_zoho_users set access_token='" . $h{access_token} . "',update_date=now()";
 				warn "sql: $sql\n";
 				&database_do($sql);
 			}
 			
+			break;
 		}
 		
 	}
