@@ -189,8 +189,8 @@ goto reconnect;
 #======================================================
 sub Bridge() {
 	local(%event) = @_;
-	print "Bridge: " ;
-	print Dumper(\%event);
+	#print "Bridge: " ;
+	#print Dumper(\%event);
 	warn $event{'Caller-Caller-ID-Number'} . " start talk with  " . $event{'Caller-Callee-ID-Number'};
 	local $from = $event{'Caller-Caller-ID-Number'};
 	local $caller_name = $event{'Caller-Caller-ID-Name'};
@@ -231,8 +231,18 @@ sub Bridge() {
 	local $json = &Hash2Json(%hash);
 	
 	#$cmd = "curl -d 'callerid1=$from&callerid2=$to&callerIdNumber=$from&requestUrl=agi%3A%2F%2F115.28.137.2%2Fincoming.agi&context=from-internal&channel=SIP%2Fa2b-000007b0&vtigersignature=1940898792584673c6e9a8a&callerId=$from&callerIdName=$from&event=AgiEvent&type=SIP&uniqueId=1481543422.1968&StartTime=$now&callUUID=$uuid&callstatus=StartApp' http://$host/vtigercrm/modules/PBXManager/callbacks/PBXManager.php";
-	warn "Send Event: $json\n";
-	$mq->publish(1, "incoming", $json);
+	#warn "Send Event: $json\n";
+	#$mq->publish(1, "incoming", $json);
+	
+	if ($zoho_tokens{$to.'@' . $domain_name} {
+		$type = 'received';
+	} elsif ($zoho_tokens{$from.'@' . $domain_name} {
+		$type = 'dialed';
+	} else {
+		$type = 'unknown';
+	}
+	$data = "type=$type&state=answered&id=$uuid&from=$from&to=$to";
+	&send_zoho_request('callnotify', "$from" . '@' . $domain_name, $data);	
 }
 
 sub Dial() {
@@ -332,7 +342,14 @@ sub Dial() {
 	}
 	
 	#local %hash = ('from' => $from, 'caller_name' => $caller_name, 'to' => $to, 'domain_name' => $domain_name, 'starttime' => $now, 'calltype' => $call_type, 'calluuid' => $uuid, 'callaction' => 'dial', queue => $cc_queue, call_state =>  $event{'Channel-Call-State'}, call_center_queue_uuid => $call_center_queue_uuid, 'caller_destination' => $caller_destination);
-	$data = "type=received&state=ringing&id=$uuid&from=$from&to=$to";
+	if ($zoho_tokens{$to.'@' . $domain_name} {
+		$type = 'received';
+	} elsif ($zoho_tokens{$from.'@' . $domain_name} {
+		$type = 'dialed';
+	} else {
+		$type = 'unknown';
+	}
+	$data = "type=$type&state=ringing&id=$uuid&from=$from&to=$to";
 	&send_zoho_request('callnotify', "$to" . '@' . $domain_name, $data);	
 }
 
@@ -427,7 +444,21 @@ sub End() {
 	#warn $recording_url;
 	local %hash = ('from' => $from, 'caller_name' => $caller_name, 'to' => $to, 'domain_name' => $domain_name, 'starttime' => $now, 'calltype' => $call_type, 'calluuid' => $uuid, 'callaction' => 'hangup',duration => $duration, billsec => $billsec,starttime => $starttime, endtime => $endtime, 'recording_url' => $recording_url, call_center_queue_uuid => $call_center_queue_uuid, queue => $queue_name);
 	
-	$data = "type=received&state=ended&id=$uuid&from=$from&to=$to&start_time=$starttime&duration=$billsec";
+	if ($zoho_tokens{$to.'@' . $domain_name} {
+		$type = 'received';
+	} elsif ($zoho_tokens{$from.'@' . $domain_name} {
+		$type = 'dialed';
+	} else {
+		$type = 'unknown';
+	}
+	
+	if (!$billsec || $billsec <= 0) {
+		$state = 'missed';
+	} else {
+		$state = 'ended';
+	}
+	
+	$data = "type=$type&state=ended&id=$uuid&from=$from&to=$to&start_time=$starttime&duration=$billsec";
 	
 	
 	&send_zoho_request('callnotify', "$to" . '@' . $domain_name, $data);	
