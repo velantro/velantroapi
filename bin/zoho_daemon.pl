@@ -324,6 +324,11 @@ sub Dial() {
 	
 	$channel_spool{$uuid}{domain_name} = $domain_name;
 	$channel_spool{$uuid}{calltype} = $call_type;
+	local $iscallback = `fs_cli -rx "uuid_getvar $uuid iscallback"`;
+	chomp $iscallback; $iscallback = '' if $iscallback eq '_undef_';
+	if (!$iscallback) {
+		$from = $iscallback;
+	}
 	
 	if (!$domain_name) {
 		local ($queue, $d) = split '@', $cc_queue;
@@ -342,6 +347,7 @@ sub Dial() {
 	}
 	
 	#local %hash = ('from' => $from, 'caller_name' => $caller_name, 'to' => $to, 'domain_name' => $domain_name, 'starttime' => $now, 'calltype' => $call_type, 'calluuid' => $uuid, 'callaction' => 'dial', queue => $cc_queue, call_state =>  $event{'Channel-Call-State'}, call_center_queue_uuid => $call_center_queue_uuid, 'caller_destination' => $caller_destination);
+	
 	if ($zoho_tokens{$to.'@' . $domain_name}) {
 		$type = 'received';
 	} elsif ($zoho_tokens{$from.'@' . $domain_name}) {
