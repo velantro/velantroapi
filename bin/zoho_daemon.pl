@@ -443,7 +443,7 @@ sub End() {
 		}
 	}
 	
-	
+	warn " $presence_id eq $to\@$domain_name";
 	return unless $presence_id eq "$to\@$domain_name";
 	warn $event{'Caller-Caller-ID-Number'} . " end call with  " . $event{'Caller-Callee-ID-Number'};
 	$queue_name = $event{'variable_cc_queue'};
