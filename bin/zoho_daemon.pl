@@ -233,16 +233,25 @@ sub Bridge() {
 	#$cmd = "curl -d 'callerid1=$from&callerid2=$to&callerIdNumber=$from&requestUrl=agi%3A%2F%2F115.28.137.2%2Fincoming.agi&context=from-internal&channel=SIP%2Fa2b-000007b0&vtigersignature=1940898792584673c6e9a8a&callerId=$from&callerIdName=$from&event=AgiEvent&type=SIP&uniqueId=1481543422.1968&StartTime=$now&callUUID=$uuid&callstatus=StartApp' http://$host/vtigercrm/modules/PBXManager/callbacks/PBXManager.php";
 	#warn "Send Event: $json\n";
 	#$mq->publish(1, "incoming", $json);
-	
+	local $iscallback = `fs_cli -rx "uuid_getvar $uuid iscallback"`;
+	chomp $iscallback; $iscallback = '' if $iscallback eq '_undef_';
+	if ($iscallback) {
+		if ($to ne $iscallback) {
+			$from = $iscallback;
+		}		
+		
+	}
 	if ($zoho_tokens{$to.'@' . $domain_name}) {
 		$type = 'received';
+		$ext = $to.'@' . $domain_name;
 	} elsif ($zoho_tokens{$from.'@' . $domain_name}) {
 		$type = 'dialed';
+		$ext = $from.'@' . $domain_name;
 	} else {
 		$type = 'unknown';
 	}
 	$data = "type=$type&state=answered&id=$uuid&from=$from&to=$to";
-	&send_zoho_request('callnotify', "$from" . '@' . $domain_name, $data);	
+	&send_zoho_request('callnotify', $ext, $data);	
 }
 
 sub Dial() {
@@ -324,11 +333,7 @@ sub Dial() {
 	
 	$channel_spool{$uuid}{domain_name} = $domain_name;
 	$channel_spool{$uuid}{calltype} = $call_type;
-	local $iscallback = `fs_cli -rx "uuid_getvar $uuid iscallback"`;
-	chomp $iscallback; $iscallback = '' if $iscallback eq '_undef_';
-	if ($iscallback) {
-		$from = $iscallback;
-	}
+	
 	
 	if (!$domain_name) {
 		local ($queue, $d) = split '@', $cc_queue;
@@ -348,15 +353,25 @@ sub Dial() {
 	
 	#local %hash = ('from' => $from, 'caller_name' => $caller_name, 'to' => $to, 'domain_name' => $domain_name, 'starttime' => $now, 'calltype' => $call_type, 'calluuid' => $uuid, 'callaction' => 'dial', queue => $cc_queue, call_state =>  $event{'Channel-Call-State'}, call_center_queue_uuid => $call_center_queue_uuid, 'caller_destination' => $caller_destination);
 	
+	local $iscallback = `fs_cli -rx "uuid_getvar $uuid iscallback"`;
+	chomp $iscallback; $iscallback = '' if $iscallback eq '_undef_';
+	if ($iscallback) {
+		if ($to ne $iscallback) {
+			$from = $iscallback;
+		}		
+		
+	}
 	if ($zoho_tokens{$to.'@' . $domain_name}) {
 		$type = 'received';
+		$ext = $to.'@' . $domain_name;
 	} elsif ($zoho_tokens{$from.'@' . $domain_name}) {
 		$type = 'dialed';
+		$ext = $from.'@' . $domain_name;
 	} else {
 		$type = 'unknown';
 	}
 	$data = "type=$type&state=ringing&id=$uuid&from=$from&to=$to";
-	&send_zoho_request('callnotify', "$to" . '@' . $domain_name, $data);	
+	&send_zoho_request('callnotify', $ext, $data);	
 }
 
 sub Newchannel() {
@@ -450,10 +465,19 @@ sub End() {
 	#warn $recording_url;
 	local %hash = ('from' => $from, 'caller_name' => $caller_name, 'to' => $to, 'domain_name' => $domain_name, 'starttime' => $now, 'calltype' => $call_type, 'calluuid' => $uuid, 'callaction' => 'hangup',duration => $duration, billsec => $billsec,starttime => $starttime, endtime => $endtime, 'recording_url' => $recording_url, call_center_queue_uuid => $call_center_queue_uuid, queue => $queue_name);
 	
+	local $iscallback = `fs_cli -rx "uuid_getvar $uuid iscallback"`;
+	chomp $iscallback; $iscallback = '' if $iscallback eq '_undef_';
+	if ($iscallback) {
+		if ($to ne $iscallback) {
+			$from = $iscallback;
+		}		
+	}
 	if ($zoho_tokens{$to.'@' . $domain_name}) {
 		$type = 'received';
+		$ext = $to.'@' . $domain_name;
 	} elsif ($zoho_tokens{$from.'@' . $domain_name}) {
 		$type = 'dialed';
+		$ext = $from.'@' . $domain_name;
 	} else {
 		$type = 'unknown';
 	}
@@ -467,7 +491,7 @@ sub End() {
 	$data = "type=$type&state=ended&id=$uuid&from=$from&to=$to&start_time=$starttime&duration=$billsec";
 	
 	
-	&send_zoho_request('callnotify', "$to" . '@' . $domain_name, $data);	
+	&send_zoho_request('callnotify', $ext, $data);
 }
 
 sub update_agent_status() {
