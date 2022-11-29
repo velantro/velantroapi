@@ -648,21 +648,20 @@ S
 sub refresh_zoho_tokens() {
 	%zoho_tokens = &database_select_as_hash("select ext,zohouser,refresh_token,access_token,extract(epoch from update_date) from v_zoho_users where ext is not null", "zohouser,refresh_token,access_token,update_time");
 	for $key(keys %zoho_tokens) {
-		if ($zoho_tokens) {
-			if (time-$zoho_tokens{$key}{update_time} > 1800) {
-				$client_id = '1000.Z7AE3OOFNGE5Y3IJPZGJWK45QWTM0D';
-				$client_secret = '9d6bb961106e7e495928b13f6bec05e56c1cbba6dc';
-				$refresh_token = $zoho_tokens{$key}{refresh_token};
-				$out = `curl -k 'https://accounts.zoho.com/oauth/v2/token' -X POST -d 'refresh_token=$refresh_token&client_id=$client_id&client_secret=$client_secret&grant_type=refresh_token'`;
-				%h = &Json2Hash($out);
-				if ($h{access_token}) {
-					$zoho_tokens{$key}{access_token} = $h{access_token};
-					$sql =  "update v_zoho_users set access_token='" . $h{access_token} . "',update_date=now() where ext='$key'";
-					warn "sql: $sql\n";
-					&datbase_do($sql);
-				}
-				
-			}			
+
+		if (time-$zoho_tokens{$key}{update_time} > 1800) {
+			$client_id = '1000.Z7AE3OOFNGE5Y3IJPZGJWK45QWTM0D';
+			$client_secret = '9d6bb961106e7e495928b13f6bec05e56c1cbba6dc';
+			$refresh_token = $zoho_tokens{$key}{refresh_token};
+			$out = `curl -k 'https://accounts.zoho.com/oauth/v2/token' -X POST -d 'refresh_token=$refresh_token&client_id=$client_id&client_secret=$client_secret&grant_type=refresh_token'`;
+			%h = &Json2Hash($out);
+			if ($h{access_token}) {
+				$zoho_tokens{$key}{access_token} = $h{access_token};
+				$sql =  "update v_zoho_users set access_token='" . $h{access_token} . "',update_date=now() where ext='$key'";
+				warn "sql: $sql\n";
+				&datbase_do($sql);
+			}
+			
 		}
 		
 	}
