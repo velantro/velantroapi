@@ -411,7 +411,7 @@ sub End() {
 	local $caller_name = $event{'Caller-Caller-ID-Name'};
 	local $to =  $event{'variable_callee_id_number'};
 	local $domain_name =  $event{'variable_domain_name'};
-	local $iscallback =  $event{'iscallback'};
+	local $iscallback =  $event{'variable_iscallback'};
 	local $uuid = $event{'Channel-Call-UUID'};
 	#$uuid =~ s/\-//g;
 	local $duration = $event{'variable_duration'};
@@ -422,7 +422,7 @@ sub End() {
 	local $host = ($host_prefix . $event{'Caller-Context'}) || $default_host;
 	warn "Get Hangup-Complete " . $uuid;
 									
-	#print Dumper(\%event);
+	print Dumper(\%event);
 	local $now = &now();
  	
 	#warn " $presence_id eq $to\@$domain_name";
