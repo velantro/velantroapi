@@ -326,7 +326,7 @@ sub Dial() {
 	$channel_spool{$uuid}{calltype} = $call_type;
 	local $iscallback = `fs_cli -rx "uuid_getvar $uuid iscallback"`;
 	chomp $iscallback; $iscallback = '' if $iscallback eq '_undef_';
-	if (!$iscallback) {
+	if ($iscallback) {
 		$from = $iscallback;
 	}
 	
