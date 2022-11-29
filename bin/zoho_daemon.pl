@@ -424,7 +424,7 @@ sub End() {
 	local $now = &now();
  	local $a_uuid = $event{'variable_originating_leg_uuid'};
 
-	if (!$event{'variable_cc_member_uuid'}) {
+	if (0 && !$event{'variable_cc_member_uuid'}) {
 		
 		return unless $a_uuid;
 		warn $a_uuid;
