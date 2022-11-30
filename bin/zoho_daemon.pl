@@ -412,8 +412,7 @@ sub End() {
 	} else {
 		$state = 'ended';
 	}
-	
-	$data = "type=$type&state=$state&id=$uuid&from=$from&to=$to&start_time=$starttime&duration=$billsec&voiceuri=https://fs5.ftpbx.net/8284e570-4054-47f2-9297-17f94d0e9866.wav";
+	$data = "type=$type&state=$state&id=$uuid&from=$from&to=$to&start_time=$starttime&duration=$billsec&voiceuri=https://$domain_name/app/xml_cdr/download.php?id=$uuid&t=bin";
 	
 	
 	&send_zoho_request('callnotify', $ext, $data);
