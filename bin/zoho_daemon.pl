@@ -255,7 +255,7 @@ sub Dial() {
 	local(%event) = @_;
 	#print Dumper(\%event);
 	return unless $event{'Channel-Call-State'} eq 'DOWN';
-	#	print Dumper(\%event);
+	print Dumper(\%event);
 
 	warn $event{'Caller-Caller-ID-Number'} . " is calling  " . $event{'Caller-Callee-ID-Number'};
 	local	$uuid = $event{'Other-Leg-Unique-ID'} ;
