@@ -277,6 +277,9 @@ sub Dial() {
 
 	local $iscallback = `fs_cli -rx "uuid_getvar $uuid iscallback"`;
 	chomp $iscallback; $iscallback = '' if $iscallback eq '_undef_';
+	if ($iscallback) {
+		$from = $event{'Caller-Orig-Caller-ID-Name'};
+	}
 	
 	if ($zoho_tokens{$to.'@' . $domain_name}) {
 		$type = 'received';
@@ -287,13 +290,25 @@ sub Dial() {
 	} else {
 		return;
 	}
-	$dailed_calls{$uuid}{from} = $from;
-	$dialed_calls{$uuid}{to} = $to;
-	$dialed_calls{$uuid}{ext} = $ext;
-	$dialed_calls{$uuid}{domain_name} = $domain_name;
-	$dialed_calls{$uuid}{type} = $type;
-	$dialed_calls{$uuid}{iscallback} = $iscallback;
 	
+	if ($dialed_calls{$uuid}) {
+		$iscallback = $dialed_calls{$uuid};
+		$from = $dailed_calls{$uuid}{from} ;
+		$to = $dialed_calls{$uuid}{to};
+		$ext = $dialed_calls{$uuid}{ext};
+		$domain_name = $dialed_calls{$uuid}{domain_name};
+		$type = $dialed_calls{$uuid}{type};
+	} else {	
+		$dailed_calls{$uuid}{from} = $from;
+		$dialed_calls{$uuid}{to} = $to;
+		$dialed_calls{$uuid}{ext} = $ext;
+		$dialed_calls{$uuid}{domain_name} = $domain_name;
+		$dialed_calls{$uuid}{type} = $type;
+		$dialed_calls{$uuid}{iscallback} = $iscallback;
+		if ($iscallback && $type eq 'recieved') {
+			return;
+		}
+	}
 	$data = "type=$type&state=ringing&id=$uuid&from=$from&to=$to";
 	&send_zoho_request('callnotify', $ext, $data);	
 }
