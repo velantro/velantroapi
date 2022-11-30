@@ -126,6 +126,7 @@ open $FH, ">> /tmp/incoming_call.log" or die $!;
 %channel_spool = ();
 %kill_bridged_uuids = ();
 %zoho_tokens = ();
+%dialed_calls = ();
 while (<$remote>) {
 	
 	$_ =~ s/\r\n//g;
@@ -355,13 +356,7 @@ sub Dial() {
 	
 	local $iscallback = `fs_cli -rx "uuid_getvar $uuid iscallback"`;
 	chomp $iscallback; $iscallback = '' if $iscallback eq '_undef_';
-	if ($iscallback) {
-		if ($to ne $iscallback) {
-			$from = $iscallback;
-		}		
-		
-		$callback_spool{$uuid} = time;
-	}
+	
 	if ($zoho_tokens{$to.'@' . $domain_name}) {
 		$type = 'received';
 		$ext = $to.'@' . $domain_name;
@@ -371,6 +366,13 @@ sub Dial() {
 	} else {
 		return;
 	}
+	$dailed_calls{$uuid}{from} = $from;
+	$dialed_calls{$uuid}{to} = $to;
+	$dialed_calls{$uuid}{ext} = $ext;
+	$dialed_calls{$uuid}{domain_name} = $domain_name;
+	$dialed_calls{$uuid}{type} = $type;
+	$dialed_calls{$uuid}{iscallback} = $iscallback;
+	
 	$data = "type=$type&state=ringing&id=$uuid&from=$from&to=$to";
 	&send_zoho_request('callnotify', $ext, $data);	
 }
@@ -421,8 +423,13 @@ sub End() {
 	local $start_epoch = $event{'variable_start_epoch'};
 	local $starttime = uri_unescape($event{'variable_start_stamp'});
 	local $host = ($host_prefix . $event{'Caller-Context'}) || $default_host;
-	warn "Get Hangup-Complete " . $uuid;
-									
+	
+	
+	if (not $dialed_calls{$uuid}) {
+		return;
+	}
+	warn "Get Hangup-Complete uuid=$uuid\n";
+	warn Data::Dumper::Dumper($dialed_calls{$uuid});
 	#print Dumper(\%event);
 	local $now = &now();
  	
@@ -438,6 +445,7 @@ sub End() {
 	#warn $recording_url;
 	local %hash = ('from' => $from, 'caller_name' => $caller_name, 'to' => $to, 'domain_name' => $domain_name, 'starttime' => $now, 'calltype' => $call_type, 'calluuid' => $uuid, 'callaction' => 'hangup',duration => $duration, billsec => $billsec,starttime => $starttime, endtime => $endtime, 'recording_url' => $recording_url, call_center_queue_uuid => $call_center_queue_uuid, queue => $queue_name);
 	
+	$iscallback  = $dialed_calls{$uuid}{iscallback};
 	if ($iscallback) {
 		if ($to ne $iscallback) {
 			$from = $iscallback;
@@ -450,24 +458,24 @@ sub End() {
 		delete $callback_spool{$uuid};
 		
 	}
-	warn "Hangup Call from $from to $to";
-	if ($zoho_tokens{$to.'@' . $domain_name}) {
-		$type = 'received';
-		$ext = $to.'@' . $domain_name;
-	} elsif ($zoho_tokens{$from.'@' . $domain_name}) {
-		$type = 'dialed';
-		$ext = $from.'@' . $domain_name;
-	} else {
-		return;
-	}
 	
+	
+	$iscallback = $dialed_calls{$uuid};
+	$from = $dailed_calls{$uuid}{from} ;
+	$to = $dialed_calls{$uuid}{to};
+	$ext = $dialed_calls{$uuid}{ext};
+	$domain_name = $dialed_calls{$uuid}{domain_name};
+	$type = $dialed_calls{$uuid}{type};
+	delete $dialed_calls{$uuid};
+	warn "Hangup Call from $from to $to";
+
 	if (!$billsec || $billsec <= 0) {
 		$state = 'missed';
 	} else {
 		$state = 'ended';
 	}
 	
-	$data = "type=$type&state=ended&id=$uuid&from=$from&to=$to&start_time=$starttime&duration=$billsec";
+	$data = "type=$type&state=$state&id=$uuid&from=$from&to=$to&start_time=$starttime&duration=$billsec";
 	
 	
 	&send_zoho_request('callnotify', $ext, $data);
