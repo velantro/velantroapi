@@ -400,7 +400,7 @@ sub End() {
 	delete $dialed_calls{$uuid};
 	warn "Hangup Call from $from to $to";
 
-	if (!$billsec || $billsec <= 0) {
+	if ($type eq 'recieved' || !$billsec) {
 		$state = 'missed';
 	} else {
 		$state = 'ended';
