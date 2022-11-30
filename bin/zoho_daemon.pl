@@ -372,7 +372,7 @@ sub End() {
 		return;
 	}
 	
-	if ($event{'Answer-State'} ne 'hangup' || $event{'Channel-Name'} !~ /loopback/) {
+	if ($event{'Answer-State'} ne 'hangup' || $event{'Channel-Name'} =~ /loopback/) {
 		return;
 	}
 	
