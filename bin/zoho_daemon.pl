@@ -413,7 +413,7 @@ sub End() {
 		$state = 'ended';
 	}
 	
-	$data = "type=$type&state=$state&id=$uuid&from=$from&to=$to&start_time=$starttime&duration=$billsec";
+	$data = "type=$type&state=$state&id=$uuid&from=$from&to=$to&start_time=$starttime&duration=$billsec&voiceuri=https://fs5.ftpbx.net/8284e570-4054-47f2-9297-17f94d0e9866.wav";
 	
 	
 	&send_zoho_request('callnotify', $ext, $data);
