@@ -269,6 +269,7 @@ sub Dial() {
 	local $caller_destination = $event{'Caller-RDNIS'};
 	#$uuid =~ s/\-//g;
 	local $now = &now();
+	if ($event{'Caller-Context'} eq 'default') {return;}
 	local $host = ($host_prefix . $event{'Caller-Context'}) || $default_host;
 	
 	local $domain_name = `fs_cli -rx "uuid_getvar $uuid domain_name"`;
