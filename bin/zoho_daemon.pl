@@ -282,6 +282,12 @@ sub Dial() {
 		$from = $event{'Caller-Orig-Caller-ID-Name'};
 	}
 	
+	if ($event{'Caller-Channel-Name'} =~ {loopback/{\w+)\-a}) {
+		$to = $event{'Caller-Destination-Number'};
+	}
+	if ($event{'Caller-Channel-Name'} =~ {loopback/{\w+)\-b}) {
+		return;
+	}
 	if ($zoho_tokens{$to.'@' . $domain_name}) {
 		$type = 'received';
 		$ext = $to.'@' . $domain_name;
