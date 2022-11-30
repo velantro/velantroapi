@@ -367,11 +367,10 @@ sub End() {
 	local $starttime = uri_unescape($event{'variable_start_stamp'});
 	local $host = ($host_prefix . $event{'Caller-Context'}) || $default_host;
 	
-	
+	warn "Hangup call: $uuid";
 	if (not $dialed_calls{$uuid}) {
 		return;
 	}
-	warn "Get Hangup-Complete uuid=$uuid\n";
 	warn Data::Dumper::Dumper($dialed_calls{$uuid});
 	#print Dumper(\%event);
 	local $now = &now();
