@@ -371,7 +371,12 @@ sub End() {
 	if (not $dialed_calls{$uuid}) {
 		return;
 	}
-	warn Data::Dumper::Dumper($dialed_calls{$uuid});
+	
+	if ($event{'Answer-State'} ne 'hangup') {
+		return;
+	}
+	
+	#warn Data::Dumper::Dumper($dialed_calls{$uuid});
 	#print Dumper(\%event);
 	local $now = &now();
  	
@@ -388,6 +393,9 @@ sub End() {
 	local %hash = ('from' => $from, 'caller_name' => $caller_name, 'to' => $to, 'domain_name' => $domain_name, 'starttime' => $now, 'calltype' => $call_type, 'calluuid' => $uuid, 'callaction' => 'hangup',duration => $duration, billsec => $billsec,starttime => $starttime, endtime => $endtime, 'recording_url' => $recording_url, call_center_queue_uuid => $call_center_queue_uuid, queue => $queue_name);
 	
 
+	if ($event{'Caller-Channel-Name'} =~ m{loopback/(\w+)\-a}) {
+		$to = $event{'Caller-Destination-Number'};
+	}
 	
 	
 	$iscallback = $dialed_calls{$uuid};
