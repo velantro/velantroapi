@@ -262,7 +262,7 @@ sub Dial() {
 
 	$uuid = $event{'Channel-Call-UUID'} if !$uuid;
 
-	local $from = $event{'Caller-Caller-ID-Number'};
+	local $from = $event{'Other-Leg-Caller-ID-Number'};
 	local $caller_name = $event{'Caller-Caller-ID-Name'};
 	
 	local $to =  $event{'Caller-Callee-ID-Number'};
@@ -274,82 +274,7 @@ sub Dial() {
 	local $domain_name = `fs_cli -rx "uuid_getvar $uuid domain_name"`;
 	chomp $domain_name;
 	$domain_name = '' if $domain_name eq '_undef_';
-	local $cc_queue = `fs_cli -rx "uuid_getvar $uuid cc_queue"`;
-	chomp $cc_queue;
-	if ($cc_queue) {
-		$csv = "uuid,direction,created,created_epoch,name,state,cid_name,cid_num,ip_addr,dest,application,application_data,dialplan,context,read_codec,read_rate,read_bit_rate,write_codec,write_rate,write_bit_rate,secure,hostname,presence_id,presence_data,accountcode,callstate,callee_name,callee_num,callee_direction,call_uuid,sent_callee_name,sent_callee_num,initial_cid_name,initial_cid_num,initial_ip_addr,initial_dest,initial_dialplan,initial_context";
-		#it is dialing agent, let's find the originator
-		$i = 0;
-		for(split ',', $csv) {
-			if ($_ eq 'context') {
-				$ci = $i;
-			}
-			
-			if ($_ eq 'initial_dest') {
-				$di = $i;
-			}
-			$i++;			
-		}
-		
-		warn "ci=$ci, di=$di\n";
-		$found = 0;
-		for (1..5) {
-			local $calls = `fs_cli -rx "show channels"`;
-			chomp $calls;
-			for (split /\n/, $calls) {
-				@arr = split ',', $_;
-				if ($arr[1] eq 'inbound' && $arr[7] eq $from) {
-					$found = 1;
-					warn $_, "\n";
-					$domain_name = $arr[$ci];
-					$caller_destination = $arr[$di];
-				}
-				
-			}
-			
-			if ($found) {
-				last;
-			}
-			warn "Original channel not found, recheck in 1 second ...";
-			sleep 1;
-		}
-	}
-	
-	$cc_queue = '' if $cc_queue eq '_undef_';
-	local $ring_group_uuid = `fs_cli -rx "uuid_getvar $uuid ring_group_uuid"`;
-	chomp $ring_group_uuid;
-	$ring_group_uuid = '' if $ring_group_uuid eq '_undef_';
-	local $call_type = 'inbound';
-	if ($cc_queue) {
-		$call_type = 'queue';
-	} elsif ($ring_group_uuid) {
-		$call_type = 'ringgroup';
-	} elsif (length($from) < 6) {
-		$call_type = 'extension';
-	} 
-	
-	$channel_spool{$uuid}{domain_name} = $domain_name;
-	$channel_spool{$uuid}{calltype} = $call_type;
-	
-	
-	if (!$domain_name) {
-		local ($queue, $d) = split '@', $cc_queue;
-		$domain_name = $d if $d;
-	}
-	
-	if ($domain_name && $cc_queue) {
-		if ($cc_queue =~ /^\w{8}-\w{4}-\w{4}-\w{4}-\w{12}$/) {
-			$call_center_queue_uuid = $cc_queue;
-		} else {
-		
-			local ($queue, $d) = split '@', $cc_queue;
-			%hash = &database_select_as_hash("select 1,call_center_queue_uuid from v_call_center_queues left join v_domains on v_call_center_queues.domain_uuid=v_domains.domain_uuid where domain_name='$d' and queue_name='$queue'", 'call_center_queue_uuid');
-			$call_center_queue_uuid = $hash{1}{call_center_queue_uuid};
-		}
-	}
-	
-	#local %hash = ('from' => $from, 'caller_name' => $caller_name, 'to' => $to, 'domain_name' => $domain_name, 'starttime' => $now, 'calltype' => $call_type, 'calluuid' => $uuid, 'callaction' => 'dial', queue => $cc_queue, call_state =>  $event{'Channel-Call-State'}, call_center_queue_uuid => $call_center_queue_uuid, 'caller_destination' => $caller_destination);
-	
+
 	local $iscallback = `fs_cli -rx "uuid_getvar $uuid iscallback"`;
 	chomp $iscallback; $iscallback = '' if $iscallback eq '_undef_';
 	
