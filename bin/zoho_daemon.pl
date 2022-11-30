@@ -234,23 +234,19 @@ sub Bridge() {
 	#$cmd = "curl -d 'callerid1=$from&callerid2=$to&callerIdNumber=$from&requestUrl=agi%3A%2F%2F115.28.137.2%2Fincoming.agi&context=from-internal&channel=SIP%2Fa2b-000007b0&vtigersignature=1940898792584673c6e9a8a&callerId=$from&callerIdName=$from&event=AgiEvent&type=SIP&uniqueId=1481543422.1968&StartTime=$now&callUUID=$uuid&callstatus=StartApp' http://$host/vtigercrm/modules/PBXManager/callbacks/PBXManager.php";
 	#warn "Send Event: $json\n";
 	#$mq->publish(1, "incoming", $json);
-	local $iscallback = `fs_cli -rx "uuid_getvar $uuid iscallback"`;
-	chomp $iscallback; $iscallback = '' if $iscallback eq '_undef_';
-	if ($iscallback) {
-		if ($to ne $iscallback) {
-			$from = $iscallback;
-		}		
-		
+	if (not $dialed_calls{$uuid}) {
+		return;
 	}
-	if ($zoho_tokens{$to.'@' . $domain_name}) {
-		$type = 'received';
-		$ext = $to.'@' . $domain_name;
-	} elsif ($zoho_tokens{$from.'@' . $domain_name}) {
-		$type = 'dialed';
-		$ext = $from.'@' . $domain_name;
-	} else {
-		$type = 'unknown';
-	}
+	warn "Get Bridged uuid=$uuid\n";
+	warn Data::Dumper::Dumper($dialed_calls{$uuid});
+	
+	$iscallback = $dialed_calls{$uuid};
+	$from = $dailed_calls{$uuid}{from} ;
+	$to = $dialed_calls{$uuid}{to};
+	$ext = $dialed_calls{$uuid}{ext};
+	$domain_name = $dialed_calls{$uuid}{domain_name};
+	$type = $dialed_calls{$uuid}{type};
+	
 	$data = "type=$type&state=answered&id=$uuid&from=$from&to=$to";
 	&send_zoho_request('callnotify', $ext, $data);	
 }
@@ -445,19 +441,7 @@ sub End() {
 	#warn $recording_url;
 	local %hash = ('from' => $from, 'caller_name' => $caller_name, 'to' => $to, 'domain_name' => $domain_name, 'starttime' => $now, 'calltype' => $call_type, 'calluuid' => $uuid, 'callaction' => 'hangup',duration => $duration, billsec => $billsec,starttime => $starttime, endtime => $endtime, 'recording_url' => $recording_url, call_center_queue_uuid => $call_center_queue_uuid, queue => $queue_name);
 	
-	$iscallback  = $dialed_calls{$uuid}{iscallback};
-	if ($iscallback) {
-		if ($to ne $iscallback) {
-			$from = $iscallback;
-		}		
-		
-		if (!$callback_spool{$uuid}) {
-			warn "call=$uuid not in callback_spool, ingore!";
-			return;
-		}
-		delete $callback_spool{$uuid};
-		
-	}
+
 	
 	
 	$iscallback = $dialed_calls{$uuid};
