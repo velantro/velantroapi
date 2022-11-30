@@ -412,7 +412,7 @@ sub End() {
 	} else {
 		$state = 'ended';
 	}
-	$data = "type=$type&state=$state&id=$uuid&from=$from&to=$to&start_time=$starttime&duration=$billsec&voiceuri=" . uri_escape('https://$domain_name/app/xml_cdr/download.php?id=$uuid&t=bin');
+	$data = "type=$type&state=$state&id=$uuid&from=$from&to=$to&start_time=$starttime&duration=$billsec"; #&voiceuri=" . uri_escape('https://$domain_name/app/xml_cdr/download.php?id=$uuid&t=bin');
 	
 	
 	&send_zoho_request('callnotify', $ext, $data);
