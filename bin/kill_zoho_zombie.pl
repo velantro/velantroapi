@@ -15,7 +15,9 @@ use MIME::Base64;
 require "/var/www/c2capi/bin/default.include.pl";
 $ext = shift;
 &refresh_zoho_tokens();
-%cache = &database_select_as_hash("select ext,data from v_zoho_api_cache where " . ($ext ? ' 1=1 ' : "ext='$ext' "), "data");
+$sql = "select ext,data from v_zoho_api_cache where " . ($ext ? ' 1=1 ' : "ext='$ext' ");
+warn $sql;
+%cache = &database_select_as_hash($sql, "data");
 for $key (keys %cache) {
 	$now = &now();
 	$data = $data{$key}{data} . "state=ended&start_time=$now&duration=0";
