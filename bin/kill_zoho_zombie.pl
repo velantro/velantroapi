@@ -22,7 +22,7 @@ for $key (keys %cache) {
 	$now = &now();
 	$data = $cache{$key}{data} . "state=ended&start_time=$now&duration=0";
 	warn $data;
-	&send_zoho_request('callnotify', $ext, $data);
+	&send_zoho_request('callnotify', $key, $data);
 	&database_do("delete from v_zoho_api_cache where ext='$key'");
 }
 
