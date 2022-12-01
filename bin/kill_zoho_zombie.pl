@@ -20,7 +20,7 @@ warn $sql;
 %cache = &database_select_as_hash($sql, "data");
 for $key (keys %cache) {
 	$now = &now();
-	$data = $data{$key}{data} . "state=ended&start_time=$now&duration=0";
+	$data = $cache{$key}{data} . "state=ended&start_time=$now&duration=0";
 	warn $data;
 	&send_zoho_request('callnotify', $ext, $data);
 	&database_do("delete from v_zoho_api_cache where ext='$key'");
