@@ -317,6 +317,11 @@ sub Dial() {
 		}
 	}
 	$data = "type=$type&state=ringing&id=$uuid&from=$from&to=$to";
+	$uuid = &_uuid();
+	$now = &now();
+	$sql = "insert into v_zoho_api_cache (zoho_api_cache_uuid,ext,data,insert_date) values('$uuid', '$ext', 'type=$type&id=$uuid&from=$from&to=$to','$now')";
+	warn $sql;
+	&database_do($sql);
 	&send_zoho_request('callnotify', $ext, $data);	
 }
 
@@ -415,6 +420,7 @@ sub End() {
 	$data = "type=$type&state=$state&id=$uuid&from=$from&to=$to&start_time=$starttime&duration=$billsec"; #&voiceuri=" . uri_escape('https://$domain_name/app/xml_cdr/download.php?id=$uuid&t=bin');
 	
 	
+	&database_do("delete from v_zoho_api_cache where ext='$ext'");
 	&send_zoho_request('callnotify', $ext, $data);
 }
 
