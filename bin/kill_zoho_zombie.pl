@@ -15,15 +15,15 @@ use MIME::Base64;
 require "/var/www/c2capi/bin/default.include.pl";
 $ext = shift;
 &refresh_zoho_tokens();
-$sql = "select ext,data from v_zoho_api_cache where " . ($ext ?  "ext='$ext' " : ' 1=1 ');
+$sql = "select zoho_cache_uuid,ext,data from v_zoho_api_cache where " . ($ext ?  "ext='$ext' " : ' 1=1 ');
 warn $sql;
-%cache = &database_select_as_hash($sql, "data");
+%cache = &database_select_as_hash($sql, "ext,data");
 for $key (keys %cache) {
 	$now = &now();
 	$data = $cache{$key}{data} . "&state=ended&start_time=$now&duration=0";
 	warn $data;
-	&send_zoho_request('callnotify', $key, $data);
-	&database_do("delete from v_zoho_api_cache where ext='$key'");
+	&send_zoho_request('callnotify', $cache{$key}{ext}, $data);
+	&database_do("delete from v_zoho_api_cache where ext='" . $cache{$key}{ext} . "'");
 }
 
 sub refresh_zoho_tokens() {
