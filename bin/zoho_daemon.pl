@@ -763,10 +763,12 @@ sub trim {
      return wantarray ? @out : $out[0];
 }
 
-sub asterisk_debug_print(){
-	local($msg) = @_;
-	print STDERR "$msg \n";
+sub _uuid {
+	my $str = `uuid`;
+	$str =~ s/[\r\n]//g;
 	
+	return $str;
 }
+
 #======================================================
  
