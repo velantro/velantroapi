@@ -1049,7 +1049,7 @@ sub get_token {
 	my $ext = clean_str($query{ext}, 'SQLSAFE');
 	
 	$uuid = &_uuid();
-	print j({error => '0', 'token' => $uuid);
+	print j({error => '0', 'token' => $uuid});
 
 }
 sub getvalue {
