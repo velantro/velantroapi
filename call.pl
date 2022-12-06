@@ -189,6 +189,8 @@ if ($query{action} eq 'addcallback') {
 	do_cdr();
 } elsif ($query{action} eq 'getteledirectminutes'){
 	do_teledirect();
+} elsif ($query{action} eq 'gettoken'){
+	get_token();
 } else {
      print j({error => '1', 'message' => 'undefined action', 'actionid' => $query{actionid}});
     exit 0;
@@ -1042,6 +1044,14 @@ sub do_send_voicemaildrop {
 	}
 }
 
+sub get_token {
+	my $zohouser = clean_str($query{zohouser}, 'SQLSAFE');
+	my $ext = clean_str($query{ext}, 'SQLSAFE');
+	
+	$uuid = &_uuid();
+	print j({error => '0', 'token' => $uuid);
+
+}
 sub getvalue {
 	my $key = shift || return;
 	my $buffer = shift;
