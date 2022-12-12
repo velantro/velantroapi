@@ -417,7 +417,7 @@ sub End() {
 	} else {
 		$state = 'ended';
 	}
-	$data = "type=$type&state=$state&id=$uuid&from=$from&to=$to&start_time=$starttime&duration=$billsec&voiceuri=https://$domain_name/app/xml_cdr/download.php?id=$uuid" . '%' . "26t=bin"; #uri_escape('https://$domain_name/app/xml_cdr/download.php?id=$uuid&t=bin');
+	$data = "type=$type&state=$state&id=$uuid&from=$from&to=$to&start_time=$starttime&duration=$billsec&voiceuri=https://$domain_name/app/xml_cdr/download.php?id=$uuid"; #uri_escape('https://$domain_name/app/xml_cdr/download.php?id=$uuid&t=bin');
 	
 	
 	&database_do("delete from v_zoho_api_cache where ext='$ext'");
