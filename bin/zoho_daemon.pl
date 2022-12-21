@@ -118,7 +118,7 @@ $remote->autoflush(1);
 $logres = login_cmd("auth ClueCon$BLANK");
 sleep 1;
 
-$logres = login_cmd("event CHANNEL_OUTGOING CHANNEL_BRIDGE CHANNEL_HANGUP CHANNEL_HANGUP_COMPLETE MEDIA_BUG_STOP CUSTOM callcenter::info$BLANK");
+$logres = login_cmd("event BACKGROUND_JOB CHANNEL_OUTGOING CHANNEL_BRIDGE CHANNEL_HANGUP CHANNEL_HANGUP_COMPLETE MEDIA_BUG_STOP CUSTOM callcenter::info$BLANK");
 $eventcount = 0;
 %Channel_Spool = ();
 local $| = 1;
@@ -162,7 +162,7 @@ while (<$remote>) {
 				&qc_start_echo(%event);
 			} elsif ($event{'Event-Subclass'} eq "callcenter%3A%3Ainfo" &&  $event{'CC-Action'} eq 'bridge-agent-start') {
 				&qc_answer_echo(%event);
-			}
+			}elsif ($event{'Event-Name'} eq "BACKGROUND_JOB" and $event{'Job-Command'} eq 'originate')			{ check_callback(%event); }
 				
 			
 			$eventcount++;
@@ -422,6 +422,10 @@ sub End() {
 	
 	&database_do("delete from v_zoho_api_cache where ext='$ext'");
 	&send_zoho_request('callnotify', $ext, $data);
+}
+
+sub check_callback() {
+	print Dumper(\%event);
 }
 
 sub update_agent_status() {
