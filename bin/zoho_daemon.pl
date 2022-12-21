@@ -435,7 +435,9 @@ sub End() {
 }
 
 sub check_callback() {
-	print Dumper(\%event);
+	#print Dumper(\%event);
+	$cmd = $event{'Job-Command-Arg'};
+	warn $cmd;
 }
 
 sub update_agent_status() {
