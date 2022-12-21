@@ -437,7 +437,16 @@ sub End() {
 sub check_callback() {
 	#print Dumper(\%event);
 	$cmd = uri_unescape($event{'Job-Command-Arg'});
-	warn $cmd;
+	$body = $event{'body'};
+	($code) = $body =~ /\-ERR (NO_USER_RESPONSE)/;
+	($from) = $cmd =~ /fromextension=(\d+)/;
+	($to) = $cmd =~ /origination_caller_id_number=(\d+)/;
+	
+	$data = "code=$code&from=$from&to=$to&message=$body"; #uri_escape('https://$domain_name/app/xml_cdr/download.php?id=$uuid&t=bin');
+	
+	
+	&database_do("delete from v_zoho_api_cache where ext='$ext'");
+	&send_zoho_request('clicktodialerror', $from, $data);
 }
 
 sub update_agent_status() {
@@ -679,6 +688,8 @@ sub send_zoho_request() {
 	local ($type, $ext, $data) = @_;
 	if ($type eq 'callnotify') {
 		$url = 'https://www.zohoapis.com/phonebridge/v3/callnotify';
+	} elsif ($type eq 'clicktodialerror') {
+		$url = 'https://www.zohoapis.com/phonebridge/v3/clicktodialerror';
 	}
 	warn "$type, $ext, $data";
 	$code = $zoho_tokens{$ext}{access_token};
