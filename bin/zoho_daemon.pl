@@ -444,7 +444,7 @@ sub check_callback() {
 	
 	($to) = $cmd =~ /origination_caller_id_number=(\d+)/;
 	
-	$data = "code=$code&from=$from&to=$to&message=$body on $domain_name"; #uri_escape('https://$domain_name/app/xml_cdr/download.php?id=$uuid&t=bin');
+	$data = "code=$code&from=$from&to=$to&message=fail to call agent: $code"; #uri_escape('https://$domain_name/app/xml_cdr/download.php?id=$uuid&t=bin');
 	
 	
 	&database_do("delete from v_zoho_api_cache where ext='$ext'");
