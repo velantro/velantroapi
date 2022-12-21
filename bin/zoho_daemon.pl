@@ -436,7 +436,7 @@ sub End() {
 
 sub check_callback() {
 	#print Dumper(\%event);
-	$cmd = $event{'Job-Command-Arg'};
+	$cmd = uri_unescape($event{'Job-Command-Arg'});
 	warn $cmd;
 }
 
