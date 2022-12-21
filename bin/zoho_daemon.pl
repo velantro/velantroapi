@@ -448,7 +448,7 @@ sub check_callback() {
 	
 	
 	&database_do("delete from v_zoho_api_cache where ext='$ext'");
-	&send_zoho_request('clicktodialerror', $from . '.' . $domain_name, $data);
+	&send_zoho_request('clicktodialerror', $from . '@' . $domain_name, $data);
 }
 
 sub update_agent_status() {
