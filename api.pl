@@ -1974,7 +1974,7 @@ sub stop_moh {
 }
 
 sub hangup {
-	my $uuid = $query{uuid} || $query{callbackid};
+	my $uuid = $query{uuid} || $query{callbackid} || $query{callrefid};
 
 =pod	
 	my $channels = `fs_cli -x "show channels"`;
