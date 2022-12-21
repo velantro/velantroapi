@@ -127,6 +127,7 @@ open $FH, ">> /tmp/incoming_call.log" or die $!;
 %kill_bridged_uuids = ();
 %zoho_tokens = ();
 %dialed_calls = ();
+$need_event_body = 0;
 while (<$remote>) {
 	
 	$_ =~ s/\r\n//g;
@@ -162,7 +163,10 @@ while (<$remote>) {
 				&qc_start_echo(%event);
 			} elsif ($event{'Event-Subclass'} eq "callcenter%3A%3Ainfo" &&  $event{'CC-Action'} eq 'bridge-agent-start') {
 				&qc_answer_echo(%event);
-			}elsif ($event{'Event-Name'} eq "BACKGROUND_JOB" and $event{'Job-Command'} eq 'originate')			{ check_callback(%event); }
+			} elsif ($event{'Event-Name'} eq "BACKGROUND_JOB" && $event{'Job-Command'} eq 'originate')			{
+				$need_event_body = 1;
+				#check_callback(%event);
+			}
 				
 			
 			$eventcount++;
@@ -171,6 +175,12 @@ while (<$remote>) {
 	}
 	if ($_ ne "") {
 		$line = $_;
+		if ($need_event_body) {
+			$event{body} = $_;
+			&check_callback(%event);
+			$need_event_body = '';
+		}
+		
 		if ($finalline eq "") {
 			$finalline = $line;
 		} else {
