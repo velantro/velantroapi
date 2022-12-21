@@ -438,7 +438,7 @@ sub check_callback() {
 	#print Dumper(\%event);
 	$cmd = uri_unescape($event{'Job-Command-Arg'});
 	$body = $event{'body'};
-	($code) = $body =~ /\-ERR (NO_USER_RESPONSE)/;
+	($code) = $body =~ /\-ERR (.+)/;
 	($from) = $cmd =~ /fromextension=(\d+)/;
 	($domain_name) = $cmd =~ /domain_name=(.+?),/;
 	
