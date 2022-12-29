@@ -421,17 +421,15 @@ sub End() {
 	$type = $dialed_calls{$uuid}{type};
 	delete $dialed_calls{$uuid};
 	warn "Hangup Call from $from to $to";
-	
-	if ($event{'variable_hangup_cause'} eq 'NORMAL_CLEARING') {
-		if ($type eq 'recieved' && !$billsec) {
-			$state = 'missed';
-		} else {
-			$state = 'ended';
-		}
+
+	if ($type eq 'recieved' && !$billsec) {
+		$state = 'missed';
 	} else {
-		$state = $event{'variable_hangup_cause'};
-	}	
-	
+		$state = 'ended';
+	}
+	if ($type eq 'dialed' && $event{'variable_hangup_cause'} ne 'NORMAL_CLEARING') {
+		$state = $event{'variable_hangup_cause'}
+	}
 	
 	$data = "type=$type&state=$state&id=$uuid&from=$from&to=$to&start_time=$starttime&duration=$billsec&voiceuri=https://$domain_name/app/xml_cdr/download.php?id=$uuid"; #uri_escape('https://$domain_name/app/xml_cdr/download.php?id=$uuid&t=bin');
 	
