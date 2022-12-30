@@ -420,9 +420,9 @@ sub End() {
 	$domain_name = $dialed_calls{$uuid}{domain_name};
 	$type = $dialed_calls{$uuid}{type};
 	delete $dialed_calls{$uuid};
-	warn "Hangup Call from $from to $to";
+	warn "Hangup Call from $from to $to: $billsec";
 
-	if ($type eq 'recieved' && int($billsec) < 1) {
+	if ($type eq 'recieved' && $billsec < 1) {
 		$state = 'missed';
 	} else {
 		$state = 'ended';
