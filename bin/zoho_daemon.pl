@@ -428,7 +428,18 @@ sub End() {
 		$state = 'ended';
 	}
 	if ($type eq 'dialed' && $event{'variable_hangup_cause'} ne 'NORMAL_CLEARING') {
-		$state = 'noanswer'; #$event{'variable_hangup_cause'}
+		if($event{'variable_hangup_cause'} eq 'USER_BUSY') {
+			$state = 'busy';
+		} elsif($event{'variable_hangup_cause'} eq 'NO_ANSWER') {
+			$state = 'noanswer';
+		} elsif($event{'variable_hangup_cause'} eq 'CALL_REJECTED') {
+			$state = 'rejected';
+		} elsif ($event{'variable_hangup_cause'} eq 'INVALID_NUMBER_FORMAT') {
+			$state = 'invalid';
+		} else {
+			$state = 'noanswer';
+		}
+		
 	}
 	
 	$data = "type=$type&state=$state&id=$uuid&from=$from&to=$to&start_time=$starttime" . ($billsec > 0 ? "&duration=$billsec&voiceuri=https://$domain_name/app/xml_cdr/download.php?id=$uuid" : ""); #uri_escape('https://$domain_name/app/xml_cdr/download.php?id=$uuid&t=bin');
