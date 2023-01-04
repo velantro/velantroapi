@@ -118,7 +118,7 @@ $remote->autoflush(1);
 $logres = login_cmd("auth ClueCon$BLANK");
 sleep 1;
 
-$logres = login_cmd("event CHANNEL_OUTGOING CHANNEL_BRIDGE CHANNEL_HANGUP CHANNEL_HANGUP_COMPLETE MEDIA_BUG_STOP CUSTOM callcenter::info$BLANK");
+$logres = login_cmd("event BACKGROUND_JOB CHANNEL_OUTGOING CHANNEL_BRIDGE CHANNEL_HANGUP CHANNEL_HANGUP_COMPLETE MEDIA_BUG_STOP CUSTOM callcenter::info$BLANK");
 $eventcount = 0;
 %Channel_Spool = ();
 local $| = 1;
@@ -127,6 +127,7 @@ open $FH, ">> /tmp/incoming_call.log" or die $!;
 %kill_bridged_uuids = ();
 %zoho_tokens = ();
 %dialed_calls = ();
+$need_event_body = 0;
 while (<$remote>) {
 	
 	$_ =~ s/\r\n//g;
@@ -162,6 +163,9 @@ while (<$remote>) {
 				&qc_start_echo(%event);
 			} elsif ($event{'Event-Subclass'} eq "callcenter%3A%3Ainfo" &&  $event{'CC-Action'} eq 'bridge-agent-start') {
 				&qc_answer_echo(%event);
+			} elsif ($event{'Event-Name'} eq "BACKGROUND_JOB" && $event{'Job-Command'} eq 'originate')			{
+				$need_event_body = 1;
+				#check_callback(%event);
 			}
 				
 			
@@ -171,6 +175,12 @@ while (<$remote>) {
 	}
 	if ($_ ne "") {
 		$line = $_;
+		if ($need_event_body) {
+			$event{body} = $_;
+			&check_callback(%event);
+			$need_event_body = '';
+		}
+		
 		if ($finalline eq "") {
 			$finalline = $line;
 		} else {
@@ -410,18 +420,50 @@ sub End() {
 	$domain_name = $dialed_calls{$uuid}{domain_name};
 	$type = $dialed_calls{$uuid}{type};
 	delete $dialed_calls{$uuid};
-	warn "Hangup Call from $from to $to";
+	warn "Hangup Call from $from to $to: $billsec";
 
-	if ($type eq 'recieved' && !$billsec) {
+	if ($type eq 'received' && $billsec < 1) {
 		$state = 'missed';
 	} else {
 		$state = 'ended';
 	}
-	$data = "type=$type&state=$state&id=$uuid&from=$from&to=$to&start_time=$starttime&duration=$billsec&voiceuri=https://$domain_name/app/xml_cdr/download.php?id=$uuid"; #uri_escape('https://$domain_name/app/xml_cdr/download.php?id=$uuid&t=bin');
+	if ($type eq 'dialed' && $event{'variable_hangup_cause'} ne 'NORMAL_CLEARING') {
+		if($event{'variable_hangup_cause'} eq 'USER_BUSY') {
+			$state = 'busy';
+		} elsif($event{'variable_hangup_cause'} eq 'NO_ANSWER') {
+			$state = 'noanswer';
+		} elsif($event{'variable_hangup_cause'} eq 'CALL_REJECTED') {
+			$state = 'rejected';
+		} elsif ($event{'variable_hangup_cause'} eq 'INVALID_NUMBER_FORMAT') {
+			$state = 'invalid';
+		} else {
+			$state = 'noanswer';
+		}
+		
+	}
+	
+	$data = "type=$type&state=$state&id=$uuid&from=$from&to=$to&start_time=$starttime" . ($billsec > 0 ? "&duration=$billsec&voiceuri=https://$domain_name/app/xml_cdr/download.php?id=$uuid" : ""); #uri_escape('https://$domain_name/app/xml_cdr/download.php?id=$uuid&t=bin');
 	
 	
 	&database_do("delete from v_zoho_api_cache where ext='$ext'");
 	&send_zoho_request('callnotify', $ext, $data);
+}
+
+sub check_callback() {
+	#print Dumper(\%event);
+	$cmd = uri_unescape($event{'Job-Command-Arg'});
+	$body = $event{'body'};
+	($code) = $body =~ /\-ERR (.+)/;
+	($from) = $cmd =~ /fromextension=(\d+)/;
+	($domain_name) = $cmd =~ /domain_name=(.+?),/;
+	
+	($to) = $cmd =~ /origination_caller_id_number=(\d+)/;
+	
+	$data = "code=$code&from=$from&to=$to&message=fail to call agent: $code"; #uri_escape('https://$domain_name/app/xml_cdr/download.php?id=$uuid&t=bin');
+	
+	
+	&database_do("delete from v_zoho_api_cache where ext='$ext'");
+	&send_zoho_request('clicktodialerror', $from . '@' . $domain_name, $data);
 }
 
 sub update_agent_status() {
@@ -663,6 +705,8 @@ sub send_zoho_request() {
 	local ($type, $ext, $data) = @_;
 	if ($type eq 'callnotify') {
 		$url = 'https://www.zohoapis.com/phonebridge/v3/callnotify';
+	} elsif ($type eq 'clicktodialerror') {
+		$url = 'https://www.zohoapis.com/phonebridge/v3/clicktodialerror';
 	}
 	warn "$type, $ext, $data";
 	$code = $zoho_tokens{$ext}{access_token};
