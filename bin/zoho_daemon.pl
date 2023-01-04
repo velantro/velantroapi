@@ -457,6 +457,7 @@ sub End() {
 			$state = 'noanswer';
 		}
 		
+		$billsec = 0;
 	}
 	
 	$data = "type=$type&state=$state&id=$uuid&from=$from&to=$to&start_time=$starttime" . ($billsec > 0 ? "&duration=$billsec&voiceuri=https://$domain_name/app/xml_cdr/download.php?id=$uuid" : ""); #uri_escape('https://$domain_name/app/xml_cdr/download.php?id=$uuid&t=bin');
