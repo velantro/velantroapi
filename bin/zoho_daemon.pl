@@ -265,7 +265,7 @@ sub Dial() {
 	local(%event) = @_;
 	#print Dumper(\%event);
 	return unless $event{'Channel-Call-State'} eq 'DOWN';
-	print Dumper(\%event);
+	#print Dumper(\%event);
 
 	warn $event{'Caller-Caller-ID-Number'} . ":" . $event{'Other-Leg-Caller-ID-Number'} . " is calling  " . $event{'Caller-Callee-ID-Number'};
 	local	$uuid = $event{'Other-Leg-Unique-ID'} ;
@@ -381,8 +381,10 @@ sub End() {
 	local $start_epoch = $event{'variable_start_epoch'};
 	local $starttime = uri_unescape($event{'variable_start_stamp'});
 	local $host = ($host_prefix . $event{'Caller-Context'}) || $default_host;
-	
-	warn "Hangup call: $uuid";
+	local $other_uuid = uri_unescape($event{'variable_other_loopback_from_uuid'});
+	local $hangup_cause = uri_unescape($event{'variable_hangup_cause'});
+ = uri_unescape($event{'other_loopback_from_uuid'});
+	warn "Hangup call: $uuid ; other_uuid:$hangup_cause; ";
 	if (not $dialed_calls{$uuid}) {
 		return;
 	}
