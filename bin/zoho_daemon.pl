@@ -448,7 +448,7 @@ sub End() {
 		} elsif($event{'variable_hangup_cause'} eq 'NO_ANSWER') {
 			$state = 'noanswer';
 		} elsif($event{'variable_hangup_cause'} eq 'NO_USER_RESPONSE') {
-			$state = 'refused';
+			$state = 'rejected';
 		} elsif($event{'variable_hangup_cause'} eq 'CALL_REJECTED') {
 			$state = 'rejected';
 		} elsif ($event{'variable_hangup_cause'} eq 'INVALID_NUMBER_FORMAT') {
