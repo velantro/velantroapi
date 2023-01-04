@@ -383,7 +383,6 @@ sub End() {
 	local $host = ($host_prefix . $event{'Caller-Context'}) || $default_host;
 	local $other_uuid = uri_unescape($event{'variable_other_loopback_from_uuid'});
 	local $hangup_cause = uri_unescape($event{'variable_hangup_cause'});
- = uri_unescape($event{'other_loopback_from_uuid'});
 	warn "Hangup call: $uuid ; other_uuid:$hangup_cause; ";
 	if (not $dialed_calls{$uuid}) {
 		return;
