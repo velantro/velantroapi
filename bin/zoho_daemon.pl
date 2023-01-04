@@ -127,6 +127,7 @@ open $FH, ">> /tmp/incoming_call.log" or die $!;
 %kill_bridged_uuids = ();
 %zoho_tokens = ();
 %dialed_calls = ();
+%hangup_calls = ();
 $need_event_body = 0;
 while (<$remote>) {
 	
@@ -386,6 +387,8 @@ sub End() {
 	warn "Hangup call: $uuid ; other_uuid:$other_uuid ; hangup_cause: $hangup_cause; ";
 	if ($hangup_cause ne 'NORMAL_CLEARING') {
 		print Dumper(\%event);
+		$destination = $event{'Caller-Destination-Number'};
+		$hangup_calls{$destination} = $hangup_cause;
 	}
 	
 	if (not $dialed_calls{$uuid}) {
@@ -427,6 +430,12 @@ sub End() {
 	$type = $dialed_calls{$uuid}{type};
 	delete $dialed_calls{$uuid};
 	warn "Hangup Call from $from to $to: $billsec";
+	if ($hangup_calls{$to}) {
+		warn "Found $to: " . $hangup_calls{$to} . " in hangup call spool";
+		$event{'variable_hangup_cause'} = $hangup_calls{$to};
+		delete $hangup_calls{$to};
+	}
+	
 
 	if ($type eq 'received' && $billsec < 1) {
 		$state = 'missed';
@@ -438,6 +447,8 @@ sub End() {
 			$state = 'busy';
 		} elsif($event{'variable_hangup_cause'} eq 'NO_ANSWER') {
 			$state = 'noanswer';
+		} elsif($event{'variable_hangup_cause'} eq 'NO_USER_RESPONSE') {
+			$state = 'refused';
 		} elsif($event{'variable_hangup_cause'} eq 'CALL_REJECTED') {
 			$state = 'rejected';
 		} elsif ($event{'variable_hangup_cause'} eq 'INVALID_NUMBER_FORMAT') {
