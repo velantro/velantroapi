@@ -384,9 +384,14 @@ sub End() {
 	local $other_uuid = uri_unescape($event{'variable_other_loopback_from_uuid'});
 	local $hangup_cause = uri_unescape($event{'variable_hangup_cause'});
 	warn "Hangup call: $uuid ; other_uuid:$other_uuid ; hangup_cause: $hangup_cause; ";
+	if ($hangup_cause ne 'NORMAL_CLEARING') {
+		print Dumper(\%event);
+	}
+	
 	if (not $dialed_calls{$uuid}) {
 		return;
 	}
+	
 	
 	if ($event{'Answer-State'} ne 'hangup' || $event{'Channel-Name'} =~ /loopback/) {
 		return;
