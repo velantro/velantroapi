@@ -492,7 +492,7 @@ sub check_missed() {
 	$domain_name = uri_unescape($event{'domain_name'});
 	$from = uri_unescape($event{'caller_id_number'});
 	
-	$ext = $to . '@' . $domain_name
+	$ext = $to . '@' . $domain_name;
 	
 	$starttime = uri_unescape($event{'Event-Date-Local'});
 	$uuid = &_uuid();
