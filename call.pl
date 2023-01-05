@@ -348,7 +348,7 @@ sub send_callback {
 	
 	my $uuid   = _uuid();
 	#my $result = `fs_cli -x "originate {origination_caller_id_name=callback-$ext,origination_caller_id_number=8188886666,domain_name=$HOSTNAME,origination_uuid=$uuid}loopback/$ext/$HOSTNAME/XML $dest XML $HOSTNAME"`;
-	unless($dest =~ /^\+1?\d{10}/) {
+	unless($dest =~ /^\+?1?\d{10}/) {
 		print j({error => '1', 'message' => "dest=$dest is invalid", 'actionid' => $query{actionid}});
 		$starttime = &now();
 		$uuid = &_uuid();
