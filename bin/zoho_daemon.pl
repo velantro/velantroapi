@@ -450,7 +450,7 @@ sub End() {
 		} elsif($event{'variable_hangup_cause'} eq 'NO_ANSWER') {
 			$state = 'noanswer';
 		} elsif($event{'variable_hangup_cause'} eq 'NO_USER_RESPONSE') {
-			$state = 'refused';
+			$state = 'rejected';
 		} elsif($event{'variable_hangup_cause'} eq 'CALL_REJECTED') {
 			$state = 'rejected';
 		} elsif ($event{'variable_hangup_cause'} eq 'INVALID_NUMBER_FORMAT') {
@@ -459,6 +459,7 @@ sub End() {
 			$state = 'noanswer';
 		}
 		
+		$billsec = 0;
 	}
 	
 	$data = "type=$type&state=$state&id=$uuid&from=$from&to=$to&start_time=$starttime" . ($billsec > 0 ? "&duration=$billsec&voiceuri=https://$domain_name/app/xml_cdr/download.php?id=$uuid" : ""); #uri_escape('https://$domain_name/app/xml_cdr/download.php?id=$uuid&t=bin');
