@@ -496,7 +496,7 @@ sub check_missed() {
 	
 	$starttime = uri_unescape($event{'Event-Date-Local'});
 	$uuid = &_uuid();
-	$data = "type=incoming&state=missed&id=$uuid&from=$from&to=$to&start_time=$starttime"; #uri_escape('https://$domain_name/app/xml_cdr/download.php?id=$uuid&t=bin');
+	$data = "type=received&state=missed&id=$uuid&from=$from&to=$to&start_time=$starttime"; #uri_escape('https://$domain_name/app/xml_cdr/download.php?id=$uuid&t=bin');
 	
 	
 	&database_do("delete from v_zoho_api_cache where ext='$ext'");
