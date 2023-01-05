@@ -348,6 +348,15 @@ sub send_callback {
 	
 	my $uuid   = _uuid();
 	#my $result = `fs_cli -x "originate {origination_caller_id_name=callback-$ext,origination_caller_id_number=8188886666,domain_name=$HOSTNAME,origination_uuid=$uuid}loopback/$ext/$HOSTNAME/XML $dest XML $HOSTNAME"`;
+	unless($dest =~ /^\+1?\d{1)}/) {
+		print j({error => '1', 'message' => "dest=$dest is invalid", 'actionid' => $query{actionid}});
+		$starttime = &now();
+		$uuid = &_uuid();
+		
+		&send_zoho_request('callnotify', $ext.'@'.$domain, "type=dialed&state=invalid&id=$uuid&from=$ext&to=$dest&start_time=$starttime");
+		exit 0;
+	}
+	
 	$dest =~ s/^\+1//g;
 	if ($dest =~ /^\+(\d+)$/) {
 		$dest = "011$1";
@@ -1214,4 +1223,24 @@ sub now {
 	@v = localtime();
 	$str = sprintf("%04d-%02d-%02d %02d:%02d:%02d", 1900+$v[5],$v[4]+1,$v[3], $v[2], $v[1], $v[0]);
 	return $str;	
+}
+
+sub send_zoho_request() {
+	local ($type, $ext, $data) = @_;
+	if ($type eq 'callnotify') {
+		$url = 'https://www.zohoapis.com/phonebridge/v3/callnotify';
+	} elsif ($type eq 'clicktodialerror') {
+		$url = 'https://www.zohoapis.com/phonebridge/v3/clicktodialerror';
+	}
+	warn "$type, $ext, $data";
+	
+	$sql = "select ext,zohouser,refresh_token,access_token,extract(epoch from update_date) from v_zoho_users where ext='$ext'";
+	$sth = $dbh->prepare($sql);
+	$sth->execute;
+	$row = $sth->fetchrow_hashref;
+	$code = $row->{access_token};
+	$cmd = "curl  $url -X POST -d '$data' -H 'Authorization: Zoho-oauthtoken $code' -H 'Content-Type: application/x-www-form-urlencoded'";
+	$res = `$cmd`;
+	warn "cmd:$cmd\nresponse: $res\n";
+	return $res;
 }
