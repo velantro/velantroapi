@@ -118,7 +118,7 @@ $remote->autoflush(1);
 $logres = login_cmd("auth ClueCon$BLANK");
 sleep 1;
 
-$logres = login_cmd("event BACKGROUND_JOB CHANNEL_OUTGOING CHANNEL_BRIDGE CHANNEL_HANGUP CHANNEL_HANGUP_COMPLETE MEDIA_BUG_STOP CUSTOM callcenter::info$BLANK");
+$logres = login_cmd("event BACKGROUND_JOB CHANNEL_OUTGOING CHANNEL_BRIDGE CHANNEL_HANGUP CHANNEL_HANGUP_COMPLETE MEDIA_BUG_STOP CUSTOM MISSED$BLANK");
 $eventcount = 0;
 %Channel_Spool = ();
 local $| = 1;
@@ -167,7 +167,9 @@ while (<$remote>) {
 			} elsif ($event{'Event-Name'} eq "BACKGROUND_JOB" && $event{'Job-Command'} eq 'originate')			{
 				$need_event_body = 1;
 				#check_callback(%event);
-			}
+			} elsif ($event{'Event-Subclass'} eq "MISSED") {
+				&check_missed(%event);
+			} 
 				
 			
 			$eventcount++;
@@ -384,10 +386,10 @@ sub End() {
 	local $host = ($host_prefix . $event{'Caller-Context'}) || $default_host;
 	local $other_uuid = uri_unescape($event{'variable_other_loopback_from_uuid'});
 	local $hangup_cause = uri_unescape($event{'variable_hangup_cause'});
-	warn "Hangup call: $uuid ; other_uuid:$other_uuid ; hangup_cause: $hangup_cause; ";
+	local $destination = $event{'Caller-Destination-Number'};
+	warn "Hangup call: $uuid ; destination:$destination ; hangup_cause: $hangup_cause; ";
 	if ($hangup_cause ne 'NORMAL_CLEARING') {
-		print Dumper(\%event);
-		$destination = $event{'Caller-Destination-Number'};
+		print Dumper(\%event);		
 		$hangup_calls{$destination} = $hangup_cause;
 	}
 	
@@ -481,6 +483,23 @@ sub check_callback() {
 	
 	&database_do("delete from v_zoho_api_cache where ext='$ext'");
 	&send_zoho_request('clicktodialerror', $from . '@' . $domain_name, $data);
+}
+
+sub check_missed() {
+	#print Dumper(\%event);
+	$to = uri_unescape($event{'extension'});
+	$domain_name = uri_unescape($event{'domain_name'});
+	$from = uri_unescape($event{'caller_id_number'});
+	
+	$ext = $to . '@' . $domain_name
+	
+	$starttime = uri_unescape($event{'Event-Date-Local'});
+	$uuid = &_uuid();
+	$data = "type=incoming&state=missed&id=$uuid&from=$from&to=$to&start_time=$starttime"; #uri_escape('https://$domain_name/app/xml_cdr/download.php?id=$uuid&t=bin');
+	
+	
+	&database_do("delete from v_zoho_api_cache where ext='$ext'");
+	&send_zoho_request('callnotify', $ext, $data);
 }
 
 sub update_agent_status() {
