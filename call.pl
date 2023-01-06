@@ -357,7 +357,7 @@ sub send_callback {
 	}
 	
 	unless($dest =~ /^\d{10}$/ || $dest =~ /^011\d+$/) {
-		print j({error => '1', 'message' => "dest=$dest is invalid", 'actionid' => $query{actionid}});
+		print j({error => '1', 'message' => "dest=$query{dest} is invalid", 'actionid' => $query{actionid}});
 		$starttime = &now();
 		$uuid = &_uuid();
 		
