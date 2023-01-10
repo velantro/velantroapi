@@ -432,10 +432,15 @@ sub End() {
 	$domain_name = $dialed_calls{$uuid}{domain_name};
 	$type = $dialed_calls{$uuid}{type};
 	$current_epoch = $event{'Event-Date-Timestamp'};
-	$dailed_calls{$uuid}{answered_epoch} = $event{'Event-Date-Timestamp'};
+	$fixed_billsec = $billsec;
+	if ( $dailed_calls{$uuid}{answered_epoch} > 1000) {
+		$fixed_billsec = $billsec - int(($current_epoch - $dailed_calls{$uuid}{answered_epoch} )/1000000);
+	}
+	
+
+
 	delete $dialed_calls{$uuid};
 	
-	$fixed_billsec = $billsec - int(($current_epoch - $dailed_calls{$uuid}{answered_epoch} )/1000000);
 	warn "Hangup Call from $from to $to: $billsec : $fixed_billsec";
 	if ($hangup_calls{$to}) {
 		warn "Found $to: " . $hangup_calls{$to} . " in hangup call spool";
