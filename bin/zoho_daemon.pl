@@ -259,7 +259,7 @@ sub Bridge() {
 	$ext = $dialed_calls{$uuid}{ext};
 	$domain_name = $dialed_calls{$uuid}{domain_name};
 	$type = $dialed_calls{$uuid}{type};
-	
+	$dailed_calls{$uuid}{answered_epoch} = $event{'Event-Date-Timestamp'};
 	$data = "type=$type&state=answered&id=$uuid&from=$from&to=$to";
 	&send_zoho_request('callnotify', $ext, $data);	
 }
@@ -318,6 +318,7 @@ sub Dial() {
 		$ext = $dialed_calls{$uuid}{ext};
 		$domain_name = $dialed_calls{$uuid}{domain_name};
 		$type = $dialed_calls{$uuid}{type};
+		
 	} else {	
 		$dailed_calls{$uuid}{from} = $from;
 		$dialed_calls{$uuid}{to} = $to;
@@ -430,8 +431,12 @@ sub End() {
 	$ext = $dialed_calls{$uuid}{ext};
 	$domain_name = $dialed_calls{$uuid}{domain_name};
 	$type = $dialed_calls{$uuid}{type};
+	$current_epoch = $event{'Event-Date-Timestamp'};
+	$dailed_calls{$uuid}{answered_epoch} = $event{'Event-Date-Timestamp'};
 	delete $dialed_calls{$uuid};
-	warn "Hangup Call from $from to $to: $billsec";
+	
+	$fixed_billsec = $billsec - int(($current_epoch - $dailed_calls{$uuid}{answered_epoch} )/1000000);
+	warn "Hangup Call from $from to $to: $billsec : $fixed_billsec";
 	if ($hangup_calls{$to}) {
 		warn "Found $to: " . $hangup_calls{$to} . " in hangup call spool";
 		$event{'variable_hangup_cause'} = $hangup_calls{$to};
@@ -462,7 +467,7 @@ sub End() {
 		$billsec = 0;
 	}
 	
-	$data = "type=$type&state=$state&id=$uuid&from=$from&to=$to&start_time=$starttime" . ($billsec > 0 ? "&duration=$billsec&voiceuri=https://$domain_name/app/xml_cdr/download.php?id=$uuid" : ""); #uri_escape('https://$domain_name/app/xml_cdr/download.php?id=$uuid&t=bin');
+	$data = "type=$type&state=$state&id=$uuid&from=$from&to=$to&start_time=$starttime" . ($fixed_billsec > 0 ? "&duration=$fixed_billsec&voiceuri=https://$domain_name/app/xml_cdr/download.php?id=$uuid" : ""); #uri_escape('https://$domain_name/app/xml_cdr/download.php?id=$uuid&t=bin');
 	
 	
 	&database_do("delete from v_zoho_api_cache where ext='$ext'");
