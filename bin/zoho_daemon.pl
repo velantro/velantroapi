@@ -324,6 +324,7 @@ sub Dial() {
 		$dialed_calls{$uuid}{to} = $to;
 		$dialed_calls{$uuid}{ext} = $ext;
 		$dialed_calls{$uuid}{domain_name} = $domain_name;
+		$dialed_calls{$uuid}{start_epoch} = $event{'Event-Date-Timestamp'};;
 		$dialed_calls{$uuid}{type} = $type;
 		$dialed_calls{$uuid}{iscallback} = $iscallback;
 		if ($iscallback && $type eq 'recieved') {
@@ -433,8 +434,8 @@ sub End() {
 	$type = $dialed_calls{$uuid}{type};
 	$current_epoch = $event{'Event-Date-Timestamp'};
 	$fixed_billsec = $billsec;
-	if ( $dailed_calls{$uuid}{answered_epoch} > 1000) {
-		$fixed_billsec = $billsec - int(($current_epoch - $dailed_calls{$uuid}{answered_epoch} )/1000000);
+	if ( $dailed_calls{$uuid}{answered_epoch} > 1000 && $dailed_calls{$uuid}{start_epoch}) {
+		$fixed_billsec = $billsec - int(($dailed_calls{$uuid}{answered_epoch} - $dailed_calls{$uuid}{start_epoch} )/1000000);
 	}
 	
 
