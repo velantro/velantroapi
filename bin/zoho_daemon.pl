@@ -432,7 +432,7 @@ sub End() {
 	$ext = $dialed_calls{$uuid}{ext};
 	$domain_name = $dialed_calls{$uuid}{domain_name};
 	$type = $dialed_calls{$uuid}{type};
-	$current_epoch = $event{'Event-Date-Timestamp'};
+	#$current_epoch = $event{'Event-Date-Timestamp'};
 	$fixed_billsec = $billsec;
 	if ( $dailed_calls{$uuid}{answered_epoch} > 1000 && $dailed_calls{$uuid}{start_epoch}) {
 		$fixed_billsec = $billsec - int(($dailed_calls{$uuid}{answered_epoch} - $dailed_calls{$uuid}{start_epoch} )/1000000);
@@ -471,6 +471,10 @@ sub End() {
 		}
 		
 		$billsec = 0;
+	}
+	
+	if ($state ne 'ended') {
+		$fixed_billsec = 0;
 	}
 	
 	$data = "type=$type&state=$state&id=$uuid&from=$from&to=$to&start_time=$starttime" . ($fixed_billsec > 0 ? "&duration=$fixed_billsec&voiceuri=https://$domain_name/app/xml_cdr/download.php?id=$uuid" : ""); #uri_escape('https://$domain_name/app/xml_cdr/download.php?id=$uuid&t=bin');
