@@ -433,16 +433,16 @@ sub End() {
 	$ext = $dialed_calls{$uuid}{ext};
 	$domain_name = $dialed_calls{$uuid}{domain_name};
 	$type = $dialed_calls{$uuid}{type};
-	#$current_epoch = $event{'Event-Date-Timestamp'};
+	$current_epoch = $event{'Event-Date-Timestamp'};
 	$fixed_billsec = $billsec;
-	if ( $dialed_calls{$uuid}{answered_epoch} > 1000 && $dialed_calls{$uuid}{start_epoch}) {
-		$fixed_billsec = $billsec - int(($dialed_calls{$uuid}{answered_epoch} - $dialed_calls{$uuid}{start_epoch} )/1000000);
+	if ( $dialed_calls{$uuid}{answered_epoch} > 1000) {
+		$fixed_billsec = int(($current_epoch - $dialed_calls{$uuid}{answered_epoch})/1000000);
 	}
 	
 
 
 	
-	warn "Hangup Call from $from to $to: $billsec : $fixed_billsec : " . $dialed_calls{$uuid}{start_epoch} . " : " . $dialed_calls{$uuid}{answered_epoch};
+	warn "Hangup Call from $from to $to: $billsec : $fixed_billsec : " . $current_epoch . " : " . $dialed_calls{$uuid}{answered_epoch};
 	delete $dialed_calls{$uuid};
 	
 	if ($hangup_calls{$to}) {
