@@ -12,6 +12,7 @@ use URI::Escape;
 #use Net::AMQP::RabbitMQ;
 use POSIX qw(strftime);
 use MIME::Base64;
+use POSIX qw/ceil/;
 require "/var/www/c2capi/bin/default.include.pl";
 
 #======================================================
@@ -436,7 +437,7 @@ sub End() {
 	$current_epoch = $event{'Event-Date-Timestamp'};
 	$fixed_billsec = $billsec;
 	if ( $dialed_calls{$uuid}{answered_epoch} > 1000) {
-		$fixed_billsec = int(($current_epoch - $dialed_calls{$uuid}{answered_epoch})/1000000);
+		$fixed_billsec = ceil(($current_epoch - $dialed_calls{$uuid}{answered_epoch})/1000000);
 	}
 	
 
