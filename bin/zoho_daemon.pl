@@ -251,15 +251,16 @@ sub Bridge() {
 		return;
 	}
 	warn "Get Bridged uuid=$uuid\n";
+	$dialed_calls{$uuid}{answered_epoch} = $event{'Event-Date-Timestamp'};
+
 	warn Data::Dumper::Dumper($dialed_calls{$uuid});
 	
 	$iscallback = $dialed_calls{$uuid};
-	$from = $dailed_calls{$uuid}{from} ;
+	$from = $dialed_calls{$uuid}{from} ;
 	$to = $dialed_calls{$uuid}{to};
 	$ext = $dialed_calls{$uuid}{ext};
 	$domain_name = $dialed_calls{$uuid}{domain_name};
 	$type = $dialed_calls{$uuid}{type};
-	$dailed_calls{$uuid}{answered_epoch} = $event{'Event-Date-Timestamp'};
 	$data = "type=$type&state=answered&id=$uuid&from=$from&to=$to";
 	&send_zoho_request('callnotify', $ext, $data);	
 }
@@ -313,14 +314,14 @@ sub Dial() {
 	
 	if ($dialed_calls{$uuid}) {
 		$iscallback = $dialed_calls{$uuid};
-		$from = $dailed_calls{$uuid}{from} ;
+		$from = $dialed_calls{$uuid}{from} ;
 		$to = $dialed_calls{$uuid}{to};
 		$ext = $dialed_calls{$uuid}{ext};
 		$domain_name = $dialed_calls{$uuid}{domain_name};
 		$type = $dialed_calls{$uuid}{type};
 		
 	} else {	
-		$dailed_calls{$uuid}{from} = $from;
+		$dialed_calls{$uuid}{from} = $from;
 		$dialed_calls{$uuid}{to} = $to;
 		$dialed_calls{$uuid}{ext} = $ext;
 		$dialed_calls{$uuid}{domain_name} = $domain_name;
@@ -427,22 +428,22 @@ sub End() {
 	
 	
 	$iscallback = $dialed_calls{$uuid};
-	$from = $dailed_calls{$uuid}{from} ;
+	$from = $dialed_calls{$uuid}{from} ;
 	$to = $dialed_calls{$uuid}{to};
 	$ext = $dialed_calls{$uuid}{ext};
 	$domain_name = $dialed_calls{$uuid}{domain_name};
 	$type = $dialed_calls{$uuid}{type};
 	#$current_epoch = $event{'Event-Date-Timestamp'};
 	$fixed_billsec = $billsec;
-	if ( $dailed_calls{$uuid}{answered_epoch} > 1000 && $dailed_calls{$uuid}{start_epoch}) {
-		$fixed_billsec = $billsec - int(($dailed_calls{$uuid}{answered_epoch} - $dailed_calls{$uuid}{start_epoch} )/1000000);
+	if ( $dialed_calls{$uuid}{answered_epoch} > 1000 && $dialed_calls{$uuid}{start_epoch}) {
+		$fixed_billsec = $billsec - int(($dialed_calls{$uuid}{answered_epoch} - $dialed_calls{$uuid}{start_epoch} )/1000000);
 	}
 	
 
 
 	delete $dialed_calls{$uuid};
 	
-	warn "Hangup Call from $from to $to: $billsec : $fixed_billsec : " . $dailed_calls{$uuid}{start_epoch} . " : " . $dailed_calls{$uuid}{answered_epoch};
+	warn "Hangup Call from $from to $to: $billsec : $fixed_billsec : " . $dialed_calls{$uuid}{start_epoch} . " : " . $dialed_calls{$uuid}{answered_epoch};
 	if ($hangup_calls{$to}) {
 		warn "Found $to: " . $hangup_calls{$to} . " in hangup call spool";
 		$event{'variable_hangup_cause'} = $hangup_calls{$to};
