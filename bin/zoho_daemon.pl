@@ -441,9 +441,10 @@ sub End() {
 	
 
 
-	delete $dialed_calls{$uuid};
 	
 	warn "Hangup Call from $from to $to: $billsec : $fixed_billsec : " . $dialed_calls{$uuid}{start_epoch} . " : " . $dialed_calls{$uuid}{answered_epoch};
+	delete $dialed_calls{$uuid};
+	
 	if ($hangup_calls{$to}) {
 		warn "Found $to: " . $hangup_calls{$to} . " in hangup call spool";
 		$event{'variable_hangup_cause'} = $hangup_calls{$to};
