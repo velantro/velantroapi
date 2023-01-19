@@ -381,6 +381,7 @@ sub End() {
 	local $to =  $event{'variable_callee_id_number'};
 	local $domain_name =  $event{'variable_domain_name'};
 	local $iscallback =  $event{'variable_iscallback'};
+	local $fromextension =  $event{'fromextension'};
 	local $uuid = $event{'Channel-Call-UUID'};
 	#$uuid =~ s/\-//g;
 	local $duration = $event{'variable_duration'};
@@ -436,15 +437,16 @@ sub End() {
 	$domain_name = $dialed_calls{$uuid}{domain_name};
 	$type = $dialed_calls{$uuid}{type};
 	$current_epoch = $event{'Event-Date-Timestamp'};
+	
 	$fixed_billsec = $billsec;
-	if ( $dialed_calls{$uuid}{answered_epoch} > 1000) {
+	if ($fromextension && $dialed_calls{$uuid}{answered_epoch} > 1000) {
 		$fixed_billsec = ceil(($current_epoch - $dialed_calls{$uuid}{answered_epoch})/1000000)+1;
 	}
 	
 
 
 	
-	warn "Hangup Call from $from to $to: $billsec : $fixed_billsec : " . $current_epoch . " : " . $dialed_calls{$uuid}{answered_epoch};
+	warn "Hangup Call from $fromextension - $from to $to: $billsec : $fixed_billsec : " . $current_epoch . " : " . $dialed_calls{$uuid}{answered_epoch};
 	delete $dialed_calls{$uuid};
 	
 	if ($hangup_calls{$to}) {
