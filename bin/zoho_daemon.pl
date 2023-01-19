@@ -333,6 +333,7 @@ sub Dial() {
 			return;
 		}
 	}
+	delete $hangup_calls{$to};
 	$data = "type=$type&state=ringing&id=$uuid&from=$from&to=$to";
 	$cache_uuid = &_uuid();
 	$now = &now();
@@ -437,7 +438,7 @@ sub End() {
 	$current_epoch = $event{'Event-Date-Timestamp'};
 	$fixed_billsec = $billsec;
 	if ( $dialed_calls{$uuid}{answered_epoch} > 1000) {
-		$fixed_billsec = ceil(($current_epoch - $dialed_calls{$uuid}{answered_epoch})/1000000);
+		$fixed_billsec = ceil(($current_epoch - $dialed_calls{$uuid}{answered_epoch})/1000000)+1;
 	}
 	
 
