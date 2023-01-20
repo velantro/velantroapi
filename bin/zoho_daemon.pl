@@ -429,7 +429,7 @@ sub End() {
 		$to = $event{'Caller-Destination-Number'};
 	}
 	
-	warn Data::Dumper::Dumper(\%event);
+	#warn Data::Dumper::Dumper(\%event);
 	$iscallback = $dialed_calls{$uuid};
 	$from = $dialed_calls{$uuid}{from} ;
 	$to = $dialed_calls{$uuid}{to};
