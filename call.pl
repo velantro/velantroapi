@@ -191,6 +191,10 @@ if ($query{action} eq 'addcallback') {
 	do_teledirect();
 } elsif ($query{action} eq 'gettoken'){
 	get_token();
+} elsif ($query{action} eq 'clearlog'){
+	system("echo 0 > api.log");
+	 print j({error => '0', 'message' => 'Log Cleared!', 'actionid' => $query{actionid}});
+	 exit 0;
 } else {
      print j({error => '1', 'message' => 'undefined action', 'actionid' => $query{actionid}});
     exit 0;
