@@ -381,7 +381,7 @@ sub End() {
 	local $to =  $event{'variable_callee_id_number'};
 	local $domain_name =  $event{'variable_domain_name'};
 	local $iscallback =  $event{'variable_iscallback'};
-	local $fromextension =  $event{'fromextension'};
+	local $fromextension =  $event{'variable_fromextension'};
 	local $uuid = $event{'Channel-Call-UUID'};
 	#$uuid =~ s/\-//g;
 	local $duration = $event{'variable_duration'};
