@@ -393,9 +393,9 @@ sub End() {
 	local $other_uuid = uri_unescape($event{'variable_other_loopback_from_uuid'});
 	local $hangup_cause = uri_unescape($event{'variable_hangup_cause'});
 	local $destination = $event{'Caller-Destination-Number'};
-	warn "Hangup call: $uuid ; destination:$destination ; hangup_cause: $hangup_cause; ";
+	warn "Hangup call: $uuid ; destination:$destination ; hangup_cause: $hangup_cause; fromextension=$fromextension; iscallback=$iscallback";
 	if ($hangup_cause ne 'NORMAL_CLEARING') {
-		print Dumper(\%event);		
+			
 		$hangup_calls{$destination} = $hangup_cause;
 	}
 	
@@ -429,7 +429,7 @@ sub End() {
 		$to = $event{'Caller-Destination-Number'};
 	}
 	
-	
+	warn Data::Dumper::Dumper(\%event);
 	$iscallback = $dialed_calls{$uuid};
 	$from = $dialed_calls{$uuid}{from} ;
 	$to = $dialed_calls{$uuid}{to};
