@@ -3,7 +3,7 @@
 use CGI::Simple;
 $CGI::Simple::DISABLE_UPLOADS = 0;
 $CGI::Simple::POST_MAX = 1_000_000_000;
-
+use POSIX qw(strftime);
 use HTTP::Request::Common;
 use LWP::UserAgent;
 use HTTP::Cookies;
