@@ -262,7 +262,7 @@ sub Bridge() {
 	$ext = $dialed_calls{$uuid}{ext};
 	$domain_name = $dialed_calls{$uuid}{domain_name};
 	$type = $dialed_calls{$uuid}{type};
-	$data = "type=$type&state=answered&id=$uuid&from=$from&to=$to";
+	$data = "type=$type&state=answered&id=$uuid&from=" . &to164($from) . "&to=" . &to164($to);
 	&send_zoho_request('callnotify', $ext, $data);	
 }
 
@@ -334,10 +334,10 @@ sub Dial() {
 		}
 	}
 	delete $hangup_calls{$to};
-	$data = "type=$type&state=ringing&id=$uuid&from=$from&to=$to";
+	$data = "type=$type&state=ringing&id=$uuid&from=" . &to164($from) . "&to=" . &to164($to);
 	$cache_uuid = &_uuid();
 	$now = &now();
-	$sql = "insert into v_zoho_api_cache (zoho_api_cache_uuid,ext,data,insert_date) values('$cache_uuid', '$ext', 'type=$type&id=$uuid&from=$from&to=$to','$now')";
+	$sql = "insert into v_zoho_api_cache (zoho_api_cache_uuid,ext,data,insert_date) values('$cache_uuid', '$ext', 'type=$type&id=$uuid&from='" . &to164($from) . '&to=' . &to164($to) . ", '$now')";
 	warn $sql;
 	&database_do($sql);
 	&send_zoho_request('callnotify', $ext, $data);	
@@ -483,7 +483,7 @@ sub End() {
 		$fixed_billsec = 0;
 	}
 	
-	$data = "type=$type&state=$state&id=$uuid&from=$from&to=$to&start_time=$starttime" . ($fixed_billsec > 0 ? "&duration=$fixed_billsec&voiceuri=https://$domain_name/app/xml_cdr/download.php?id=$uuid" : ""); #uri_escape('https://$domain_name/app/xml_cdr/download.php?id=$uuid&t=bin');
+	$data = "type=$type&state=$state&id=$uuid&from=" . &to164($from) . "&to=" . &to164($to) . "&start_time=$starttime" . ($fixed_billsec > 0 ? "&duration=$fixed_billsec&voiceuri=https://$domain_name/app/xml_cdr/download.php?id=$uuid" : ""); #uri_escape('https://$domain_name/app/xml_cdr/download.php?id=$uuid&t=bin');
 	
 	
 	&database_do("delete from v_zoho_api_cache where ext='$ext'");
@@ -500,7 +500,7 @@ sub check_callback() {
 	
 	($to) = $cmd =~ /origination_caller_id_number=(\d+)/;
 	
-	$data = "code=$code&from=$from&to=$to&message=fail to call agent: $code"; #uri_escape('https://$domain_name/app/xml_cdr/download.php?id=$uuid&t=bin');
+	$data = "code=$code&from=" . &to164($from) . "&to=" . &to164($to) . "&message=fail to call agent: $code"; #uri_escape('https://$domain_name/app/xml_cdr/download.php?id=$uuid&t=bin');
 	
 	
 	&database_do("delete from v_zoho_api_cache where ext='$ext'");
@@ -517,7 +517,7 @@ sub check_missed() {
 	
 	$starttime = uri_unescape($event{'Event-Date-Local'});
 	$uuid = &_uuid();
-	$data = "type=received&state=missed&id=$uuid&from=$from&to=$to&start_time=$starttime"; #uri_escape('https://$domain_name/app/xml_cdr/download.php?id=$uuid&t=bin');
+	$data = "type=received&state=missed&id=$uuid&from=" . &to164($from) . "&to=" . &to164($to) . "&start_time=$starttime"; #uri_escape('https://$domain_name/app/xml_cdr/download.php?id=$uuid&t=bin');
 	
 	
 	&database_do("delete from v_zoho_api_cache where ext='$ext'");
@@ -870,6 +870,26 @@ sub _uuid {
 	$str =~ s/[\r\n]//g;
 	
 	return $str;
+}
+
+sub to164 {
+	$number = shift;
+	$len = length $number;
+	if ($len < 6) {
+		return $number;
+	}
+	if ($len == 10) {
+		return "+1$number";
+	}
+	if ($len == 11 && substr($number, 0, 1) eq '1') {
+		return "+$number";
+	}
+	
+	if (substr($number, 0, 1) ne '+') {
+		return "+$number";
+	}
+	
+	return $number;	
 }
 
 #======================================================
