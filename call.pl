@@ -334,6 +334,7 @@ sub add_autocallback {
 sub send_callback {	
 	my $ext 	= $query{ext};
 	my $domain  = $query{domain} || $HOSTNAME;
+	delete $query{autoanswer};
 	$domain		= $cgi->server_name();
 	
 	
