@@ -366,7 +366,7 @@ sub send_callback {
 		$starttime = &now();
 		$uuid = &_uuid();
 		
-		&send_zoho_request('callnotify', $ext.'@'.$domain, "type=dialed&state=invalid&id=$uuid&from=$ext&to=$dest&start_time=$starttime&message=International Dialing is disabled");
+		&send_zoho_request('clicktodialerror', $ext.'@'.$domain, "type=dialed&state=invalid&id=$uuid&from=$ext&to=$dest&start_time=$starttime&message=International Dialing is disabled");
 		exit 0;
 	}
 	
@@ -375,7 +375,7 @@ sub send_callback {
 		$starttime = &now();
 		$uuid = &_uuid();
 		
-		&send_zoho_request('callnotify', $ext.'@'.$domain, "type=dialed&state=invalid&id=$uuid&from=$ext&to=$dest&start_time=$starttime");
+		&send_zoho_request('clicktodialerror', $ext.'@'.$domain, "type=dialed&state=invalid&id=$uuid&from=$ext&to=$dest&start_time=$starttime");
 		exit 0;
 	}
 	
