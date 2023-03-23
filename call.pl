@@ -361,6 +361,15 @@ sub send_callback {
 		$dest = "011$1";
 	}
 	
+	if ($dest =~ /^011/) {
+		print j({error => '1', 'message' => "dest=$query{dest} is international call not supported", 'actionid' => $query{actionid}});
+		$starttime = &now();
+		$uuid = &_uuid();
+		
+		&send_zoho_request('callnotify', $ext.'@'.$domain, "type=dialed&state=blocked&id=$uuid&from=$ext&to=$dest&start_time=$starttime&message=International Dialing is disabled");
+		exit 0;
+	}
+	
 	unless($dest =~ /^\d{10}$/) {
 		print j({error => '1', 'message' => "dest=$query{dest} is invalid", 'actionid' => $query{actionid}});
 		$starttime = &now();
