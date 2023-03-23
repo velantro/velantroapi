@@ -366,7 +366,7 @@ sub send_callback {
 		$starttime = &now();
 		$uuid = &_uuid();
 		
-		&send_zoho_request('callnotify', $ext.'@'.$domain, "type=dialed&state=blocked&id=$uuid&from=$ext&to=$dest&start_time=$starttime&message=International Dialing is disabled");
+		&send_zoho_request('callnotify', $ext.'@'.$domain, "type=dialed&state=notavailable&id=$uuid&from=$ext&to=$dest&start_time=$starttime&message=International Dialing is disabled");
 		exit 0;
 	}
 	
