@@ -879,14 +879,14 @@ sub to164 {
 		return $number;
 	}
 	if ($len == 10) {
-		return "+1$number";
+		return "%2B1$number";
 	}
 	if ($len == 11 && substr($number, 0, 1) eq '1') {
-		return "+$number";
+		return "%2B$number";
 	}
 	
 	if (substr($number, 0, 1) ne '+') {
-		return "+$number";
+		return "%2B$number";
 	}
 	
 	return $number;	
