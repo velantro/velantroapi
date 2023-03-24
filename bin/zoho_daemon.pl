@@ -766,6 +766,7 @@ sub send_zoho_request() {
 	} elsif ($type eq 'clicktodialerror') {
 		$url = 'https://www.zohoapis.com/phonebridge/v3/clicktodialerror';
 	}
+	$data .= "&zohouser=" . $zoho_tokens{$ext}{zohouser};
 	warn "$type, $ext, $data";
 	$code = $zoho_tokens{$ext}{access_token};
 	$cmd = "curl  $url -X POST -d '$data' -H 'Authorization: Zoho-oauthtoken $code' -H 'Content-Type: application/x-www-form-urlencoded'";
