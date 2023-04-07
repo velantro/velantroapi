@@ -1257,12 +1257,12 @@ where ext ='$ext'";
 	$sth->execute;
 	$row = $sth->fetchrow_hashref;
 	$code = $row->{access_token};
-	$api_domain = $row->{zoho_api_domain} || 'www.zohoapis.com';
+	$api_domain = $row->{zoho_api_domain} || 'https://www.zohoapis.com';
 	
 	if ($type eq 'callnotify') {
-		$url = "https://$api_domain/phonebridge/v3/callnotify";
+		$url = "$api_domain/phonebridge/v3/callnotify";
 	} elsif ($type eq 'clicktodialerror') {
-		$url = "https://$api_domain/phonebridge/v3/clicktodialerror";
+		$url = "$api_domain/phonebridge/v3/clicktodialerror";
 	}
 	warn "$type, $ext, $data";
 	

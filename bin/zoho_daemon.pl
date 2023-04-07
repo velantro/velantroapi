@@ -763,11 +763,11 @@ where ext is not null", "zohouser,refresh_token,access_token,update_time,api_dom
 
 sub send_zoho_request() {
 	local ($type, $ext, $data) = @_;
-	local ($api_domain) = $zoho_tokens{$ext}{api_domain} || 'www.zohoapis.com';
+	local ($api_domain) = $zoho_tokens{$ext}{api_domain} || 'https://www.zohoapis.com';
 	if ($type eq 'callnotify') {
-		$url = "https://$api_domain/phonebridge/v3/callnotify";
+		$url = "$api_domain/phonebridge/v3/callnotify";
 	} elsif ($type eq 'clicktodialerror') {
-		$url = "https://$api_domain/phonebridge/v3/clicktodialerror";
+		$url = "$api_domain/phonebridge/v3/clicktodialerror";
 	}
 	$data .= "&zohouser=" . $zoho_tokens{$ext}{zohouser};
 	warn "$type, $ext, $data";
