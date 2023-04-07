@@ -1248,18 +1248,24 @@ sub now {
 
 sub send_zoho_request() {
 	local ($type, $ext, $data) = @_;
-	if ($type eq 'callnotify') {
-		$url = 'https://www.zohoapis.com/phonebridge/v3/callnotify';
-	} elsif ($type eq 'clicktodialerror') {
-		$url = 'https://www.zohoapis.com/phonebridge/v3/clicktodialerror';
-	}
-	warn "$type, $ext, $data";
 	
-	$sql = "select ext,zohouser,refresh_token,access_token,extract(epoch from update_date) from v_zoho_users where ext='$ext'";
+	
+	$sql = "select ext,zohouser,refresh_token,access_token,extract(epoch from v_zoho_users.update_date),zoho_api_domain
+from v_zoho_users left join v_zoho_token on v_zoho_users.zoho_token_uuid=v_zoho_token.zoho_token_uuid
+where ext ='$ext'";
 	$sth = $dbh->prepare($sql);
 	$sth->execute;
 	$row = $sth->fetchrow_hashref;
 	$code = $row->{access_token};
+	$api_domain = $row->{zoho_api_domain} || 'www.zohoapis.com';
+	
+	if ($type eq 'callnotify') {
+		$url = 'https://$api_domain/phonebridge/v3/callnotify';
+	} elsif ($type eq 'clicktodialerror') {
+		$url = 'https://$api_domain/phonebridge/v3/clicktodialerror';
+	}
+	warn "$type, $ext, $data";
+	
 	$cmd = "curl  $url -X POST -d '$data' -H 'Authorization: Zoho-oauthtoken $code' -H 'Content-Type: application/x-www-form-urlencoded'";
 	$res = `$cmd`;
 	warn "cmd:$cmd\nresponse: $res\n";

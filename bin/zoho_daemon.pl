@@ -737,7 +737,9 @@ S
 }
 
 sub refresh_zoho_tokens() {
-	%zoho_tokens = &database_select_as_hash("select ext,zohouser,refresh_token,access_token,extract(epoch from update_date) from v_zoho_users where ext is not null", "zohouser,refresh_token,access_token,update_time");
+	%zoho_tokens = &database_select_as_hash("select ext,zohouser,refresh_token,access_token,extract(epoch from v_zoho_users.update_date),zoho_api_domain
+from v_zoho_users left join v_zoho_token on v_zoho_users.zoho_token_uuid=v_zoho_token.zoho_token_uuid
+where ext is not null", "zohouser,refresh_token,access_token,update_time,api_domain");
 	for $key(keys %zoho_tokens) {
 
 		if (time-$zoho_tokens{$key}{update_time} > 1800) {
@@ -761,10 +763,11 @@ sub refresh_zoho_tokens() {
 
 sub send_zoho_request() {
 	local ($type, $ext, $data) = @_;
+	local ($api_domain) = $zoho_tokens{$ext}{api_domain} || 'www.zohoapis.com';
 	if ($type eq 'callnotify') {
-		$url = 'https://www.zohoapis.com/phonebridge/v3/callnotify';
+		$url = 'https://$api_domain/phonebridge/v3/callnotify';
 	} elsif ($type eq 'clicktodialerror') {
-		$url = 'https://www.zohoapis.com/phonebridge/v3/clicktodialerror';
+		$url = 'https://$api_domain/phonebridge/v3/clicktodialerror';
 	}
 	$data .= "&zohouser=" . $zoho_tokens{$ext}{zohouser};
 	warn "$type, $ext, $data";
