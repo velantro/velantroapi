@@ -1260,9 +1260,9 @@ where ext ='$ext'";
 	$api_domain = $row->{zoho_api_domain} || 'www.zohoapis.com';
 	
 	if ($type eq 'callnotify') {
-		$url = 'https://$api_domain/phonebridge/v3/callnotify';
+		$url = "https://$api_domain/phonebridge/v3/callnotify";
 	} elsif ($type eq 'clicktodialerror') {
-		$url = 'https://$api_domain/phonebridge/v3/clicktodialerror';
+		$url = "https://$api_domain/phonebridge/v3/clicktodialerror";
 	}
 	warn "$type, $ext, $data";
 	
