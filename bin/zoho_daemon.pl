@@ -500,7 +500,7 @@ sub check_callback() {
 	}
 	
 	if ($code eq 'NO_ANSWER') {
-		$code = 'notavailable';
+		$code = 'noanswer';
 	}
 	
 	($from) = $cmd =~ /fromextension=(\d+)/;
