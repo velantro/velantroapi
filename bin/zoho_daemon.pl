@@ -495,6 +495,7 @@ sub check_callback() {
 	$cmd = uri_unescape($event{'Job-Command-Arg'});
 	$body = $event{'body'};
 	($code) = $body =~ /\-ERR (.+)/;
+	$code ||= 'noanswer';
 	($from) = $cmd =~ /fromextension=(\d+)/;
 	($domain_name) = $cmd =~ /domain_name=(.+?),/;
 	
