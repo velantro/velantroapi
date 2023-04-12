@@ -495,7 +495,10 @@ sub check_callback() {
 	$cmd = uri_unescape($event{'Job-Command-Arg'});
 	$body = $event{'body'};
 	($code) = $body =~ /\-ERR (.+)/;
-	$code ||= 'notavailable';
+	if (!$code) {
+		return;
+	}
+	
 	if ($code eq 'NO_ANSWER') {
 		$code = 'notavailable';
 	}
