@@ -496,6 +496,10 @@ sub check_callback() {
 	$body = $event{'body'};
 	($code) = $body =~ /\-ERR (.+)/;
 	$code ||= 'noanswer';
+	if ($code eq 'NO_ANSWER') {
+		$code = 'noanswer';
+	}
+	
 	($from) = $cmd =~ /fromextension=(\d+)/;
 	($domain_name) = $cmd =~ /domain_name=(.+?),/;
 	
