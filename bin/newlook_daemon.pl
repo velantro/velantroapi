@@ -271,10 +271,11 @@ sub Dial() {
 	return unless $event{'Channel-Call-State'} eq 'DOWN';
 	#print Dumper(\%event);
 
-	warn $event{'Caller-Caller-ID-Number'} . ":" . $event{'Other-Leg-Caller-ID-Number'} . " is calling  " . $event{'Caller-Callee-ID-Number'};
+	
 	local	$uuid = $event{'Other-Leg-Unique-ID'} ;
 
 	$uuid = $event{'Channel-Call-UUID'} if !$uuid;
+	warn "$uuid: " . $event{'Caller-Caller-ID-Number'} . ":" . $event{'Other-Leg-Caller-ID-Number'} . " is calling  " . $event{'Caller-Callee-ID-Number'};
 
 	local $from = $event{'Other-Leg-Caller-ID-Number'};
 	local $caller_name = $event{'Caller-Caller-ID-Name'};
@@ -288,7 +289,7 @@ sub Dial() {
 	
 	local $domain_name = `fs_cli -rx "uuid_getvar $uuid domain_name"`;
 	chomp $domain_name;
-	#if ($event{'Caller-Context'} eq 'default') {return;}
+	if ($event{'Caller-Context'} eq 'default') {return;}
 	$domain_name = '' if $domain_name eq '_undef_';
 
 	local $iscallback = `fs_cli -rx "uuid_getvar $uuid iscallback"`;
