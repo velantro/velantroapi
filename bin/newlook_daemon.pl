@@ -746,7 +746,7 @@ S
 sub refresh_zoho_tokens() {
 	%zoho_tokens = &database_select_as_hash("select extension_uuid,extension,user_context from v_extensions where enabled='true'", 'extension,domain_name');
 	for $key(keys %zoho_tokens) {
-		$zoho_tokens{$key}{access_token} = $zoho_tokens{$key}{extension} . '@' . $zoho_tokens{$key}{user_context};		
+		$zoho_tokens{$key}{access_token} = $zoho_tokens{$key}{extension} . '@' . $zoho_tokens{$key}{domain_name};		
 	}
 }
 
