@@ -289,7 +289,10 @@ sub Dial() {
 	
 	local $domain_name = `fs_cli -rx "uuid_getvar $uuid domain_name"`;
 	chomp $domain_name;
-	if ($event{'Caller-Context'} eq 'default') {return;}
+	
+	local $presence_id = `fs_cli -rx "uuid_getvar $uuid presence_id"`;
+	chomp $presence_id;
+	if ($event{'Caller-Context'} eq 'default') {warn "presence_id: $presence_id";}
 	$domain_name = '' if $domain_name eq '_undef_';
 
 	local $iscallback = `fs_cli -rx "uuid_getvar $uuid iscallback"`;
