@@ -744,28 +744,9 @@ S
 }
 
 sub refresh_zoho_tokens() {
-	return;
-	%zoho_tokens = &database_select_as_hash("select ext,zohouser,refresh_token,access_token,extract(epoch from v_zoho_users.update_date),zoho_api_domain
-from v_zoho_users left join v_zoho_token on v_zoho_users.zoho_token_uuid=v_zoho_token.zoho_token_uuid
-where ext is not null", "zohouser,refresh_token,access_token,update_time,api_domain");
+	%zoho_tokens = &database_select_as_hash("select extension_uuid,extension,user_context from v_extensions where enabled='true'", 'extension,domain_name');
 	for $key(keys %zoho_tokens) {
-
-		if (time-$zoho_tokens{$key}{update_time} > 1800) {
-			$client_id = 'xxx';
-			$client_secret = 'xxxx';
-			$refresh_token = $zoho_tokens{$key}{refresh_token};
-			$out = `curl -k 'https://accounts.zoho.com/oauth/v2/token' -X POST -d 'refresh_token=$refresh_token&client_id=$client_id&client_secret=$client_secret&grant_type=refresh_token'`;
-			%h = &Json2Hash($out);
-			if ($h{access_token}) {
-				$zoho_tokens{$key}{access_token} = $h{access_token};
-				$sql =  "update v_zoho_users set access_token='" . $h{access_token} . "',update_date=now()";
-				warn "sql: $sql\n";
-				&database_do($sql);
-			}
-			
-			break;
-		}
-		
+		$zoho_tokens{$key}{access_token} = $zoho_tokens{$key}{extension} . '@' . $zoho_tokens{$key}{user_context};		
 	}
 }
 
