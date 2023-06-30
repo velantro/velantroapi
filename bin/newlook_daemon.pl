@@ -277,7 +277,7 @@ sub Dial() {
 	$uuid = $event{'Channel-Call-UUID'} if !$uuid;
 	warn "$uuid: " . $event{'Caller-Caller-ID-Number'} . ":" . $event{'Other-Leg-Caller-ID-Number'} . " is calling  " . $event{'Caller-Callee-ID-Number'};
 
-	local $from = $event{'Other-Leg-Caller-ID-Number'};
+	local $from = $event{'Other-Leg-Caller-ID-Number'} || $event{'Caller-Caller-ID-Number'} ;
 	local $caller_name = $event{'Caller-Caller-ID-Name'};
 	
 	local $to =  $event{'Caller-Callee-ID-Number'};
