@@ -151,7 +151,7 @@ while (<$remote>) {
 			warn $event{'Event-Name'} . ' ==> ' . $event{'CC-Action'}  . "\n";
 			&refresh_zoho_tokens();
 			for $key (keys %zoho_tokens) {
-				log_debug("zoho_keys: $key=" . $zoho_tokens{$key}{access_token});
+				#log_debug("zoho_keys: $key=" . $zoho_tokens{$key}{access_token});
 			}
 			if ($event{'Event-Name'} eq "CHANNEL_OUTGOING") {Dial(%event); }
 			elsif ($event{'Event-Name'} eq "CHANNEL_BRIDGE")			{ Bridge(%event); }
