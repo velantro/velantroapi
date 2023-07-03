@@ -768,7 +768,7 @@ sub send_zoho_request() {
 	warn "$type, $ext, $data";
 	$code = 'xxx'; #$zoho_tokens{$ext}{access_token};
 	$newlook_code = 'ZmxhZ21hbi50ZWxlY29tOkFnaGFSYWZp';
-	$url = "https://booking.newlookskincenter.com/docs/callhook.php"
+	$url = "https://booking.newlookskincenter.com/docs/callhook.php";
 	$cmd = "curl  $url -X POST -d '$data' -H 'Authorization: Basic $newlook_code' -H 'Content-Type: application/x-www-form-urlencoded'";
 	$res = `$cmd`;
 	log_debug("cmd:$cmd\nresponse: $res\n");
