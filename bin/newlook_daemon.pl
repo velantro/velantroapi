@@ -615,7 +615,7 @@ sub qc_start() {
 	local $did  = $event{'variable_sip_req_user'};
 	local $domain_name = '';
 
-	($to) = uri_unescape($events{'CC-Queue'}) =~ /^(.+?)\@/;
+	($to) = uri_unescape($event{'CC-Queue'}) =~ /^(.+?)\@/;
 	
 	$ext = $dialed_calls{$uuid}{ext};
 	$domain_name = $dialed_calls{$uuid}{domain_name};
@@ -641,20 +641,20 @@ sub qc_end() {
 	local $domain_name = '';
 	local $variable_bridge_uuid = $event{variable_bridge_uuid};
 
-	($to) = uri_unescape($events{'CC-Queue'}) =~ /^(.+?)\@/;
-	$answered_time = uri_unescape($events{'CC-Agent-Answered-Time'});
-	$leaving_time = uri_unescape($events{'CC-Member-Leaving-Time'});
-	$joined_time = uri_unescape($events{'CC-Member-Joined-Time'});
+	($to) = uri_unescape($event{'CC-Queue'}) =~ /^(.+?)\@/;
+	$answered_time = uri_unescape($event{'CC-Agent-Answered-Time'});
+	$leaving_time = uri_unescape($event{'CC-Member-Leaving-Time'});
+	$joined_time = uri_unescape($event{'CC-Member-Joined-Time'});
 	if ($answered_time > 0) {
 		$cc_cause = 'SUCCESS';
 		$cc_talk_time = $leaving_time-$answered_time;
 	} else {
-		$cc_cause = uri_unescape($events{'CC-Cancel-Reason'});
+		$cc_cause = uri_unescape($event{'CC-Cancel-Reason'});
 	}
 	
 	$cc_in_time = $leaving_time-$joined_time;
 	
-	$cc_cause =  uri_unescape($events{'CC-Cause'});
+	$cc_cause =  uri_unescape($event{'CC-Cause'});
 	$ext = $dialed_calls{$uuid}{ext};
 	$domain_name = $dialed_calls{$uuid}{domain_name};
 	$type = $dialed_calls{$uuid}{type};
