@@ -118,7 +118,7 @@ $remote->autoflush(1);
 $logres = login_cmd("auth ClueCon$BLANK");
 sleep 1;
 
-$logres = login_cmd("event BACKGROUND_JOB CHANNEL_OUTGOING CHANNEL_BRIDGE CHANNEL_HANGUP CHANNEL_HANGUP_COMPLETE MEDIA_BUG_STOP CUSTOM MISSED$BLANK");
+$logres = login_cmd("event BACKGROUND_JOB CHANNEL_OUTGOING CHANNEL_BRIDGE CHANNEL_HANGUP CHANNEL_HANGUP_COMPLETE MEDIA_BUG_STOP CUSTOM MISSED callcenter::info $BLANK");
 $eventcount = 0;
 %Channel_Spool = ();
 local $| = 1;
@@ -161,10 +161,14 @@ while (<$remote>) {
 			elsif ($event{'Event-Subclass'} eq "callcenter%3A%3Ainfo" &&  $event{'CC-Action'} eq 'agent-status-change') {
 				&update_agent_status(%event);
 			} elsif ($event{'Event-Subclass'} eq "callcenter%3A%3Ainfo" &&  $event{'CC-Action'} eq 'member-queue-start') {
-				&qc_start_echo(%event);
+				&qc_start(%event);
+			} elsif ($event{'Event-Subclass'} eq "callcenter%3A%3Ainfo" &&  $event{'CC-Action'} eq 'member-queue-end') {
+				&qc_end(%event);
+			}elsif ($event{'Event-Subclass'} eq "callcenter%3A%3Ainfo" &&  $event{'CC-Action'} eq 'bridge-agent-start') {
+				&qc_answer_echo(%event);
 			} elsif ($event{'Event-Subclass'} eq "callcenter%3A%3Ainfo" &&  $event{'CC-Action'} eq 'bridge-agent-start') {
 				&qc_answer_echo(%event);
-			} elsif ($event{'Event-Name'} eq "BACKGROUND_JOB" && $event{'Job-Command'} eq 'originate')			{
+			}elsif ($event{'Event-Name'} eq "BACKGROUND_JOB" && $event{'Job-Command'} eq 'originate')			{
 				$need_event_body = 1;
 				#check_callback(%event);
 			} elsif ($event{'Event-Subclass'} eq "MISSED") {
@@ -595,6 +599,153 @@ sub update_agent_status() {
 		}
 		
 	}
+	return 1;
+}
+sub qc_start() {
+	local(%event) = @_;
+	
+	#print "Bridge: " ;
+	#print Dumper(\%event);
+	warn $event{'Caller-Caller-ID-Number'} . " start talk with  " . $event{'Caller-Callee-ID-Number'};
+	local $from = $event{'Caller-Caller-ID-Number'};
+	local $caller_name = $event{'Caller-Caller-ID-Name'};
+	local $to =  $event{'Caller-Callee-ID-Number'};
+	local $uuid = $event{'Channel-Call-UUID'};
+	local $did  = $event{'variable_sip_req_user'};
+	local $domain_name = '';
+	local $variable_bridge_uuid = $event{variable_bridge_uuid};
+	
+	if ($kill_bridged_uuids{$variable_bridge_uuid}) {
+		$cmd = "fs_cli -rx \"uuid_kill $variable_bridge_uuid\"";
+		local $domain_name = $event{'variable_domain_name'};
+		#$cmd = "fs_cli -rx \"uuid_transfer $variable_bridge_uuid *9196 XML $domain_name\"";
+		$res = `$cmd`;
+		warn "cmd: $cmd=$res";
+		
+		delete  $kill_bridged_uuids{$variable_bridge_uuid};
+	}
+	
+	#$uuid =~ s/\-//g;
+	
+	local $host = ($host_prefix . $event{'Caller-Context'}) || $default_host;
+	local $now = &now();
+	local $domain_name = $channel_spool{$uuid}{domain_name};
+	local $call_type   = $channel_spool{$uuid}{calltype};
+	
+	if ($event{'variable_cc_agent_uuid'}) {
+			$domain_name = `fs_cli -rx "uuid_getvar $uuid domain_name"`;
+			chomp $domain_name;
+			$call_type = 'queue';
+			$agent_uuid = $event{'variable_cc_agent_uuid'};
+			$res = `fs_cli -rx "uuid_setvar $agent_uuid originating_leg_uuid $uuid"`;
+	}
+	
+	local %hash = ('from' => $from, 'caller_name' => $caller_name, 'to' => $to, 'domain_name' => $domain_name, 'did' => $did, 'starttime' => $now, 'calltype' => $call_type, 'calluuid' => $uuid, 'callaction' => 'bridge');
+	
+	
+	local $json = &Hash2Json(%hash);
+	
+	#$cmd = "curl -d 'callerid1=$from&callerid2=$to&callerIdNumber=$from&requestUrl=agi%3A%2F%2F115.28.137.2%2Fincoming.agi&context=from-internal&channel=SIP%2Fa2b-000007b0&vtigersignature=1940898792584673c6e9a8a&callerId=$from&callerIdName=$from&event=AgiEvent&type=SIP&uniqueId=1481543422.1968&StartTime=$now&callUUID=$uuid&callstatus=StartApp' http://$host/vtigercrm/modules/PBXManager/callbacks/PBXManager.php";
+	#warn "Send Event: $json\n";
+	#$mq->publish(1, "incoming", $json);
+	if (not $dialed_calls{$uuid}) {
+		return;
+	}
+	warn "Get Bridged uuid=$uuid\n";
+	$dialed_calls{$uuid}{answered_epoch} = $event{'Event-Date-Timestamp'};
+
+	warn Data::Dumper::Dumper($dialed_calls{$uuid});
+	
+	$iscallback = $dialed_calls{$uuid};
+	$from = $dialed_calls{$uuid}{from} ;
+	($to) = uri_unescape($events{'CC-Queue'}) =~ /^(.+?)\@/;
+	
+	$ext = $dialed_calls{$uuid}{ext};
+	$domain_name = $dialed_calls{$uuid}{domain_name};
+	$type = $dialed_calls{$uuid}{type};
+	$data = "type=$type&state=enterqueue&id=$uuid&from=" . &to164($from) . "&to=$to";
+	&send_zoho_request('callnotify', $ext, $data);	
+	
+	return 1;
+}
+
+sub qc_end() {
+	local(%event) = @_;
+	
+	#print "Bridge: " ;
+	#print Dumper(\%event);
+	warn $event{'Caller-Caller-ID-Number'} . " start talk with  " . $event{'Caller-Callee-ID-Number'};
+	local $from = $event{'Caller-Caller-ID-Number'};
+	local $caller_name = $event{'Caller-Caller-ID-Name'};
+	local $to =  $event{'Caller-Callee-ID-Number'};
+	local $uuid = $event{'Channel-Call-UUID'};
+	local $did  = $event{'variable_sip_req_user'};
+	local $domain_name = '';
+	local $variable_bridge_uuid = $event{variable_bridge_uuid};
+	
+	if ($kill_bridged_uuids{$variable_bridge_uuid}) {
+		$cmd = "fs_cli -rx \"uuid_kill $variable_bridge_uuid\"";
+		local $domain_name = $event{'variable_domain_name'};
+		#$cmd = "fs_cli -rx \"uuid_transfer $variable_bridge_uuid *9196 XML $domain_name\"";
+		$res = `$cmd`;
+		warn "cmd: $cmd=$res";
+		
+		delete  $kill_bridged_uuids{$variable_bridge_uuid};
+	}
+	
+	#$uuid =~ s/\-//g;
+	
+	local $host = ($host_prefix . $event{'Caller-Context'}) || $default_host;
+	local $now = &now();
+	local $domain_name = $channel_spool{$uuid}{domain_name};
+	local $call_type   = $channel_spool{$uuid}{calltype};
+	
+	if ($event{'variable_cc_agent_uuid'}) {
+			$domain_name = `fs_cli -rx "uuid_getvar $uuid domain_name"`;
+			chomp $domain_name;
+			$call_type = 'queue';
+			$agent_uuid = $event{'variable_cc_agent_uuid'};
+			$res = `fs_cli -rx "uuid_setvar $agent_uuid originating_leg_uuid $uuid"`;
+	}
+	
+	local %hash = ('from' => $from, 'caller_name' => $caller_name, 'to' => $to, 'domain_name' => $domain_name, 'did' => $did, 'starttime' => $now, 'calltype' => $call_type, 'calluuid' => $uuid, 'callaction' => 'bridge');
+	
+	
+	local $json = &Hash2Json(%hash);
+	
+	#$cmd = "curl -d 'callerid1=$from&callerid2=$to&callerIdNumber=$from&requestUrl=agi%3A%2F%2F115.28.137.2%2Fincoming.agi&context=from-internal&channel=SIP%2Fa2b-000007b0&vtigersignature=1940898792584673c6e9a8a&callerId=$from&callerIdName=$from&event=AgiEvent&type=SIP&uniqueId=1481543422.1968&StartTime=$now&callUUID=$uuid&callstatus=StartApp' http://$host/vtigercrm/modules/PBXManager/callbacks/PBXManager.php";
+	#warn "Send Event: $json\n";
+	#$mq->publish(1, "incoming", $json);
+	if (not $dialed_calls{$uuid}) {
+		return;
+	}
+	warn "Get Bridged uuid=$uuid\n";
+	$dialed_calls{$uuid}{answered_epoch} = $event{'Event-Date-Timestamp'};
+
+	#warn Data::Dumper::Dumper($dialed_calls{$uuid});
+	
+	$iscallback = $dialed_calls{$uuid};
+	$from = $dialed_calls{$uuid}{from} ;
+	($to) = uri_unescape($events{'CC-Queue'}) =~ /^(.+?)\@/;]
+	$answered_time = uri_unescape($events{'CC-Agent-Answered-Time'});
+	$leaving_time = uri_unescape($events{'CC-Member-Leaving-Time'});
+	$joined_time = uri_unescape($events{'CC-Member-Joined-Time'});
+	if ($answered_time > 0) {
+		$cc_cause = 'SUCCESS';
+		$cc_talk_time = $leaving_time-$answered_time;
+	} else {
+		$cc_cause = uri_unescape($events{'CC-Cancel-Reason'});
+	}
+	
+	$cc_in_time = $leaving_time-$joined_time;
+	
+	$cc_cause =  uri_unescape($events{'CC-Cause'});
+	$ext = $dialed_calls{$uuid}{ext};
+	$domain_name = $dialed_calls{$uuid}{domain_name};
+	$type = $dialed_calls{$uuid}{type};
+	$data = "type=$type&state=leavequeue&id=$uuid&from=" . &to164($from) . "&to=$to&cc_cause=$cc_cause&cc_talk_time=$cc_talk_time&cc_in_time=$cc_in_time";
+	&send_zoho_request('callnotify', $ext, $data);	
+	
 	return 1;
 }
 
