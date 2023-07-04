@@ -607,7 +607,7 @@ sub qc_start() {
 	#print "Bridge: " ;
 	#print Dumper(\%event);
 	warn "qc_start: " . $event{'CC-Action'};
-	warn Data::Dumper::Dumper(\%event);
+	#warn Data::Dumper::Dumper(\%event);
 	local $from = $event{'Caller-Caller-ID-Number'};
 	local $caller_name = $event{'Caller-Caller-ID-Name'};
 	local $to =  $event{'Caller-Callee-ID-Number'};
@@ -632,7 +632,7 @@ sub qc_end() {
 	#print "Bridge: " ;
 	#print Dumper(\%event);
 	warn "qc_start: " . $event{'CC-Action'};
-	warn Data::Dumper::Dumper(\%event);
+	#warn Data::Dumper::Dumper(\%event);
 	local $from = $event{'Caller-Caller-ID-Number'};
 	local $caller_name = $event{'Caller-Caller-ID-Name'};
 	local $to =  $event{'Caller-Callee-ID-Number'};
