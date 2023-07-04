@@ -726,7 +726,7 @@ sub qc_end() {
 	
 	$iscallback = $dialed_calls{$uuid};
 	$from = $dialed_calls{$uuid}{from} ;
-	($to) = uri_unescape($events{'CC-Queue'}) =~ /^(.+?)\@/];
+	($to) = uri_unescape($events{'CC-Queue'}) =~ /^(.+?)\@/;
 	$answered_time = uri_unescape($events{'CC-Agent-Answered-Time'});
 	$leaving_time = uri_unescape($events{'CC-Member-Leaving-Time'});
 	$joined_time = uri_unescape($events{'CC-Member-Joined-Time'});
