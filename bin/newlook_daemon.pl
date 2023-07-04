@@ -669,7 +669,7 @@ sub qc_start_echo() {
 	#local $callback_number = "\*91968888";
 	local $cn = $event{'Channel-Name'}; #$event{'variable_caller_id_number'};
 	warn "Channel Name: $cn";
-	print Dumper(\%event);
+	#print Dumper(\%event);
 
 	# loopback/*9196888815149991234-a
 	#if ($cn =~ m{\*91968888(\d+)}) {
@@ -697,7 +697,7 @@ sub qc_answer_echo() {
 	#local $callback_number = "\*91968888";
 	local $cn = $event{'CC-Member-DNIS'};
 	warn "Member RDNIS: $cn";
-	print Dumper(\%event);
+	#print Dumper(\%event);
 	
 #*9196888815149991234
 	if ($cn =~ m{\*91968888(\d+)}) {
