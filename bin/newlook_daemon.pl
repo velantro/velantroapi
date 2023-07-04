@@ -648,17 +648,17 @@ sub qc_end() {
 	if ($answered_time > 0) {
 		$cc_cause = 'SUCCESS';
 		$cc_talk_time = $leaving_time-$answered_time;
+		$ext = $event{'variable_last_sent_callee_id_number'};
 	} else {
 		$cc_cause = uri_unescape($event{'CC-Cancel-Reason'});
 	}
 	
 	$cc_in_time = $leaving_time-$joined_time;
 	
-	$cc_cause =  uri_unescape($event{'CC-Cause'});
-	$ext = $dialed_calls{$uuid}{ext};
+	
 	$domain_name = $dialed_calls{$uuid}{domain_name};
 	$type = $dialed_calls{$uuid}{type};
-	$data = "type=$type&state=leavequeue&id=$uuid&from=" . &to164($from) . "&to=$to&cc_cause=$cc_cause&cc_talk_time=$cc_talk_time&cc_in_time=$cc_in_time";
+	$data = "type=$type&state=leavequeue&id=$uuid&from=" . &to164($from) . "&to=$to&cc_cause=$cc_cause&cc_talk_time=$cc_talk_time&cc_in_time=$cc_in_time&ext=$ext";
 	&send_zoho_request('callnotify', $ext, $data);	
 	
 	return 1;
