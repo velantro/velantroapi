@@ -613,51 +613,7 @@ sub qc_start() {
 	local $uuid = $event{'Channel-Call-UUID'};
 	local $did  = $event{'variable_sip_req_user'};
 	local $domain_name = '';
-	local $variable_bridge_uuid = $event{variable_bridge_uuid};
-	
-	if ($kill_bridged_uuids{$variable_bridge_uuid}) {
-		$cmd = "fs_cli -rx \"uuid_kill $variable_bridge_uuid\"";
-		local $domain_name = $event{'variable_domain_name'};
-		#$cmd = "fs_cli -rx \"uuid_transfer $variable_bridge_uuid *9196 XML $domain_name\"";
-		$res = `$cmd`;
-		warn "cmd: $cmd=$res";
-		
-		delete  $kill_bridged_uuids{$variable_bridge_uuid};
-	}
-	
-	#$uuid =~ s/\-//g;
-	
-	local $host = ($host_prefix . $event{'Caller-Context'}) || $default_host;
-	local $now = &now();
-	local $domain_name = $channel_spool{$uuid}{domain_name};
-	local $call_type   = $channel_spool{$uuid}{calltype};
-	
-	if ($event{'variable_cc_agent_uuid'}) {
-			$domain_name = `fs_cli -rx "uuid_getvar $uuid domain_name"`;
-			chomp $domain_name;
-			$call_type = 'queue';
-			$agent_uuid = $event{'variable_cc_agent_uuid'};
-			$res = `fs_cli -rx "uuid_setvar $agent_uuid originating_leg_uuid $uuid"`;
-	}
-	
-	local %hash = ('from' => $from, 'caller_name' => $caller_name, 'to' => $to, 'domain_name' => $domain_name, 'did' => $did, 'starttime' => $now, 'calltype' => $call_type, 'calluuid' => $uuid, 'callaction' => 'bridge');
-	
-	
-	local $json = &Hash2Json(%hash);
-	
-	#$cmd = "curl -d 'callerid1=$from&callerid2=$to&callerIdNumber=$from&requestUrl=agi%3A%2F%2F115.28.137.2%2Fincoming.agi&context=from-internal&channel=SIP%2Fa2b-000007b0&vtigersignature=1940898792584673c6e9a8a&callerId=$from&callerIdName=$from&event=AgiEvent&type=SIP&uniqueId=1481543422.1968&StartTime=$now&callUUID=$uuid&callstatus=StartApp' http://$host/vtigercrm/modules/PBXManager/callbacks/PBXManager.php";
-	#warn "Send Event: $json\n";
-	#$mq->publish(1, "incoming", $json);
-	if (not $dialed_calls{$uuid}) {
-		return;
-	}
-	warn "Get Bridged uuid=$uuid\n";
-	$dialed_calls{$uuid}{answered_epoch} = $event{'Event-Date-Timestamp'};
 
-	warn Data::Dumper::Dumper($dialed_calls{$uuid});
-	
-	$iscallback = $dialed_calls{$uuid};
-	$from = $dialed_calls{$uuid}{from} ;
 	($to) = uri_unescape($events{'CC-Queue'}) =~ /^(.+?)\@/;
 	
 	$ext = $dialed_calls{$uuid}{ext};
@@ -682,50 +638,7 @@ sub qc_end() {
 	local $did  = $event{'variable_sip_req_user'};
 	local $domain_name = '';
 	local $variable_bridge_uuid = $event{variable_bridge_uuid};
-	
-	if ($kill_bridged_uuids{$variable_bridge_uuid}) {
-		$cmd = "fs_cli -rx \"uuid_kill $variable_bridge_uuid\"";
-		local $domain_name = $event{'variable_domain_name'};
-		#$cmd = "fs_cli -rx \"uuid_transfer $variable_bridge_uuid *9196 XML $domain_name\"";
-		$res = `$cmd`;
-		warn "cmd: $cmd=$res";
-		
-		delete  $kill_bridged_uuids{$variable_bridge_uuid};
-	}
-	
-	#$uuid =~ s/\-//g;
-	
-	local $host = ($host_prefix . $event{'Caller-Context'}) || $default_host;
-	local $now = &now();
-	local $domain_name = $channel_spool{$uuid}{domain_name};
-	local $call_type   = $channel_spool{$uuid}{calltype};
-	
-	if ($event{'variable_cc_agent_uuid'}) {
-			$domain_name = `fs_cli -rx "uuid_getvar $uuid domain_name"`;
-			chomp $domain_name;
-			$call_type = 'queue';
-			$agent_uuid = $event{'variable_cc_agent_uuid'};
-			$res = `fs_cli -rx "uuid_setvar $agent_uuid originating_leg_uuid $uuid"`;
-	}
-	
-	local %hash = ('from' => $from, 'caller_name' => $caller_name, 'to' => $to, 'domain_name' => $domain_name, 'did' => $did, 'starttime' => $now, 'calltype' => $call_type, 'calluuid' => $uuid, 'callaction' => 'bridge');
-	
-	
-	local $json = &Hash2Json(%hash);
-	
-	#$cmd = "curl -d 'callerid1=$from&callerid2=$to&callerIdNumber=$from&requestUrl=agi%3A%2F%2F115.28.137.2%2Fincoming.agi&context=from-internal&channel=SIP%2Fa2b-000007b0&vtigersignature=1940898792584673c6e9a8a&callerId=$from&callerIdName=$from&event=AgiEvent&type=SIP&uniqueId=1481543422.1968&StartTime=$now&callUUID=$uuid&callstatus=StartApp' http://$host/vtigercrm/modules/PBXManager/callbacks/PBXManager.php";
-	#warn "Send Event: $json\n";
-	#$mq->publish(1, "incoming", $json);
-	if (not $dialed_calls{$uuid}) {
-		return;
-	}
-	warn "Get Bridged uuid=$uuid\n";
-	$dialed_calls{$uuid}{answered_epoch} = $event{'Event-Date-Timestamp'};
 
-	#warn Data::Dumper::Dumper($dialed_calls{$uuid});
-	
-	$iscallback = $dialed_calls{$uuid};
-	$from = $dialed_calls{$uuid}{from} ;
 	($to) = uri_unescape($events{'CC-Queue'}) =~ /^(.+?)\@/;
 	$answered_time = uri_unescape($events{'CC-Agent-Answered-Time'});
 	$leaving_time = uri_unescape($events{'CC-Member-Leaving-Time'});
