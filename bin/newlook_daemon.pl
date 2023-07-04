@@ -606,7 +606,8 @@ sub qc_start() {
 	
 	#print "Bridge: " ;
 	#print Dumper(\%event);
-	warn $event{'Caller-Caller-ID-Number'} . " start talk with  " . $event{'Caller-Callee-ID-Number'};
+	warn "meber-queue-start: ";
+	warn Data::Dumper::Dumper(\%event);
 	local $from = $event{'Caller-Caller-ID-Number'};
 	local $caller_name = $event{'Caller-Caller-ID-Name'};
 	local $to =  $event{'Caller-Callee-ID-Number'};
@@ -630,7 +631,8 @@ sub qc_end() {
 	
 	#print "Bridge: " ;
 	#print Dumper(\%event);
-	warn $event{'Caller-Caller-ID-Number'} . " start talk with  " . $event{'Caller-Callee-ID-Number'};
+	warn "meber-queue-end: ";
+	warn Data::Dumper::Dumper(\%event);
 	local $from = $event{'Caller-Caller-ID-Number'};
 	local $caller_name = $event{'Caller-Caller-ID-Name'};
 	local $to =  $event{'Caller-Callee-ID-Number'};
