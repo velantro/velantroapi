@@ -160,7 +160,7 @@ while (<$remote>) {
 			elsif ($event{'Event-Name'} eq "MEDIA_BUG_STOP") { Recording(%event); }
 			elsif ($event{'Event-Subclass'} eq "callcenter%3A%3Ainfo" &&  $event{'CC-Action'} eq 'agent-status-change') {
 				&update_agent_status(%event);
-			} elsif ($event{'Event-Subclass'} eq "callcenter%3A%3Ainfo" &&  $event{'CC-Action'} eq 'member-queue-start') {
+			} elsif ($event{'Event-Subclass'} eq "callcenter%3A%3Ainfo" &&  ($event{'CC-Action'} eq 'member-queue-start' or $event{'CC-Action'} eq 'member-queue-resume')) {
 				&qc_start(%event);
 			} elsif ($event{'Event-Subclass'} eq "callcenter%3A%3Ainfo" &&  $event{'CC-Action'} eq 'member-queue-end') {
 				&qc_end(%event);
@@ -606,7 +606,7 @@ sub qc_start() {
 	
 	#print "Bridge: " ;
 	#print Dumper(\%event);
-	warn "meber-queue-start: ";
+	warn "qc_start: " . $event{'CC-Action'};
 	warn Data::Dumper::Dumper(\%event);
 	local $from = $event{'Caller-Caller-ID-Number'};
 	local $caller_name = $event{'Caller-Caller-ID-Name'};
@@ -631,7 +631,7 @@ sub qc_end() {
 	
 	#print "Bridge: " ;
 	#print Dumper(\%event);
-	warn "meber-queue-end: ";
+	warn "qc_start: " . $event{'CC-Action'};
 	warn Data::Dumper::Dumper(\%event);
 	local $from = $event{'Caller-Caller-ID-Number'};
 	local $caller_name = $event{'Caller-Caller-ID-Name'};
