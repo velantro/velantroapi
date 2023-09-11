@@ -250,7 +250,7 @@ if ($query{action} eq 'addcallback') {
 	do_hold();
 } elsif ($query{action} eq 'unhold'){
 	do_unhold();
-} elsif ($query{action} eq 'getcdrbydid'){
+} elsif ($query{action} eq 'getcdrbydid' || $query{action} eq 'getcdr'){
 	do_cdr();
 } elsif ($query{action} eq 'getteledirectminutes'){
 	do_teledirect();
