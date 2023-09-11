@@ -507,6 +507,7 @@ sub do_cdr() {
 	local $destination_number = substr $query{destination_number}, 0, 20;
 	local $st = substr $query{start_stamp}, 0, 20;
 	local $et = substr $query{end_stamp}, 0, 20;
+	local $uuid = substr $query{uuid}, 0, 20;
 	local $page = $query{page} || 0;
 	local $limit = $query{limit} || 100;
 	$s = $page * $limit;
@@ -526,6 +527,7 @@ sub do_cdr() {
 	my $cond = ($did ? "caller_destination like '%$did' and " : '') .
 			($destination_number ? " destination_number='$destination_number' and " : '').			  
 			($caller_id_number ? "  caller_id_number like '%$caller_id_number' and " : '') .
+			($uuid ? "  xml_cdr_uuid = '$uuid' and " : '') .
 			"  start_stamp >= '$st' and end_stamp <= '$et' ";
 	my $sql = "select count(*) as total from v_xml_cdr where $cond";
 			
