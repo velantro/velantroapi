@@ -507,7 +507,7 @@ sub do_cdr() {
 	local $destination_number = substr $query{destination_number}, 0, 20;
 	local $st = substr $query{start_stamp}, 0, 20;
 	local $et = substr $query{end_stamp}, 0, 20;
-	local $uuid = substr $query{uuid}, 0, 20;
+	local $uuid = substr $query{uuid}, 0, 100;
 	local $page = $query{page} || 0;
 	local $limit = $query{limit} || 100;
 	$s = $page * $limit;
