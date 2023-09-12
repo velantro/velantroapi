@@ -517,11 +517,12 @@ sub do_cdr() {
 	
 	@v = localtime();
 	$date = sprintf("%04d-%02d-%02d", 1900+$v[5],$v[4]+1,$v[3]);
+	$tz = `cat /etc/timezone`;chomp $tz;
 	if (!$st) {
-		$st = "$date 00:00:00";
+		$st = "$date 00:00:00$tz";
 	}
 	if (!$et) {
-		$et = "$date 23:59:59";
+		$et = "$date 23:59:59$tz";
 	}
 	
 	my $cond = ($did ? "caller_destination like '%$did' and " : '') .
