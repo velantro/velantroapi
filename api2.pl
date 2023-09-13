@@ -430,7 +430,7 @@ sub send_callback {
 	#my $result = `$fs_cli -x "bgapi originate {ringback=/var/www/api/usring.wav,ignore_early_media=true,absolute_codec_string=PCMA,fromextension=$ext,origination_caller_id_name=$dest,origination_caller_id_number=$dest,effective_caller_id_number=$dest,effective_caller_id_name=$dest,domain_name=$domain,outbound_caller_id_number=$dest,$alert_info,origination_uuid=$uuid,$auto_answer}user/$ext\@$domain &bridge([origination_caller_id_name=$cid,origination_caller_id_number=$cid,effective_caller_id_number=$cid,effective_caller_id_name=$cid,iscallback=$ext,outbound_caller_id_number=$cid,user_record=all,record_session=true,ringback=/var/www/api/usring.wav,ring_ready=true]loopback/$dest/$domain)"`;
 	my ($y,$m,$d) = &get_today();
 	
-	my $execute_on_answer = "execute_on_answer='record_session /var/lib/freeswitch/recordings/$domain/archive/$y/$m/$m/$uuid.wav'";
+	my $execute_on_answer = "execute_on_answer='record_session /var/lib/freeswitch/recordings/$domain/archive/$y/$m/$d/$uuid.wav'";
 
 	my $cmd = qq{$fs_cli -x "bgapi originate {ringback=/var/www/api/usring.wav,ignore_early_media=true,absolute_codec_string=PCMA,fromextension=$ext,origination_caller_id_name=$dest,origination_caller_id_number=$dest,effective_caller_id_number=$dest,effective_caller_id_name=$dest,domain_name=$domain,outbound_caller_id_number=$dest,$alert_info,origination_uuid=$uuid,$auto_answer,$execute_on_answer}user/$ext\@$domain &bridge([origination_caller_id_name=$cid,origination_caller_id_number=$cid,effective_caller_id_number=$cid,effective_caller_id_name=$cid,iscallback=$ext,outbound_caller_id_number=$cid,user_record=all,record_session=true,ringback=/var/www/api/usring.wav,ring_ready=true]loopback/$dest/$domain)"};
 	$gateway_uuid = $config{gateway_uuid};
