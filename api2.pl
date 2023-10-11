@@ -534,6 +534,11 @@ sub do_cdr() {
 			($caller_id_number ? "  caller_id_number like '%$caller_id_number' and " : '') .
 			($uuid ? "  xml_cdr_uuid = '$uuid' and " : '') .
 			"  start_stamp >= '$st' and end_stamp <= '$et' ";
+			
+	if ($uuid) {
+		$cond = "  xml_cdr_uuid = '$uuid' ";
+	}
+	
 	my $sql = "select count(*) as total from v_xml_cdr where $cond";
 			
 			
