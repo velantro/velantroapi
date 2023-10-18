@@ -2342,6 +2342,10 @@ sub do_route53 {
 		$basedomain = 'nexlevel2.net';
 		$hostzoneid ='/hostedzone/Z1Q2P85CGBRLH7';
 	}
+	if ($domain =~ /mango9\.com/) {
+		$basedomain = 'mango9.com';
+		$hostzoneid ='/hostedzone/Z051483928NNOMWGC29CZ';
+	}
 	
 	$json =<<J;
 {"Comment": "$domain for $basedomain.",
