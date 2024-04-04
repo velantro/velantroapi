@@ -560,8 +560,14 @@ sub do_cdr() {
 		$recording_filename = $row->{record_path} . '/' . $row->{record_name};
 		if (!$row->{record_name}) {
 			@today = &get_today();
-			$recording_filename = "/var/lib/freeswitch/recordings/" . $row->{domain_name} . "/archive" . "/"  . $today[0] . "/" . $today[1] . "/" . $today[2] . "/" . $row->{xml_cdr_uuid} . ".mp3";
-			
+			$recording_filename = "/var/lib/freeswitch/recordings/" . $row->{domain_name} . "/archive" . "/"  . $today[0] . "/" . $today[1] . "/" . $today[2] . "/" . $row->{xml_cdr_uuid};
+			if (-e "$recording_filename.mp3") {
+				$recording_filename .= ".mp3";
+			} elsif(-e "$recording_filename.wav") {
+				$recording_filename .= ".wav";
+			} else {
+				warn $recording_filename . ".mp3|.wav not found";
+			}		
 		}
 		warn "recording_filename: $recording_filename";
 		$recording_url = "/app/recordings/recordings2.php?filename=" . encode_base64($recording_filename, '');
