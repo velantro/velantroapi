@@ -558,7 +558,7 @@ sub do_cdr() {
 		#$c++;
 		$recording_url = '';
 		$recording_filename = $row->{record_path} . '/' . $row->{record_name};
-		if (!-e $recording_filename) {
+		if (!$row->{record_name}) {
 			@today = &get_today();
 			$recording_filename = "/var/lib/freeswitch/recordings/" . $row->{domain_name} . "/archive" . "/"  . $today[0] . "/" . $today[1] . "/" . $today[2] . "/" . $row->{xml_cdr_uuid} . ".mp3";
 			
