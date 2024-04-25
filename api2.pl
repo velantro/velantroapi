@@ -254,7 +254,9 @@ if ($query{action} eq 'addcallback') {
 	do_cdr();
 } elsif ($query{action} eq 'getteledirectminutes'){
 	do_teledirect();
-} else {
+} elsif ($query{action} eq 'checkextension'){
+	do_checkextension();
+}else {
      print j({error => '1', 'message' => 'undefined action', 'actionid' => $query{actionid}});
     exit 0;
 }
@@ -470,6 +472,18 @@ sub get_outbound_callerid {
 	return $row->{outbound_caller_id_number};
 }
 
+sub do_checkextension {
+	my $domain		= $cgi->server_name();
+	my $ext	= shift;
+	my $sql = "select * from v_extensions where user_context='$domain' and extension='$ext'";
+	#warn $sql;
+	my $sth = $dbh->prepare($sql);
+	$sth   -> execute();
+	my $row = $sth->fetchrow_hashref;
+	#warn Dump($row);
+	$found =  $row ? 'true' : 'false';
+	print j({found => $found});
+}
 sub start_moh {
 	my $uuid = $query{uuid};
 	my $path = "/usr/local/freeswitch/sounds/music/8000/$query{widgetid}.wav";
