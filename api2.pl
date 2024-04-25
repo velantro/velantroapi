@@ -474,7 +474,7 @@ sub get_outbound_callerid {
 
 sub do_checkextension {
 	my $domain		= $cgi->server_name();
-	my $ext	= shift;
+	my $ext	= $query{extension};
 	my $sql = "select * from v_extensions where user_context='$domain' and extension='$ext'";
 	#warn $sql;
 	my $sth = $dbh->prepare($sql);
