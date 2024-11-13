@@ -429,7 +429,7 @@ sub send_callback {
 	$res = `fs_cli -rx "show registrations" | grep "$ext,$domain"`;
 	chomp $res;
 	if (length($res) < 1) {
-		print j({error => '1', 'message' => "error: $ext not register", 'actionid' => $query{actionid}});
+		print j({error => '1', 'message' => "error: the phone $ext is not registered", 'actionid' => $query{actionid}});
 		return;
 	}
 	
