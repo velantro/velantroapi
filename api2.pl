@@ -426,6 +426,13 @@ sub send_callback {
 	my $cid = get_outbound_callerid($domain, $ext) || $dest;
 	warn "cid=$cid";
 	
+	$res = `fs_cli -rx "show registrations" | grep "$ext,$domain"`;
+	chomp $res;
+	if (length($res) < 1) {
+		print j({error => '1', 'message' => "error: $ext not register", 'actionid' => $query{actionid}});
+		return;
+	}
+	
 	
 	# bgapi originate {ignore_early_media=true,fromextension=188,origination_caller_id_name=8882115404,origination_caller_id_number=8882115404,effective_caller_id_number=8882115404,effective_caller_id_name=8882115404,domain_name=vip.velantro.net,origination_uuid=14061580998073}loopback/188/vip.velantro.net 8882115404 XML vip.velantro.net
 	#my $result = `$fs_cli -x "bgapi originate {ringback=local_stream://default,ignore_early_media=true,absolute_codec_string=PCMA,fromextension=$ext,origination_caller_id_name=$dest,origination_caller_id_number=$dest,effective_caller_id_number=$cid,effective_caller_id_name=$cid,domain_name=$domain,outbound_caller_id_number=$cid,$alert_info,origination_uuid=$uuid,$auto_answer}loopback/$ext/$domain $realdest XML $domain"`;
