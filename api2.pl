@@ -166,7 +166,11 @@ if ($session_uuid) {
 }
 
 if (!$login_ok) {
-	print $cgi->header(-status => 403);
+	print $cgi->header(-status => 403,-type => 'application/json',
+					   -access_control_allow_origin => '*',
+						-access_control_allow_headers => 'content-type,X-Requested-With',
+						-access_control_allow_methods => 'GET,POST,OPTIONS',
+						-access_control_allow_credentials => 'true');
 
 	print j({error => 1, 'message' => "Not Login", 'actionid' => $query{actionid}});
 	exit 0;
