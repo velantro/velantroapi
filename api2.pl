@@ -176,7 +176,12 @@ if (!$login_ok) {
 if ($query{action} eq 'getincomingevent') {
 	print $cgi->header(-type  =>  'text/event-stream;charset=UTF-8', '-cache-control' => 'NO-CACHE', );
 } else {
-	print $cgi->header();
+	print $cgi->header(
+						-type => 'application/json',
+					   -access_control_allow_origin => '*',
+						-access_control_allow_headers => 'content-type,X-Requested-With',
+						-access_control_allow_methods => 'GET,POST,OPTIONS',
+						-access_control_allow_credentials => 'true');
 	
 }
 
@@ -429,7 +434,7 @@ sub send_callback {
 	$res = `fs_cli -rx "show registrations" | grep "$ext,$domain"`;
 	chomp $res;
 	if (length($res) < 1) {
-		print j({error => '1', 'message' => "error: the phone $ext is not registered,Check the phone connection and try again.", 'actionid' => $query{actionid}});
+		print j({error => '1', 'message' => "error: The extension $ext is not registered. Check the connection and try again. ", 'actionid' => $query{actionid}});
 		return;
 	}
 	
