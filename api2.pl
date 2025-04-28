@@ -589,7 +589,7 @@ sub do_cdr() {
 		$recording_url = '';
 		$recording_filename = $row->{record_path} . '/' . $row->{record_name};
 		if (!$row->{record_name}) {
-			@today = &get_today();
+			@today = &get_day($row->{start_epoch});
 			$recording_filename = "/var/lib/freeswitch/recordings/" . $row->{domain_name} . "/archive" . "/"  . $today[0] . "/" . $today[1] . "/" . $today[2] . "/" . $row->{xml_cdr_uuid};
 			if (-e "$recording_filename.mp3") {
 				$recording_filename .= ".mp3";
@@ -1180,6 +1180,17 @@ sub get_today {
 	return ($y, $m, $d);
 }
 
+
+sub get_day {
+	local $time = shift || time;
+	my @arr = localtime($time);
+	my $y   = $arr[5] + 1900;
+	my @months = qw/Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec/;
+	my $m	= $months[$arr[4]];
+	my $d	= sprintf("%02d", $arr[3]);
+	
+	return ($y, $m, $d);
+}
 sub _uuid {
 	my $str = `uuid`;
 	$str =~ s/[\r\n]//g;
