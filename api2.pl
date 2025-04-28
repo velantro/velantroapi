@@ -1173,7 +1173,7 @@ sub getvalue {
 sub get_today {
 	my @arr = localtime();
 	my $y   = $arr[5] + 1900;
-	my @months = qw/Jan Feb Mar Api May Jun Jul Aug Sep Oct Nov Dec/;
+	my @months = qw/Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec/;
 	my $m	= $months[$arr[4]];
 	my $d	= sprintf("%02d", $arr[3]);
 	
