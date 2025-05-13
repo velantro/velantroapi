@@ -745,7 +745,7 @@ S
 }
 
 sub refresh_zoho_tokens() {
-	%default = &database_select_as_hash("select default_setting_subcategory,default_setting_value from v_default_setttings where (default_setting_subcategory = 'zoho_client_id' or default_setting_subcategory = 'zoho_client_secret')", "value");
+	%default = &database_select_as_hash("select default_setting_subcategory,default_setting_value from v_default_settings where (default_setting_subcategory = 'zoho_client_id' or default_setting_subcategory = 'zoho_client_secret')", "value");
 	$client_id = $default{zoho_client_id}{value};
 	$client_secret = $default{zoho_client_secret}{value};
 	
