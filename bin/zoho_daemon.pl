@@ -313,6 +313,7 @@ sub Dial() {
 		$type = 'dialed';
 		$ext = $from.'@' . $domain_name;
 	} else {
+		warn "$from/$to in $domain_name not enable zoho!";
 		return;
 	}
 	
