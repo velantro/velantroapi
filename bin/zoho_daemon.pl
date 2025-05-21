@@ -337,7 +337,7 @@ sub Dial() {
 	$data = "type=$type&state=ringing&id=$uuid&from=" . &to164($from) . "&to=" . &to164($to);
 	$cache_uuid = &_uuid();
 	$now = &now();
-	$sql = "insert into v_zoho_api_cache (zoho_api_cache_uuid,ext,data,insert_date) values('$cache_uuid', '$ext', 'type=$type&id=$uuid&from='" . &to164($from) . '&to=' . &to164($to) . ", '$now')";
+	$sql = "insert into v_zoho_api_cache (zoho_api_cache_uuid,ext,data,insert_date) values('$cache_uuid', '$ext', 'type=$type&id=$uuid&from=" . &to164($from) . '&to=' . &to164($to) . ", '$now')";
 	warn $sql;
 	&database_do($sql);
 	&send_zoho_request('callnotify', $ext, $data);	
