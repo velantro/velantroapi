@@ -457,7 +457,8 @@ sub End() {
 	$from = $dialed_calls{$uuid}{from} ;
 	$domain_name = $dialed_calls{$uuid}{domain_name};
 	if ($event{variable_ring_group_extension}) {
-		$to = $destination;
+		$to = $event{last_sent_callee_id_number};
+		$to ||= $destination;
 		$ext = "$to\@$domain_name";
 	} else {
 		$to = $dialed_calls{$uuid}{to};
