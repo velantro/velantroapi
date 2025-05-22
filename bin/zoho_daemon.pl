@@ -262,9 +262,16 @@ sub Bridge() {
 	local $is_ring_group = `fs_cli -rx "uuid_getvar $uuid ring_group_extension"`;
 	chomp $is_ring_group; $is_ring_group = '' if $is_ring_group eq '_undef_';
 	
-	$to = $dialed_calls{$uuid}{to};
-	$ext = $dialed_calls{$uuid}{ext};
 	$domain_name = $dialed_calls{$uuid}{domain_name};
+	if ($ring_group_extension) {
+		$ext = "$to\@$domain_name";
+	} else {
+		$to = $dialed_calls{$uuid}{to};
+		$ext = $dialed_calls{$uuid}{ext};
+	}
+	
+	
+	
 	$type = $dialed_calls{$uuid}{type};
 	$data = "type=$type&state=answered&id=$uuid&from=" . &to164($from) . "&to=" . &to164($to);
 	&send_zoho_request('callnotify', $ext, $data);	
@@ -445,10 +452,17 @@ sub End() {
 	
 	#warn Data::Dumper::Dumper(\%event);
 	$iscallback = $dialed_calls{$uuid};
+	
+	
 	$from = $dialed_calls{$uuid}{from} ;
-	$to = $dialed_calls{$uuid}{to};
-	$ext = $dialed_calls{$uuid}{ext};
 	$domain_name = $dialed_calls{$uuid}{domain_name};
+	if ($event{variable_ring_group_extension}) {
+		$ext = "$to\@$domain_name";
+	} else {
+		$to = $dialed_calls{$uuid}{to};
+		$ext = $dialed_calls{$uuid}{ext};
+	}
+	
 	$type = $dialed_calls{$uuid}{type};
 	$current_epoch = $event{'Event-Date-Timestamp'};
 	
@@ -461,7 +475,9 @@ sub End() {
 
 	
 	warn "Hangup Call from $fromextension - $from to $to: $billsec : $fixed_billsec : " . $current_epoch . " : " . $dialed_calls{$uuid}{answered_epoch};
-	delete $dialed_calls{$uuid};
+	if ($hangup_cause ne 'LOSE_RACE') {
+		delete $dialed_calls{$uuid};
+	}
 	
 	if ($hangup_calls{$to}) {
 		warn "Found $to: " . $hangup_calls{$to} . " in hangup call spool";
