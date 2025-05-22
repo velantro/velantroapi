@@ -447,7 +447,7 @@ sub End() {
 	
 
 	if ($event{'Caller-Channel-Name'} =~ m{loopback/(\w+)\-a}) {
-		$to = $destination;
+		$to = $event{'Caller-Destination-Number'};;
 	}
 	
 	#warn Data::Dumper::Dumper(\%event);
@@ -457,6 +457,7 @@ sub End() {
 	$from = $dialed_calls{$uuid}{from} ;
 	$domain_name = $dialed_calls{$uuid}{domain_name};
 	if ($event{variable_ring_group_extension}) {
+		$to = $destination;
 		$ext = "$to\@$domain_name";
 	} else {
 		$to = $dialed_calls{$uuid}{to};
