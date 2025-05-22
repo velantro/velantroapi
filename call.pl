@@ -550,7 +550,7 @@ sub hangup {
 	my $cmd = "fs_cli -x \"uuid_kill $uuid\"";
 	my $res = `$cmd`;
 	warn "$cmd: $res\n";
-	if ($res =~ /ERR/) {
+	if (0 && $res =~ /ERR/) {
 		warn "not found $uuid in current channels, let's find it in xml_cdr log";
 		my $dir = "/usr/local/freeswitch/log/xml_cdr";
 		my $xml_file = "$dir/a_$uuid.cdr.xml";
