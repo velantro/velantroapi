@@ -258,6 +258,10 @@ sub Bridge() {
 	
 	$iscallback = $dialed_calls{$uuid};
 	$from = $dialed_calls{$uuid}{from} ;
+	
+	local $is_ring_group = `fs_cli -rx "uuid_getvar $uuid ring_group_extension"`;
+	chomp $is_ring_group; $is_ring_group = '' if $is_ring_group eq '_undef_';
+	
 	$to = $dialed_calls{$uuid}{to};
 	$ext = $dialed_calls{$uuid}{ext};
 	$domain_name = $dialed_calls{$uuid}{domain_name};
@@ -296,6 +300,8 @@ sub Dial() {
 	
 	local $iscallback = `fs_cli -rx "uuid_getvar $uuid iscallback"`;
 	chomp $iscallback; $iscallback = '' if $iscallback eq '_undef_';
+	local $is_ring_group = `fs_cli -rx "uuid_getvar $uuid ring_group_extension"`;
+	chomp $is_ring_group; $is_ring_group = '' if $is_ring_group eq '_undef_';
 	if ($iscallback) {
 		$from = $event{'Caller-Orig-Caller-ID-Name'};
 	}
@@ -320,8 +326,11 @@ sub Dial() {
 	if ($dialed_calls{$uuid}) {
 		$iscallback = $dialed_calls{$uuid};
 		$from = $dialed_calls{$uuid}{from} ;
-		$to = $dialed_calls{$uuid}{to};
-		$ext = $dialed_calls{$uuid}{ext};
+		unless ($dialed_calls{$uuid}{is_ring_group}) {
+			$to = $dialed_calls{$uuid}{to};
+			$ext = $dialed_calls{$uuid}{ext};
+		}
+		
 		$domain_name = $dialed_calls{$uuid}{domain_name};
 		$type = $dialed_calls{$uuid}{type};
 		
@@ -332,6 +341,7 @@ sub Dial() {
 		$dialed_calls{$uuid}{domain_name} = $domain_name;
 		$dialed_calls{$uuid}{start_epoch} = $event{'Event-Date-Timestamp'};;
 		$dialed_calls{$uuid}{type} = $type;
+		$dialed_calls{$uuid}{is_ring_group} = $is_ring_group;
 		$dialed_calls{$uuid}{iscallback} = $iscallback;
 		if ($iscallback && $type eq 'recieved') {
 			return;
