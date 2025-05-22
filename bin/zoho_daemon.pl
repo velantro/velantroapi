@@ -263,7 +263,7 @@ sub Bridge() {
 	chomp $is_ring_group; $is_ring_group = '' if $is_ring_group eq '_undef_';
 	
 	$domain_name = $dialed_calls{$uuid}{domain_name};
-	if ($ring_group_extension) {
+	if ($is_ring_group) {
 		$ext = "$to\@$domain_name";
 	} else {
 		$to = $dialed_calls{$uuid}{to};
@@ -447,7 +447,7 @@ sub End() {
 	
 
 	if ($event{'Caller-Channel-Name'} =~ m{loopback/(\w+)\-a}) {
-		$to = $event{'Caller-Destination-Number'};
+		$to = $destination;
 	}
 	
 	#warn Data::Dumper::Dumper(\%event);
