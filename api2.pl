@@ -663,8 +663,7 @@ sub hangup {
 			if ($row->{bridge_uuid}) {
 				$uuid = $row->{bridge_uuid};
 			} else {
-				print j({error => '1', 'message' => 'Error: not found this callbackid', 'actionid' => $query{actionid}, channels => $channels});
-				exit 0;
+				warn j({error => '1', 'message' => 'Error: not found bridge_uuid for this callbackid', 'actionid' => $query{actionid}, channels => $channels});
 			}
 		}
 	}
