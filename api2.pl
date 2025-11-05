@@ -435,7 +435,7 @@ sub send_callback {
 	my $cid = get_outbound_callerid($domain, $ext) || $dest;
 	warn "cid=$cid";
 	
-	$res = `fs_cli -rx "show registrations" | grep "$ext,$domain"`;
+	$res = `fs_cli -rx "show registrations" | grep "\\b$ext,$domain"`;
 	chomp $res;
 	if (length($res) < 1) {
 		print j({error => '1', 'message' => "error: The extension $ext is not registered. Check the connection and try again. ", 'actionid' => $query{actionid}});
